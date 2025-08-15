@@ -3,6 +3,9 @@ import { computed, ref } from 'vue'
 import { useSimulationStore } from '../stores/simulation.js'
 import { useGameValuesStore } from '../stores/gameValues.js'
 import { useResultsStore } from '../stores/results.js'
+import ResourceChart from './ResourceChart.vue'
+import PhaseTimeline from './PhaseTimeline.vue'
+import UpgradeChart from './UpgradeChart.vue'
 
 const simulation = useSimulationStore()
 const gameValues = useGameValuesStore()
@@ -791,6 +794,22 @@ function getPlotStatusClass(plot) {
               {{ testResults }}
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Advanced Visualization Section -->
+    <div class="section">
+      <h3>📊 Advanced Visualization</h3>
+      <div class="charts-grid">
+        <div class="chart-row">
+          <ResourceChart />
+        </div>
+        <div class="chart-row">
+          <PhaseTimeline />
+        </div>
+        <div class="chart-row">
+          <UpgradeChart />
         </div>
       </div>
     </div>
@@ -1727,5 +1746,28 @@ function getPlotStatusClass(plot) {
   border: 1px solid #c3e6cb;
   font-family: monospace;
   font-size: 0.9rem;
+}
+
+/* Charts Grid */
+.charts-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.chart-row {
+  width: 100%;
+}
+
+@media (min-width: 1200px) {
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  
+  .chart-row:first-child {
+    grid-column: 1 / -1;
+  }
 }
 </style>

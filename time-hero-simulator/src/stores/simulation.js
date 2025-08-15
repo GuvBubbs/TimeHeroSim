@@ -54,7 +54,19 @@ export const useSimulationStore = defineStore('simulation', () => {
       autoMode: false,
       seedInventory: { carrot: 10, radish: 10, potato: 10 }
     },
-    currentPhase: 'tutorial'
+    currentPhase: 'tutorial',
+    
+    // History tracking for charts
+    resourceHistory: [], // { timestamp, gameDay, resources: {...} }
+    phaseHistory: [], // { phase, startDay, duration }
+    upgradeHistory: [], // { upgradeId, day, cost }
+    discoveredHelpers: [],
+    purchasedUpgrades: [],
+    unlockedFeatures: ['farming'], // farming, adventure, mining, forge, tower
+    
+    // Current simulation tick for reactive updates
+    currentTick: 0,
+    day: 1 // convenient accessor for current day
   })
   
   // Player behavior parameters (modifiable simulation settings)
@@ -349,7 +361,73 @@ export const useSimulationStore = defineStore('simulation', () => {
     if (currentMinute.value === 0) {
       logEvent('TIME', `Hour ${currentHour.value} - Day ${currentDay.value}`)
     }
+
+    // Track resource history every hour
+    if (currentMinute.value === 0) {
+      trackResourceHistory()
+    }
+
+    // Update reactive tick counter
+    gameState.value.currentTick++
+    gameState.value.day = currentDay.value
   }
+
+  // Track resource history for charts
+  function trackResourceHistory() {
+    const historyEntry = {
+      timestamp: Date.now(),
+      gameDay: currentDay.value,
+      gameHour: currentHour.value,
+      resources: {
+        energy: {
+          current: gameState.value.resources.energy.current,
+          cap: gameState.value.resources.energy.cap
+        },
+        gold: gameState.value.resources.gold,
+        materials: { ...gameState.value.resources.materials }
+      }
+    }
+    
+    gameState.value.resourceHistory.push(historyEntry)
+    
+    // Keep only last 7 days of hourly data (168 entries)
+    if (gameState.value.resourceHistory.length > 168) {
+      gameState.value.resourceHistory = gameState.value.resourceHistory.slice(-168)
+    }
+  }
+
+  // Track upgrade purchases
+  function trackUpgradePurchase(upgradeId, cost) {
+    const upgradeEntry = {
+      upgradeId,
+      day: currentDay.value,
+      cost,
+      timestamp: Date.now()
+    }
+    
+    gameState.value.upgradeHistory.push(upgradeEntry)
+    gameState.value.purchasedUpgrades.push(upgradeId)
+  }
+
+  // Track phase transitions
+  function trackPhaseTransition(newPhase) {
+    const currentPhaseEntry = gameState.value.phaseHistory.find(
+      entry => entry.phase === gameState.value.currentPhase
+    )
+    
+    if (currentPhaseEntry) {
+      currentPhaseEntry.duration = currentDay.value - currentPhaseEntry.startDay
+    }
+    
+    // Add new phase entry
+    gameState.value.phaseHistory.push({
+      phase: newPhase,
+      startDay: currentDay.value,
+      duration: 0
+    })
+  }
+
+  // Process crop growth for all plots
 
   // Process crop growth for all plots
   function processFarmGrowth() {
@@ -439,6 +517,9 @@ export const useSimulationStore = defineStore('simulation', () => {
     }
 
     if (newPhase !== currentPhase) {
+      // Track the phase transition for charts
+      trackPhaseTransition(newPhase)
+      
       gameState.value.currentPhase = newPhase
       logEvent('PROGRESSION', `Entered ${newPhase} phase!`, 'major')
       
@@ -904,6 +985,9 @@ export const useSimulationStore = defineStore('simulation', () => {
     
     // Add to owned upgrades
     gameState.value.upgrades.owned.push(upgradeId)
+    
+    // Track the purchase for charts
+    trackUpgradePurchase(upgradeId, upgrade.cost)
     
     // Apply upgrade effects
     applyUpgradeEffect(upgradeId, upgrade.effect)
@@ -1490,6 +1574,16 @@ export const useSimulationStore = defineStore('simulation', () => {
     checkPlayerSession,
     simulatePlayerSession,
     performSessionActions,
-    processOngoingActions
+    processOngoingActions,
+    
+    // History Tracking
+    trackResourceHistory,
+    trackUpgradePurchase,
+    trackPhaseTransition,
+    
+    // Computed getters for charts
+    resourceHistory: computed(() => gameState.value.resourceHistory),
+    phaseHistory: computed(() => gameState.value.phaseHistory),
+    upgradeHistory: computed(() => gameState.value.upgradeHistory)
   }
 })
