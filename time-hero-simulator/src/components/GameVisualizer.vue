@@ -1,10 +1,52 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useSimulationStore } from '../stores/simulation.js'
 import { useGameValuesStore } from '../stores/gameValues.js'
+import { useResultsStore } from '../stores/results.js'
 
 const simulation = useSimulationStore()
 const gameValues = useGameValuesStore()
+const results = useResultsStore()
+
+// Testing controls state
+const showTestingPanel = ref(false)
+const testScenario = ref('casual')
+const reportFormat = ref('json')
+const testResults = ref('')
+
+// Test scenario options
+const testScenarios = [
+  { value: 'speedrunner', label: 'Speedrunner (Optimal Play)', icon: '🏃‍♂️' },
+  { value: 'casual', label: 'Casual Player', icon: '😊' },
+  { value: 'weekend-warrior', label: 'Weekend Warrior', icon: '📅' },
+  { value: 'balance-test', label: 'Balance Test', icon: '⚖️' }
+]
+
+// Export format options
+const exportFormats = [
+  { value: 'json', label: 'JSON Data' },
+  { value: 'csv', label: 'CSV Spreadsheet' },
+  { value: 'markdown', label: 'Markdown Report' }
+]
+
+// Testing functions
+function runTestScenario() {
+  testResults.value = results.runQuickTestScenario(testScenario.value)
+}
+
+function generateReport() {
+  const report = results.generateComprehensiveReport()
+  testResults.value = `Comprehensive report generated with ID: ${report.id}`
+}
+
+function exportCurrentReport() {
+  if (results.latestReport) {
+    const result = results.exportReport(results.latestReport.id, reportFormat.value)
+    testResults.value = result || 'Export completed'
+  } else {
+    testResults.value = 'No report available to export'
+  }
+}
 
 const energyPercentage = computed(() => {
   const current = simulation.gameState.resources.energy.current
@@ -51,7 +93,6 @@ const phaseProgress = computed(() => {
 })
 
 // Farm control variables
-import { ref } from 'vue'
 const selectedCrop = ref('')
 const selectedPlotId = ref(1)
 
@@ -653,6 +694,104 @@ function getPlotStatusClass(plot) {
         <p v-if="simulation.gameState.heroes.currentAction.timeRemaining">
           <strong>Time Remaining:</strong> {{ simulation.gameState.heroes.currentAction.timeRemaining }} min
         </p>
+      </div>
+    </div>
+
+    <!-- Testing & Reporting Panel -->
+    <div class="section">
+      <h3>🧪 Testing & Reporting</h3>
+      <div class="testing-controls">
+        <button @click="showTestingPanel = !showTestingPanel" class="toggle-btn">
+          {{ showTestingPanel ? '▼' : '▶' }} {{ showTestingPanel ? 'Hide' : 'Show' }} Testing Panel
+        </button>
+        
+        <div v-if="showTestingPanel" class="testing-panel">
+          <div class="testing-section">
+            <h4>🏃‍♂️ Quick Test Scenarios</h4>
+            <div class="scenario-selector">
+              <label>Test Scenario:</label>
+              <select v-model="testScenario">
+                <option v-for="scenario in testScenarios" :key="scenario.value" :value="scenario.value">
+                  {{ scenario.icon }} {{ scenario.label }}
+                </option>
+              </select>
+              <button @click="runTestScenario" class="test-btn">Run Test</button>
+            </div>
+            
+            <div class="scenario-descriptions">
+              <div class="scenario-desc">
+                <strong>Speedrunner:</strong> Optimal play patterns, 10+ daily check-ins, max efficiency
+              </div>
+              <div class="scenario-desc">
+                <strong>Casual:</strong> 2-4 daily check-ins, moderate efficiency, balanced approach
+              </div>
+              <div class="scenario-desc">
+                <strong>Weekend Warrior:</strong> Heavy weekend play, light weekday engagement
+              </div>
+              <div class="scenario-desc">
+                <strong>Balance Test:</strong> Standard test profile for game balance validation
+              </div>
+            </div>
+          </div>
+
+          <div class="testing-section">
+            <h4>📊 Comprehensive Reporting</h4>
+            <div class="report-controls">
+              <button @click="generateReport" class="report-btn">
+                📈 Generate Full Report
+              </button>
+              
+              <div class="export-controls">
+                <label>Export Format:</label>
+                <select v-model="reportFormat">
+                  <option v-for="format in exportFormats" :key="format.value" :value="format.value">
+                    {{ format.label }}
+                  </option>
+                </select>
+                <button @click="exportCurrentReport" class="export-btn">
+                  💾 Export Report
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="testing-section" v-if="results.latestReport">
+            <h4>📋 Latest Report Summary</h4>
+            <div class="report-summary">
+              <div class="summary-stat">
+                <span class="stat-label">Game Day:</span>
+                <span class="stat-value">{{ results.latestReport.gameState?.day || 'N/A' }}</span>
+              </div>
+              <div class="summary-stat">
+                <span class="stat-label">Phase:</span>
+                <span class="stat-value">{{ results.latestReport.gameState?.phase || 'N/A' }}</span>
+              </div>
+              <div class="summary-stat">
+                <span class="stat-label">Active Plots:</span>
+                <span class="stat-value">{{ results.latestReport.gameState?.activePlots || 'N/A' }}</span>
+              </div>
+              <div class="summary-stat">
+                <span class="stat-label">Helpers:</span>
+                <span class="stat-value">{{ results.latestReport.gameState?.helpers || 'N/A' }}</span>
+              </div>
+              <div class="summary-stat">
+                <span class="stat-label">Energy Efficiency:</span>
+                <span class="stat-value">
+                  {{ results.latestReport.balance?.energyBalance?.efficiency 
+                     ? (results.latestReport.balance.energyBalance.efficiency * 100).toFixed(1) + '%' 
+                     : 'N/A' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="testing-section" v-if="testResults">
+            <h4>🎯 Test Results</h4>
+            <div class="test-results">
+              {{ testResults }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1415,5 +1554,178 @@ function getPlotStatusClass(plot) {
   color: #495057;
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+/* Testing Panel Styles */
+.testing-controls {
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.toggle-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.toggle-btn:hover {
+  background: #545b62;
+}
+
+.testing-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.testing-section {
+  background: white;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+}
+
+.testing-section h4 {
+  margin: 0 0 1rem 0;
+  color: #495057;
+  font-size: 1rem;
+}
+
+.scenario-selector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.scenario-selector label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.scenario-selector select {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.test-btn, .report-btn, .export-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.test-btn {
+  background: #28a745;
+  color: white;
+}
+
+.test-btn:hover {
+  background: #218838;
+}
+
+.report-btn {
+  background: #007bff;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.report-btn:hover {
+  background: #0056b3;
+}
+
+.export-btn {
+  background: #6f42c1;
+  color: white;
+}
+
+.export-btn:hover {
+  background: #5a32a3;
+}
+
+.scenario-descriptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scenario-desc {
+  background: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.85rem;
+  border-left: 3px solid #dee2e6;
+}
+
+.report-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.export-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.export-controls label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.export-controls select {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.report-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.summary-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  border-left: 3px solid #007bff;
+}
+
+.stat-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.stat-value {
+  font-weight: 600;
+  color: #212529;
+}
+
+.test-results {
+  background: #d4edda;
+  color: #155724;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid #c3e6cb;
+  font-family: monospace;
+  font-size: 0.9rem;
 }
 </style>
