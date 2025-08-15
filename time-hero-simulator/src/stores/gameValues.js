@@ -1,0 +1,142 @@
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+
+/**
+ * Game Values Store - Immutable imported values
+ * 
+ * This store contains all game values loaded from CSVs/JSON files.
+ * These values are NEVER modified by the simulator - they represent
+ * the actual game's design and must be preserved exactly.
+ */
+export const useGameValuesStore = defineStore('gameValues', () => {
+  // Immutable game data - loaded from CSV/JSON files
+  const crops = ref(Object.freeze({}))
+  const upgrades = ref(Object.freeze({}))
+  const adventures = ref(Object.freeze({}))
+  const mining = ref(Object.freeze({}))
+  const helpers = ref(Object.freeze({}))
+  const tools = ref(Object.freeze({}))
+  const storage = ref(Object.freeze({}))
+  
+  // Validation state
+  const isLoaded = ref(false)
+  const validationErrors = ref([])
+  const lastUpdated = ref(null)
+  
+  // Computed getters for easy access
+  const getCropsByTier = computed(() => {
+    const tiers = { early: [], mid: [], late: [], endgame: [] }
+    Object.values(crops.value).forEach(crop => {
+      if (tiers[crop.tier]) {
+        tiers[crop.tier].push(crop)
+      }
+    })
+    return tiers
+  })
+  
+  const getUpgradesByCategory = computed(() => {
+    const categories = {}
+    Object.values(upgrades.value).forEach(upgrade => {
+      if (!categories[upgrade.category]) {
+        categories[upgrade.category] = []
+      }
+      categories[upgrade.category].push(upgrade)
+    })
+    return categories
+  })
+  
+  // Load game values from imported data
+  function loadGameValues(gameData) {
+    try {
+      // Freeze all imported data to prevent modification
+      crops.value = Object.freeze(gameData.crops || {})
+      upgrades.value = Object.freeze(gameData.upgrades || {})
+      adventures.value = Object.freeze(gameData.adventures || {})
+      mining.value = Object.freeze(gameData.mining || {})
+      helpers.value = Object.freeze(gameData.helpers || {})
+      tools.value = Object.freeze(gameData.tools || {})
+      storage.value = Object.freeze(gameData.storage || {})
+      
+      isLoaded.value = true
+      lastUpdated.value = new Date().toISOString()
+      validationErrors.value = []
+      
+      console.log('Game values loaded successfully:', {
+        crops: Object.keys(crops.value).length,
+        upgrades: Object.keys(upgrades.value).length,
+        adventures: Object.keys(adventures.value).length
+      })
+    } catch (error) {
+      console.error('Failed to load game values:', error)
+      validationErrors.value.push(`Load error: ${error.message}`)
+    }
+  }
+  
+  // Validate imported data integrity
+  function validateGameValues() {
+    const errors = []
+    
+    // Validate crops
+    Object.entries(crops.value).forEach(([id, crop]) => {
+      if (!crop.energy || crop.energy < 0) {
+        errors.push(`Invalid energy for crop ${id}: ${crop.energy}`)
+      }
+      if (!crop.growthTime || crop.growthTime < 0) {
+        errors.push(`Invalid growth time for crop ${id}: ${crop.growthTime}`)
+      }
+      if (!['early', 'mid', 'late', 'endgame'].includes(crop.tier)) {
+        errors.push(`Invalid tier for crop ${id}: ${crop.tier}`)
+      }
+    })
+    
+    // Validate upgrades have costs
+    Object.entries(upgrades.value).forEach(([id, upgrade]) => {
+      if (!upgrade.cost || Object.keys(upgrade.cost).length === 0) {
+        errors.push(`Missing cost for upgrade ${id}`)
+      }
+    })
+    
+    validationErrors.value = errors
+    return errors.length === 0
+  }
+  
+  // Get crop by ID with error handling
+  function getCrop(cropId) {
+    return crops.value[cropId] || null
+  }
+  
+  // Get upgrade by ID with error handling
+  function getUpgrade(upgradeId) {
+    return upgrades.value[upgradeId] || null
+  }
+  
+  // Get adventure route by ID
+  function getAdventure(adventureId) {
+    return adventures.value[adventureId] || null
+  }
+  
+  return {
+    // State
+    crops,
+    upgrades,
+    adventures,
+    mining,
+    helpers,
+    tools,
+    storage,
+    isLoaded,
+    validationErrors,
+    lastUpdated,
+    
+    // Computed
+    getCropsByTier,
+    getUpgradesByCategory,
+    
+    // Actions
+    loadGameValues,
+    validateGameValues,
+    getCrop,
+    getUpgrade,
+    getAdventure
+  }
+})
