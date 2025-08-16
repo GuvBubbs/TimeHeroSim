@@ -15,6 +15,7 @@ export const useGameValuesStore = defineStore('gameValues', () => {
   const adventures = ref(Object.freeze({}))
   const mining = ref(Object.freeze({}))
   const helpers = ref(Object.freeze({}))
+  const combat = ref(Object.freeze({}))
   const tools = ref(Object.freeze({}))
   const storage = ref(Object.freeze({}))
   
@@ -22,6 +23,7 @@ export const useGameValuesStore = defineStore('gameValues', () => {
   const isLoaded = ref(false)
   const validationErrors = ref([])
   const lastUpdated = ref(null)
+  const hasUnsavedChanges = ref(false)
   
   // Computed getters for easy access
   const getCropsByTier = computed(() => {
@@ -54,6 +56,7 @@ export const useGameValuesStore = defineStore('gameValues', () => {
       adventures.value = Object.freeze(gameData.adventures || {})
       mining.value = Object.freeze(gameData.mining || {})
       helpers.value = Object.freeze(gameData.helpers || {})
+      combat.value = Object.freeze(gameData.combat || {})
       tools.value = Object.freeze(gameData.tools || {})
       storage.value = Object.freeze(gameData.storage || {})
       
@@ -114,6 +117,73 @@ export const useGameValuesStore = defineStore('gameValues', () => {
   function getAdventure(adventureId) {
     return adventures.value[adventureId] || null
   }
+
+  // Save configuration (placeholder for future implementation)
+  function saveConfiguration() {
+    hasUnsavedChanges.value = false
+    console.log('Configuration saved')
+  }
+  
+  // Stub methods for GameConfiguration component
+  function updateItemValue(category, itemId, key, value) {
+    console.log('updateItemValue called:', category, itemId, key, value)
+    // TODO: Implement actual update logic
+  }
+  
+  function updateItem(category, itemId, updatedItem) {
+    console.log('updateItem called:', category, itemId, updatedItem)
+    // TODO: Implement actual update logic
+  }
+  
+  function addItem(category, itemId, newItem) {
+    console.log('addItem called:', category, itemId, newItem)
+    // TODO: Implement actual add logic
+  }
+  
+  function deleteItem(category, itemId) {
+    console.log('deleteItem called:', category, itemId)
+    // TODO: Implement actual delete logic
+  }
+  
+  function exportItemsAsCSV(category, items) {
+    console.log('exportItemsAsCSV called:', category, items)
+    // TODO: Implement CSV export
+  }
+  
+  function resetToDefaults() {
+    console.log('resetToDefaults called')
+    // TODO: Reload from CSV files
+  }
+  
+  function exportAllAsCSV() {
+    console.log('exportAllAsCSV called')
+    // TODO: Export all data as CSV
+  }
+  
+  function importFromCSV(category, file) {
+    console.log('importFromCSV called:', category, file)
+    // TODO: Import CSV file
+  }
+  
+  function saveConfigurationSet(name) {
+    console.log('saveConfigurationSet called:', name)
+    // TODO: Save configuration set
+  }
+  
+  function updateUpgrade(upgradeId, updatedData) {
+    console.log('updateUpgrade called:', upgradeId, updatedData)
+    // TODO: Implement upgrade update logic
+  }
+  
+  function deleteUpgrade(upgradeId) {
+    console.log('deleteUpgrade called:', upgradeId)
+    // TODO: Implement upgrade deletion logic
+  }
+  
+  function exportUpgradeTree() {
+    console.log('exportUpgradeTree called')
+    // TODO: Export upgrade tree as JSON or CSV
+  }
   
   return {
     // State
@@ -122,11 +192,13 @@ export const useGameValuesStore = defineStore('gameValues', () => {
     adventures,
     mining,
     helpers,
+    combat,
     tools,
     storage,
     isLoaded,
     validationErrors,
     lastUpdated,
+    hasUnsavedChanges,
     
     // Computed
     getCropsByTier,
@@ -137,6 +209,21 @@ export const useGameValuesStore = defineStore('gameValues', () => {
     validateGameValues,
     getCrop,
     getUpgrade,
-    getAdventure
+    getAdventure,
+    saveConfiguration,
+    
+    // Methods for GameConfiguration component
+    updateItemValue,
+    updateItem,
+    addItem,
+    deleteItem,
+    exportItemsAsCSV,
+    resetToDefaults,
+    exportAllAsCSV,
+    importFromCSV,
+    saveConfigurationSet,
+    updateUpgrade,
+    deleteUpgrade,
+    exportUpgradeTree
   }
 })

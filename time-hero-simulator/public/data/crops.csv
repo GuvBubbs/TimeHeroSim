@@ -1,30 +1,30 @@
 name,tier,unlockDay,growthTime,growthStages,energy,seedCost,notes
-Carrot,early,1,6,3,0.5,0,Good starter income
-Radish,early,1,4.5,3,0.5,0,Quick satisfaction for new players
-Potato,early,1,9,3,1,0,Reliable and familiar crop
-Cabbage,early,1,12,4,1.5,1,First bulk-harvest leafy crop
-Turnip,early,2,6,3,1,1,Common root vegetable
-Corn,early,2,20,5,2.5,2,Good yield steady income
-Tomato,early,2,15,5,2,2,Recurring harvests
-Strawberry,mid,3,25,5,6,5,Popular and profitable
-Spinach,mid,3,3,3,2.5,3,High nutritional energy
-Onion,mid,4,12,3,3.5,4,Solid mid-tier selling crop
-Garlic,mid,4,18,3,5,5,High price niche in cooking
-Cucumber,mid,5,20,5,4.5,6,Consistent sales
+Carrot,early,1,6,3,0.5,0,Early starter crop with quick growth
+Radish,early,1,4.5,3,0.5,0,Fastest growing early crop
+Potato,early,1,9,3,1,0,Reliable early crop with good energy
+Cabbage,early,1,12,4,1.5,1,First multi-stage leafy crop
+Turnip,early,2,6,3,1,1,Common root vegetable upgrade
+Corn,early,2,20,5,2.5,2,High yield multi-stage crop
+Tomato,early,2,15,5,2,2,Recurring harvest crop
+Strawberry,mid,3,25,5,6,5,Popular profitable mid-tier crop
+Spinach,mid,3,3,3,2.5,3,Fast growing high energy leafy
+Onion,mid,4,12,3,3.5,4,Solid mid-tier crop
+Garlic,mid,4,18,3,5,5,High value specialty crop
+Cucumber,mid,5,20,5,4.5,6,Consistent multi-harvest crop
 Leek,mid,5,15,3,4,5,Versatile cooking ingredient
-Wheat,mid,6,20,4,6,7,Used in flour/bread good energy
+Wheat,mid,6,20,4,6,7,Essential grain for advanced recipes
 Pumpkin,late,14,40,5,12,15,High value seasonal crop
-Pineapple,late,14,50,5,20,25,Rare tropical crop high energy
-Watermelon,late,14,45,5,17,20,High selling price summer crop
+Pineapple,late,14,50,5,20,25,Premium tropical fruit
+Watermelon,late,14,45,5,17,20,High value summer crop
 Honeydew,late,14,40,5,15,18,Valuable melon variety
-Asparagus,late,14,21,3,10,12,High market price
-Cauliflower,late,14,24,4,9,11,High yield advanced recipes
-Caisim,late,14,12,3,8,10,Rare leafy green
-Yam,endgame,21,36,3,25,35,High energy food
-Beetroot,endgame,21,32,4,18,25,Unique color recipe bonuses
-Bell Pepper Green,endgame,21,35,5,22,30,Part of pepper set
-Bell Pepper Red,endgame,21,35,5,27,35,More valuable than green
-Bell Pepper Yellow,endgame,28,35,5,32,40,Rarest pepper variant
-Shallot,endgame,28,30,3,30,40,High culinary value
-Eggplant,endgame,28,30,5,20,28,Staple in advanced dishes
-Soybean,endgame,28,40,5,22,30,Crafting utility (tofu/soy)
+Asparagus,late,14,21,3,10,12,High market price vegetable
+Cauliflower,late,14,24,4,9,11,Advanced recipe ingredient
+Caisim,late,14,12,3,8,10,Rare leafy green specialty
+Yam,endgame,21,36,3,25,35,High energy endgame crop
+Beetroot,endgame,21,32,4,18,25,Unique colored root vegetable
+Bell Pepper (G),endgame,21,35,5,22,30,Green bell pepper variety
+Bell Pepper (R),endgame,21,35,5,27,35,Red bell pepper variety
+Bell Pepper (Y),endgame,28,35,5,32,40,Premium yellow bell pepper
+Shallot,endgame,28,30,3,30,40,High culinary value allium
+Eggplant,endgame,28,30,5,20,28,Staple endgame cooking ingredient
+Soybean,endgame,28,40,5,22,30,Versatile protein crop

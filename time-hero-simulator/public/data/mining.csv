@@ -1,0 +1,11 @@
+id,name,depth,unlockDay,energyDrain,maxRuntime,commonMaterial,commonAmount,rareMaterial,rareAmount,specialFind,specialChance,notes
+depth_1,Surface Mining,1,2,1,300,stone,3,copper,1,,0,Entry level mining
+depth_2,Copper Veins,2,3,2,150,copper,2,iron,1,,0,Rich copper deposits
+depth_3,Iron Deposits,3,4,4,75,copper,3,iron,2,sleeping_gnome,5,First helper discovery zone
+depth_4,Deep Iron,4,5,8,37,iron,2,silver,1,sleeping_gnome,10,Higher gnome chance
+depth_5,Silver Caverns,5,7,16,18,iron,3,silver,2,stone_golem_core,5,Stone golem cores appear
+depth_6,Crystal Edge,6,8,32,9,silver,2,crystal,1,stone_golem_core,10,Crystal formation begins
+depth_7,Crystal Depths,7,14,64,5,silver,3,crystal,2,crystal_golem_core,5,Crystal golem territory
+depth_8,Mythril Approach,8,15,128,2.5,crystal,2,mythril,1,crystal_golem_core,10,Mythril veins discovered
+depth_9,Ancient Depths,9,21,256,1.3,crystal,3,mythril,2,ancient_golem_core,5,Ancient power awakens
+depth_10,Core Chamber,10,28,512,0.65,mythril,2,obsidian,1,ancient_golem_core,10,Maximum depth reached

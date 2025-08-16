@@ -36,14 +36,23 @@ function parseCSVData(csvText, config = {}) {
 // Load CSV file from public directory
 async function loadCSVFile(filename) {
   try {
+    console.log(`🔄 Attempting to load CSV file: ${filename}`)
     const response = await fetch(`/data/${filename}`)
+    console.log(`📄 Response for ${filename}:`, response.status, response.statusText)
+    
     if (!response.ok) {
       throw new Error(`Failed to load ${filename}: ${response.statusText}`)
     }
     const csvText = await response.text()
-    return parseCSVData(csvText)
+    console.log(`📝 CSV content for ${filename} (first 200 chars):`, csvText.substring(0, 200))
+    
+    const parsedData = parseCSVData(csvText)
+    console.log(`✅ Parsed ${filename} successfully. Row count:`, parsedData.length)
+    console.log(`🔍 First parsed row:`, parsedData[0])
+    
+    return parsedData
   } catch (error) {
-    console.error(`Error loading CSV file ${filename}:`, error)
+    console.error(`❌ Error loading CSV file ${filename}:`, error)
     throw error
   }
 }
@@ -155,45 +164,147 @@ function processUpgradesData(rawData) {
   return Object.freeze(upgradesObj)
 }
 
+// Process mining data specifically
+function processMiningData(rawData) {
+  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'depth', 'energyDrain'], 'mining')
+  
+  if (validationErrors.length > 0) {
+    throw new Error(`Mining data validation failed: ${validationErrors.join(', ')}`)
+  }
+  
+  const miningObj = {}
+  rawData.forEach(level => {
+    miningObj[level.id] = {
+      ...level,
+      // Add computed properties
+      efficiencyRatio: level.commonAmount / level.energyDrain
+    }
+  })
+  
+  return Object.freeze(miningObj)
+}
+
+// Process helpers data specifically
+function processHelpersData(rawData) {
+  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'type', 'basePlotCapacity'], 'helpers')
+  
+  if (validationErrors.length > 0) {
+    throw new Error(`Helpers data validation failed: ${validationErrors.join(', ')}`)
+  }
+  
+  const helpersObj = {}
+  rawData.forEach(helper => {
+    helpersObj[helper.id] = {
+      ...helper,
+      // Add computed properties
+      efficiencyGain: helper.maxEfficiency - helper.baseEfficiency
+    }
+  })
+  
+  return Object.freeze(helpersObj)
+}
+
+// Process combat data specifically
+function processCombatData(rawData) {
+  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'type', 'category'], 'combat')
+  
+  if (validationErrors.length > 0) {
+    throw new Error(`Combat data validation failed: ${validationErrors.join(', ')}`)
+  }
+  
+  const combatObj = {}
+  rawData.forEach(item => {
+    // Create structured cost object
+    const cost = {
+      gold: item.goldCost || 0,
+      energy: item.energyCost || 0,
+      stone: item.stoneCost || 0,
+      copper: item.copperCost || 0,
+      iron: item.ironCost || 0,
+      silver: item.silverCost || 0,
+      crystal: item.crystalCost || 0,
+      mythril: item.mythrilCost || 0
+    }
+    
+    combatObj[item.id] = {
+      ...item,
+      cost // Add structured cost object
+    }
+  })
+  
+  return Object.freeze(combatObj)
+}
+
 // Main function to load all game data
 export async function loadAllGameData() {
   try {
-    console.log('Loading game data from CSV files...')
+    console.log('🚀 Loading game data from CSV files...')
     
     // Load all CSV files in parallel
-    const [cropsRaw, adventuresRaw, upgradesRaw] = await Promise.all([
+    const [cropsRaw, adventuresRaw, upgradesRaw, miningRaw, helpersRaw, combatRaw] = await Promise.all([
       loadCSVFile('crops.csv'),
       loadCSVFile('adventures.csv'),
-      loadCSVFile('upgrades.csv')
+      loadCSVFile('upgrades.csv'),
+      loadCSVFile('mining.csv').catch(() => []),
+      loadCSVFile('helpers.csv').catch(() => []),
+      loadCSVFile('combat.csv').catch(() => [])
     ])
+    
+    console.log('📊 Raw data loaded:', {
+      crops: cropsRaw.length,
+      adventures: adventuresRaw.length,
+      upgrades: upgradesRaw.length,
+      mining: miningRaw.length,
+      helpers: helpersRaw.length,
+      combat: combatRaw.length
+    })
     
     // Process each data type
     const crops = processCropsData(cropsRaw)
     const adventures = processAdventuresData(adventuresRaw)
     const upgrades = processUpgradesData(upgradesRaw)
+    const mining = miningRaw.length > 0 ? processMiningData(miningRaw) : Object.freeze({})
+    const helpers = helpersRaw.length > 0 ? processHelpersData(helpersRaw) : Object.freeze({})
+    const combat = combatRaw.length > 0 ? processCombatData(combatRaw) : Object.freeze({})
+    
+    console.log('🔧 Processed data:', {
+      crops: Object.keys(crops).length,
+      adventures: Object.keys(adventures).length,
+      upgrades: Object.keys(upgrades).length,
+      mining: Object.keys(mining).length,
+      helpers: Object.keys(helpers).length,
+      combat: Object.keys(combat).length
+    })
     
     // Create the final game data object
     const gameData = Object.freeze({
       crops,
       adventures,
       upgrades,
-      // Placeholder for additional data
-      mining: Object.freeze({}),
-      helpers: Object.freeze({}),
+      mining,
+      helpers,
+      combat,
       tools: Object.freeze({}),
       storage: Object.freeze({})
     })
     
-    console.log('Game data loaded successfully:', {
+    console.log('✅ Game data loaded successfully:', {
       crops: Object.keys(crops).length,
       adventures: Object.keys(adventures).length,
-      upgrades: Object.keys(upgrades).length
+      upgrades: Object.keys(upgrades).length,
+      mining: Object.keys(mining).length,
+      helpers: Object.keys(helpers).length,
+      combat: Object.keys(combat).length
     })
+    
+    console.log('🔍 Sample crop data:', Object.values(crops)[0])
+    console.log('🔍 Sample adventure data:', Object.values(adventures)[0])
+    console.log('🔍 Sample upgrade data:', Object.values(upgrades)[0])
     
     return gameData
     
   } catch (error) {
-    console.error('Failed to load game data:', error)
+    console.error('❌ Failed to load game data:', error)
     throw error
   }
 }
@@ -206,5 +317,8 @@ export {
   validateRequiredFields,
   processCropsData,
   processAdventuresData,
-  processUpgradesData
+  processUpgradesData,
+  processMiningData,
+  processHelpersData,
+  processCombatData
 }

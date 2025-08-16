@@ -20,6 +20,23 @@ backpack_2,Hero Backpack II,hero,4,200,150,0,0,8,0,0,0,carry_8_crops,Carry 4→8
 backpack_3,Hero Cart,hero,14,1200,800,0,0,0,3,0,0,carry_12_crops,Carry 8→12 crops
 backpack_4,Magic Satchel,hero,21,8000,4000,0,0,0,0,2,0,carry_20_crops,Carry 12→20 crops
 backpack_5,Void Bag,hero,28,50000,20000,0,0,0,0,0,1,carry_30_crops,Carry 20→30 crops
+seed_storage_1,Seed Storage I,storage,2,50,40,5,0,0,0,0,0,seed_cap_150,50→150 seed cap
+seed_storage_2,Seed Storage II,storage,4,250,200,0,10,0,0,0,0,seed_cap_500,150→500 seed cap
+seed_storage_3,Seed Vault,storage,14,1500,1000,0,0,5,0,0,0,seed_cap_2000,500→2000 seed cap
+farm_expand_1,Clear Weeds #1,expansion,1,0,15,0,0,0,0,0,0,plots_add_2,Clear weeds to add 2 plots
+farm_expand_2,Clear Weeds #2,expansion,1,0,50,0,0,0,0,0,0,plots_add_3,Clear more weeds to add 3 plots
+farm_expand_3,Till Soil #1,expansion,2,0,60,0,0,0,0,0,0,plots_add_3,Till soil to add 3 plots
+farm_expand_4,Clear Rocks #1,expansion,2,0,120,0,0,0,0,0,0,plots_add_3,Clear rocks to add 3 plots
+farm_expand_5,Till Soil #2,expansion,2,0,120,0,0,0,0,0,0,plots_add_3,Till more soil to add 3 plots
+farm_expand_6,Clear Rocks #2,expansion,2,0,250,0,0,0,0,0,0,plots_add_3,Clear more rocks to add 3 plots
+farm_expand_7,Expand West,expansion,7,0,1500,0,0,0,0,0,0,expand_west,First major farm expansion
+farm_expand_8,Clear Boulders #1,expansion,7,0,600,0,0,0,0,0,0,plots_add_4,Clear boulders to add 4 plots
+farm_expand_9,Remove Stumps #1,expansion,7,0,750,0,0,0,0,0,0,plots_add_4,Remove stumps to add 4 plots
+farm_expand_10,Clear Boulders #2,expansion,7,0,1200,0,0,0,0,0,0,plots_add_4,Clear more boulders to add 4 plots
+farm_expand_11,Remove Stumps #2,expansion,7,0,1500,0,0,0,0,0,0,plots_add_4,Remove more stumps to add 4 plots
+farm_expand_12,Till New Land,expansion,7,0,1600,0,0,0,0,0,0,plots_add_4,Till new expansion area
+backpack_4,Magic Satchel,hero,21,8000,4000,0,0,0,0,2,0,carry_20_crops,Carry 12→20 crops
+backpack_5,Void Bag,hero,28,50000,20000,0,0,0,0,0,1,carry_30_crops,Carry 20→30 crops
 tower_2,Tower Floor 2,tower,2,100,50,10,0,0,0,0,0,tower_floor_2,Access Low Wind seeds
 tower_3,Tower Floor 3,tower,4,500,200,0,15,0,0,0,0,tower_floor_3,Access Mid Wind seeds
 tower_4,Tower Floor 4,tower,14,2000,1000,0,0,10,0,0,0,tower_floor_4,Access High Wind seeds

@@ -56,6 +56,8 @@ export const useSimulationStore = defineStore('simulation', () => {
     helpers: [],
     upgrades: {
       owned: [],
+      purchased: [], // Array of purchased upgrade IDs for component compatibility
+      available: [], // Array of available upgrade IDs
       blueprints: ['storage_1', 'pump_1'] // Free starter blueprints
     },
     tools: {
@@ -1622,6 +1624,104 @@ export const useSimulationStore = defineStore('simulation', () => {
     }
   }
 
+  // Check if an upgrade is available for purchase
+  function isUpgradeAvailable(upgradeId) {
+    // Basic availability check - can be expanded with actual game logic
+    const gameValues = useGameValuesStore()
+    const upgrade = gameValues.getUpgrade(upgradeId)
+    if (!upgrade) return false
+    
+    // Check if already purchased
+    if (gameState.value?.upgrades?.purchased?.includes(upgradeId)) {
+      return false
+    }
+    
+    // Check unlock day
+    if (upgrade.unlockDay && currentDay.value < upgrade.unlockDay) {
+      return false
+    }
+    
+    // Check if player has enough resources (simplified)
+    const goldCost = upgrade.goldCost || upgrade.cost?.gold || 0
+    const energyCost = upgrade.energyCost || upgrade.cost?.energy || 0
+    
+    if (gameState.value?.resources?.gold < goldCost) return false
+    if (gameState.value?.resources?.energy?.current < energyCost) return false
+    
+    // Check prerequisites if any
+    // TODO: Add prerequisite checking logic
+    
+    return true
+  }
+  
+  // Placeholder functions that might be missing
+  function canAffordUpgrade(upgradeId) {
+    const gameValues = useGameValuesStore()
+    const upgrade = gameValues.getUpgrade(upgradeId)
+    if (!upgrade) return false
+    
+    const goldCost = upgrade.goldCost || upgrade.cost?.gold || 0
+    const energyCost = upgrade.energyCost || upgrade.cost?.energy || 0
+    
+    return gameState.value?.resources?.gold >= goldCost && 
+           gameState.value?.resources?.energy?.current >= energyCost
+  }
+  
+  function purchaseUpgrade(upgradeId) {
+    console.log('purchaseUpgrade:', upgradeId)
+    // TODO: Implement purchase logic
+  }
+  
+  function applyUpgradeEffect(upgradeId) {
+    console.log('applyUpgradeEffect:', upgradeId)
+    // TODO: Implement effect application
+  }
+  
+  function considerUpgradePurchases() {
+    console.log('considerUpgradePurchases')
+    // TODO: AI logic for purchasing upgrades
+  }
+  
+  function detectBottlenecks() {
+    console.log('detectBottlenecks')
+    return []
+  }
+  
+  function generateSimulationReport() {
+    console.log('generateSimulationReport')
+    return {}
+  }
+  
+  function generateRecommendations() {
+    console.log('generateRecommendations')
+    return []
+  }
+  
+  function checkPlayerSession() {
+    console.log('checkPlayerSession')
+    return false
+  }
+  
+  function simulatePlayerSession() {
+    console.log('simulatePlayerSession')
+  }
+  
+  function performSessionActions() {
+    console.log('performSessionActions')
+  }
+  
+  function trackResourceHistory() {
+    // Already implemented above
+  }
+  
+  function trackUpgradePurchase(upgradeId) {
+    console.log('trackUpgradePurchase:', upgradeId)
+  }
+  
+  function trackPhaseTransition(newPhase) {
+    console.log('trackPhaseTransition:', newPhase)
+  }
+  
   return {
     // State
     isRunning,

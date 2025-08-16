@@ -1,0 +1,11 @@
+id,name,type,unlockDay,findLocation,discoverChance,awakeningEnergy,awakeningMaterials,basePlotCapacity,maxPlotCapacity,baseEfficiency,maxEfficiency,specialAbility,level5Ability,level10Ability,notes
+garden_gnome,Garden Gnome,gnome,4,mine_depth_3,5,100,10 copper,5,10,1.0,1.5,Auto-watering,Waters 10 plots,Waters + fertilizes,First helper type discovered
+miner_gnome,Miner Gnome,gnome,5,mine_depth_4,10,200,15 copper,0,0,1.0,2.0,Passive mining,+5 stone/hour,Finds rare materials,Generates resources while idle
+stone_golem,Stone Golem,golem,7,mine_depth_5,5,500,5 silver + 20 stone,10,20,1.2,2.0,Auto-harvest,Harvests 10 plots/min,Auto-replants,First automation helper
+crystal_golem,Crystal Golem,golem,14,mine_depth_7,5,2000,2 crystal + 10 silver,15,30,1.5,2.5,Harvest bonus,Harvests + 25% bonus,Harvests + time skip,Enhanced harvest efficiency
+ancient_golem,Ancient Golem,golem,21,mine_depth_9,5,10000,1 mythril + 5 crystal,20,40,2.0,3.0,Plot management,Manages 30 plots,Manages + evolves crops,Ultimate helper type
+elder_gnome,Elder Gnome,gnome,14,special_event,0,1500,3 crystal,8,15,1.3,2.0,Auto-planting,Smart planting,Crop optimization,Evolved gnome variant
+mining_gnome,Mining Specialist,gnome,10,mine_depth_5,3,800,3 silver,0,0,1.5,3.0,Deep mining,2x mining speed,Material radar,Specialized mining helper
+combat_gnome,Battle Gnome,gnome,12,adventure_reward,0,1200,5 iron + 2 silver,3,8,1.0,1.8,Combat support,Adventure bonus,Boss slayer,Helps in adventures
+farming_golem,Farm Specialist,golem,17,special_craft,0,5000,3 crystal + 20 iron,25,45,1.8,3.0,Mass harvest,Field management,Crop mastery,Specialized farming golem
+guardian_golem,Guardian Golem,golem,24,time_rift,0,20000,2 mythril + 10 crystal,15,25,1.5,2.5,Protection,Pest control,Farm defense,Protects crops from events
