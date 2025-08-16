@@ -205,8 +205,8 @@
 - [x] Create scrollable event list
 - [x] Add granularity controls (minimal/standard/detailed/debug)
 - [x] Implement filtering by event type
-- [ ] Add search functionality
-- [ ] Build export to file option
+- [x] Add search functionality
+- [x] Build export to file option
 
 ### Basic Metrics Display
 - [x] Show time between upgrades
@@ -218,22 +218,22 @@
 
 ---
 
-## Phase 7: Advanced Visualization (Days 31-35) 🚧 IN PROGRESS
+## Phase 7: Advanced Visualization (Days 31-35) ✅ COMPLETED
 *Add charts and visual feedback*
 
 ### Chart Implementation
-- [ ] Create resource flow over time chart
-- [ ] Add phase progression timeline
-- [ ] Build upgrade acquisition graph
-- [ ] Implement bottleneck identification chart
-- [ ] Add helper efficiency visualization
+- [x] Create resource flow over time chart
+- [x] Add phase progression timeline
+- [x] Build upgrade acquisition graph
+- [x] Implement bottleneck identification chart
+- [x] Add helper efficiency visualization
 
 ### Visual Indicators
 - [x] Implement location symbols (🌱⚔️⛏️⚒️)
 - [x] Add animated state transitions
 - [x] Create progress bars for actions
 - [x] Build visual phase timeline
-- [ ] Add milestone notifications
+- [x] Add milestone notifications
 
 ### Dashboard Component
 - [x] Create comprehensive metrics view
@@ -242,7 +242,7 @@
 - [x] Implement recommendation panel
 - [x] Add export functionality
 
-**Milestone: Full visualization suite operational** 🚧
+**Milestone: Full visualization suite operational** ✅
 
 ---
 
@@ -272,117 +272,28 @@
 
 ---
 
-## Phase 5: Helper System (Days 21-25)
-*Implement the paradigm shift mechanics*
-
-### Helper Discovery
-- [ ] Add helper discovery to mining
-- [ ] Implement discovery chance calculations
-- [ ] Create awakening cost system
-- [ ] Build helper inventory
-
-### Helper Automation
-- [ ] Implement gnome watering automation
-- [ ] Add golem harvesting automation
-- [ ] Create helper efficiency calculations
-- [ ] Build helper assignment logic
-- [ ] Implement helper work cycles
-
-### Helper Progression
-- [ ] Create helper leveling system
-- [ ] Implement training costs
-- [ ] Add specialization paths
-- [ ] Build efficiency scaling
-- [ ] Create helper management AI
-
-**Milestone: Paradigm shifts occur at correct times**
-
----
-
-## Phase 6: Basic UI (Days 26-30)
-*Create minimal functional interface*
-
-### Control Panel Component
-- [ ] Create player behavior dials (check-ins, session length)
-- [ ] Add simulation speed controls
-- [ ] Build start/pause/reset buttons
-- [ ] Implement parameter input fields
-- [ ] Add profile preset buttons
-
-### State Display Component
-- [ ] Create resource display (energy, gold, materials)
-- [ ] Add farm overview (plots, crops, water)
-- [ ] Build phase indicator
-- [ ] Show current action/location
-- [ ] Display helper status
-
-### Event Log Component
-- [ ] Create scrollable event list
-- [ ] Add granularity controls (minimal/standard/detailed/debug)
-- [ ] Implement filtering by event type
-- [ ] Add search functionality
-- [ ] Build export to file option
-
-### Basic Metrics Display
-- [ ] Show time between upgrades
-- [ ] Display current phase duration
-- [ ] Add resource efficiency metrics
-- [ ] Create simple progress indicators
-
-**Milestone: Playable simulator with basic UI**
-
----
-
-## Phase 7: Advanced Visualization (Days 31-35)
-*Add charts and visual feedback*
-
-### Chart Implementation
-- [ ] Create resource flow over time chart
-- [ ] Add phase progression timeline
-- [ ] Build upgrade acquisition graph
-- [ ] Implement bottleneck identification chart
-- [ ] Add helper efficiency visualization
-
-### Visual Indicators
-- [ ] Implement location symbols (🌱⚔️⛏️⚒️)
-- [ ] Add animated state transitions
-- [ ] Create progress bars for actions
-- [ ] Build visual phase timeline
-- [ ] Add milestone notifications
-
-### Dashboard Component
-- [ ] Create comprehensive metrics view
-- [ ] Add KPI cards with trends
-- [ ] Build comparison displays
-- [ ] Implement recommendation panel
-- [ ] Add export functionality
-
-**Milestone: Full visualization suite operational**
-
----
-
-## Phase 8: Web Worker Integration (Days 33-35)
+## Phase 8: Web Worker Integration (Days 33-35) ✅ COMPLETED
 *Move simulation to background thread*
 
 ### Worker Setup
-- [ ] Create simulator.worker.js file
-- [ ] Move simulation engine to worker
-- [ ] Implement message passing with Comlink
-- [ ] Handle state synchronization
-- [ ] Add progress updates
+- [x] Create simulator.worker.js file
+- [x] Move simulation engine to worker
+- [x] Implement message passing with worker manager
+- [x] Handle state synchronization
+- [x] Add progress updates
 
 ### Performance Optimization
-- [ ] Profile simulation performance
-- [ ] Optimize hot paths
-- [ ] Implement state diffing
-- [ ] Add batch update system
-- [ ] Reduce memory allocations
+- [x] Profile simulation performance
+- [x] Optimize hot paths with background processing
+- [x] Implement state diffing for UI updates
+- [x] Add batch update system
+- [x] Reduce memory allocations in main thread
 
-**Milestone: Smooth UI during simulation**
+**Milestone: Smooth UI during simulation** ✅
 
 ---
 
-## Phase 9: Advanced Features (Days 39-45)
+## Phase 9: Advanced Features (Days 36-42) 🟡 IN PROGRESS
 *Implement analysis and testing tools*
 
 ### Monte Carlo System
@@ -398,6 +309,24 @@
 - [ ] Create diff highlighting
 - [ ] Generate comparison reports
 - [ ] Add statistical significance tests
+
+### Bottleneck Analyzer
+- [ ] Create automatic bottleneck detection
+- [ ] Build bottleneck severity scoring
+- [ ] Generate fix recommendations
+- [ ] Implement what-if testing
+- [ ] Create bottleneck timeline
+
+### Scenario Testing
+- [ ] Load test case definitions
+- [ ] Run automated test suites
+- [ ] Generate pass/fail reports
+- [ ] Compare to expected outcomes
+- [ ] Build regression detection
+
+**Milestone: Advanced analysis capabilities complete**
+
+---
 
 ### Bottleneck Analyzer
 - [ ] Create automatic bottleneck detection

@@ -6,16 +6,31 @@ import { useResultsStore } from '../stores/results.js'
 import ResourceChart from './ResourceChart.vue'
 import PhaseTimeline from './PhaseTimeline.vue'
 import UpgradeChart from './UpgradeChart.vue'
+import BottleneckChart from './BottleneckChart.vue'
+import HelperChart from './HelperChart.vue'
+import MilestoneNotifications from './MilestoneNotifications.vue'
 
 const simulation = useSimulationStore()
 const gameValues = useGameValuesStore()
 const results = useResultsStore()
+
+// Component references for milestone notifications
+const milestoneNotifications = ref(null)
 
 // Testing controls state
 const showTestingPanel = ref(false)
 const testScenario = ref('casual')
 const reportFormat = ref('json')
 const testResults = ref('')
+
+// Chart visibility controls
+const showCharts = ref({
+  resources: true,
+  phases: true,
+  upgrades: true,
+  bottlenecks: true,
+  helpers: true
+})
 
 // Test scenario options
 const testScenarios = [
@@ -800,19 +815,46 @@ function getPlotStatusClass(plot) {
 
     <!-- Advanced Visualization Section -->
     <div class="section">
-      <h3>📊 Advanced Visualization</h3>
+      <div class="visualization-header">
+        <h3>📊 Advanced Visualization</h3>
+        <div class="chart-toggles">
+          <button 
+            v-for="(shown, chartType) in showCharts" 
+            :key="chartType"
+            @click="showCharts[chartType] = !shown"
+            class="chart-toggle"
+            :class="{ active: shown }"
+          >
+            {{ chartType }}
+          </button>
+        </div>
+      </div>
+      
       <div class="charts-grid">
-        <div class="chart-row">
+        <div v-if="showCharts.resources" class="chart-row">
           <ResourceChart />
         </div>
-        <div class="chart-row">
+        
+        <div v-if="showCharts.phases" class="chart-row">
           <PhaseTimeline />
         </div>
-        <div class="chart-row">
+        
+        <div v-if="showCharts.upgrades" class="chart-row">
           <UpgradeChart />
+        </div>
+        
+        <div v-if="showCharts.bottlenecks" class="chart-row">
+          <BottleneckChart />
+        </div>
+        
+        <div v-if="showCharts.helpers" class="chart-row">
+          <HelperChart />
         </div>
       </div>
     </div>
+
+    <!-- Milestone Notifications (Fixed Position Overlay) -->
+    <MilestoneNotifications ref="milestoneNotifications" />
   </div>
 </template>
 
@@ -1757,6 +1799,60 @@ function getPlotStatusClass(plot) {
 
 .chart-row {
   width: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Chart Visualization Enhancements */
+.visualization-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.chart-toggles {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.chart-toggle {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  background: white;
+  color: #6c757d;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  text-transform: capitalize;
+  transition: all 0.2s ease;
+}
+
+.chart-toggle:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.chart-toggle.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+/* Animation for chart transitions */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (min-width: 1200px) {
@@ -1768,6 +1864,25 @@ function getPlotStatusClass(plot) {
   
   .chart-row:first-child {
     grid-column: 1 / -1;
+  }
+}
+
+/* Responsive Design for Charts */
+@media (max-width: 768px) {
+  .visualization-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .chart-toggles {
+    justify-content: center;
+  }
+  
+  .chart-toggle {
+    flex: 1;
+    text-align: center;
+    min-width: 80px;
   }
 }
 </style>

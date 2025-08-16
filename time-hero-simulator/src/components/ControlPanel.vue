@@ -26,6 +26,15 @@ function toggleSimulation() {
   }
 }
 
+async function initializeWorker() {
+  try {
+    await simulation.initializeWorker()
+    console.log('Worker initialized successfully')
+  } catch (error) {
+    console.error('Worker initialization failed:', error)
+  }
+}
+
 function resetSimulation() {
   simulation.resetSimulation()
 }
@@ -49,7 +58,7 @@ function updateEfficiency(phase, value) {
 }
 
 function setSimulationSpeed(speed) {
-  simulation.simulationSpeed = speed
+  simulation.setSimulationSpeed(speed)
 }
 </script>
 
@@ -74,6 +83,34 @@ function setSimulationSpeed(speed) {
           <span class="value">{{ gameDataSummary.upgrades }}</span>
         </div>
       </div>
+    </div>
+
+    <!-- Worker Status -->
+    <div class="section">
+      <h3>⚙️ Worker Status</h3>
+      <div class="worker-status">
+        <div class="data-item">
+          <span class="label">Worker:</span>
+          <span :class="['value', simulation.isWorkerInitialized ? 'status-ready' : 'status-not-ready']">
+            {{ simulation.isWorkerInitialized ? '✅ Ready' : '❌ Not Ready' }}
+          </span>
+        </div>
+        <div class="data-item" v-if="simulation.performanceMetrics.totalTicks > 0">
+          <span class="label">Ticks/sec:</span>
+          <span class="value">{{ Math.round(simulation.performanceMetrics.ticksPerSecond) }}</span>
+        </div>
+        <div class="data-item" v-if="simulation.performanceMetrics.totalTicks > 0">
+          <span class="label">Total Ticks:</span>
+          <span class="value">{{ simulation.performanceMetrics.totalTicks }}</span>
+        </div>
+      </div>
+      <button 
+        @click="initializeWorker" 
+        :disabled="simulation.isWorkerInitialized"
+        class="btn-secondary"
+      >
+        🔧 Initialize Worker
+      </button>
     </div>
 
     <!-- Simulation Controls -->
@@ -438,5 +475,25 @@ function setSimulationSpeed(speed) {
   background: #007bff;
   color: white;
   border-color: #007bff;
+}
+
+/* Worker Status Styles */
+.worker-status {
+  margin-bottom: 1rem;
+}
+
+.status-ready {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.status-not-ready {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.worker-status .btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>

@@ -16,8 +16,12 @@ onMounted(async () => {
     const gameData = await loadAllGameData()
     gameValues.loadGameValues(gameData)
     gameValues.validateGameValues()
+    
+    // Initialize worker for better performance
+    await simulation.initializeWorker()
+    console.log('✅ Simulation worker initialized on app startup')
   } catch (error) {
-    console.error('Failed to initialize game data:', error)
+    console.error('Failed to initialize app:', error)
   }
 })
 </script>

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { useGameValuesStore } from './gameValues.js'
+import { SimulationWorkerManager } from '../utils/workerManager.js'
 
 /**
  * Simulation Store - Current simulation state
@@ -9,6 +10,10 @@ import { useGameValuesStore } from './gameValues.js'
  * including game state, player parameters, and simulation controls.
  */
 export const useSimulationStore = defineStore('simulation', () => {
+  // Worker manager for background simulation
+  const workerManager = new SimulationWorkerManager()
+  let unsubscribeFromWorker = []
+  
   // Simulation control state
   const isRunning = ref(false)
   const isPaused = ref(false)
@@ -16,6 +21,14 @@ export const useSimulationStore = defineStore('simulation', () => {
   const currentDay = ref(1)
   const currentHour = ref(8)
   const currentMinute = ref(0)
+  const isWorkerInitialized = ref(false)
+  
+  // Performance metrics from worker
+  const performanceMetrics = ref({
+    ticksPerSecond: 0,
+    totalTicks: 0,
+    lastUpdateTime: 0
+  })
   
   // Game state - represents the actual game state at current time
   const gameState = ref({
@@ -159,40 +172,140 @@ export const useSimulationStore = defineStore('simulation', () => {
     return !gameState.value.heroes.currentAction || gameState.value.heroes.currentAction.type === 'idle'
   })
   
+  // Initialize worker when store is created
+  async function initializeWorker() {
+    if (isWorkerInitialized.value) return
+
+    try {
+      await workerManager.initialize()
+      
+      // Set up event handlers
+      unsubscribeFromWorker = [
+        workerManager.subscribeToStateUpdates(handleStateUpdate),
+        workerManager.subscribeToMajorEvents(handleMajorEvent),
+        workerManager.subscribeToErrors(handleWorkerError),
+        workerManager.subscribeToLifecycle(handleLifecycleEvent)
+      ]
+      
+      isWorkerInitialized.value = true
+      console.log('Simulation worker initialized successfully')
+    } catch (error) {
+      console.error('Failed to initialize simulation worker:', error)
+      throw error
+    }
+  }
+
+  // Handle state updates from worker
+  function handleStateUpdate(payload) {
+    if (payload.gameState) {
+      // Update reactive state with worker data
+      const workerState = payload.gameState
+      gameState.value.time = workerState.time
+      gameState.value.resources = workerState.resources
+      gameState.value.farm = workerState.farm
+      gameState.value.heroes = workerState.heroes
+      gameState.value.helpers = workerState.helpers
+      gameState.value.currentPhase = workerState.currentPhase
+      gameState.value.currentTick = workerState.currentTick
+      gameState.value.day = workerState.day
+      
+      // Update time refs
+      currentDay.value = workerState.time.day
+      currentHour.value = workerState.time.hour
+      currentMinute.value = workerState.time.minute
+    }
+    
+    if (payload.performance) {
+      performanceMetrics.value = payload.performance
+    }
+  }
+
+  // Handle major events from worker
+  function handleMajorEvent(payload) {
+    if (payload.type === 'PHASE_CHANGE') {
+      logEvent('PHASE', 'Phase Changed', {
+        from: payload.data.oldPhase,
+        to: payload.data.newPhase,
+        trigger: payload.data.trigger,
+        day: currentDay.value
+      })
+    } else if (payload.type === 'MAJOR_EVENT') {
+      logEvent('EVENT', 'Major Event', payload.data)
+    }
+  }
+
+  // Handle worker errors
+  function handleWorkerError(payload) {
+    console.error('Simulation worker error:', payload)
+    logEvent('ERROR', 'Worker Error', payload)
+  }
+
+  // Handle lifecycle events
+  function handleLifecycleEvent(event, payload) {
+    switch (event) {
+      case 'started':
+        isRunning.value = true
+        isPaused.value = false
+        break
+      case 'paused':
+        isPaused.value = true
+        break
+      case 'resumed':
+        isPaused.value = false
+        break
+      case 'reset':
+        // Handle reset
+        break
+      case 'speed_changed':
+        simulationSpeed.value = payload.speed
+        break
+    }
+  }
+
   // Actions
-  function startSimulation() {
+  async function startSimulation() {
+    if (!isWorkerInitialized.value) {
+      await initializeWorker()
+    }
+
     if (!isRunning.value) {
-      isRunning.value = true
-      isPaused.value = false
-      startSimulationLoop()
+      const gameValuesStore = useGameValuesStore()
+      
+      // Initialize simulation in worker
+      await workerManager.initializeSimulation(
+        gameValuesStore.allGameValues,
+        gameState.value
+      )
+      
+      // Start simulation
+      workerManager.startSimulation(simulationSpeed.value)
+      
       logEvent('SIMULATION', 'Started', {
         profile: playerProfile.value,
         settings: simulationSettings.value
       })
     }
   }
-  
+
   function pauseSimulation() {
     if (isRunning.value && !isPaused.value) {
-      isPaused.value = true
-      stopSimulationLoop()
+      workerManager.pauseSimulation()
       logEvent('SIMULATION', 'Paused')
     }
   }
-  
+
   function resumeSimulation() {
     if (isRunning.value && isPaused.value) {
-      isPaused.value = false
-      startSimulationLoop()
+      workerManager.resumeSimulation(simulationSpeed.value)
       logEvent('SIMULATION', 'Resumed')
     }
   }
   
   function stopSimulation() {
     if (isRunning.value) {
+      workerManager.pauseSimulation()
       isRunning.value = false
       isPaused.value = false
-      stopSimulationLoop()
       logEvent('SIMULATION', 'Stopped')
     }
   }
@@ -239,7 +352,15 @@ export const useSimulationStore = defineStore('simulation', () => {
         autoMode: false,
         seedInventory: { carrot: 10, radish: 10, potato: 10 }
       },
-      currentPhase: 'tutorial'
+      currentPhase: 'tutorial',
+      resourceHistory: [],
+      phaseHistory: [{ phase: 'tutorial', startDay: 1, duration: null }],
+      upgradeHistory: [],
+      discoveredHelpers: [],
+      purchasedUpgrades: [],
+      unlockedFeatures: ['farming'],
+      currentTick: 0,
+      day: 1
     }
     
     eventLog.value = []
@@ -267,8 +388,39 @@ export const useSimulationStore = defineStore('simulation', () => {
     isRunning.value = false
     isPaused.value = false
     
+    // Reset worker if initialized
+    if (isWorkerInitialized.value) {
+      const gameValuesStore = useGameValuesStore()
+      workerManager.resetSimulation(gameValuesStore.allGameValues)
+    }
+    
     logEvent('SIMULATION', 'Reset to initial state')
   }
+
+  function setSimulationSpeed(speed) {
+    simulationSpeed.value = speed
+    if (isRunning.value && isWorkerInitialized.value) {
+      workerManager.setSimulationSpeed(speed)
+    }
+    logEvent('SIMULATION', 'Speed Changed', { speed })
+  }
+
+  // Cleanup function for when component unmounts
+  function cleanup() {
+    // Unsubscribe from worker events
+    unsubscribeFromWorker.forEach(unsub => unsub())
+    unsubscribeFromWorker = []
+    
+    // Destroy worker
+    if (workerManager) {
+      workerManager.destroy()
+    }
+  }
+
+  // Auto-cleanup when component unmounts (in Vue 3)
+  onUnmounted(() => {
+    cleanup()
+  })
   
   function updatePlayerProfile(newProfile) {
     playerProfile.value = { ...playerProfile.value, ...newProfile }
@@ -1470,39 +1622,6 @@ export const useSimulationStore = defineStore('simulation', () => {
     }
   }
 
-  // Simulation loop management
-  let tickInterval = null
-
-  function startSimulationLoop() {
-    if (tickInterval) return
-
-    const getTickDelay = () => {
-      switch (simulationSpeed.value) {
-        case 1: return 1000 // 1 second = 1 minute
-        case 10: return 100 // 0.1 second = 1 minute  
-        case 100: return 10 // 0.01 second = 1 minute
-        case 'max': return 1 // As fast as possible
-        default: return 1000
-      }
-    }
-
-    const tick = () => {
-      gameTick()
-      if (isRunning.value && !isPaused.value) {
-        tickInterval = setTimeout(tick, getTickDelay())
-      }
-    }
-
-    tick()
-  }
-
-  function stopSimulationLoop() {
-    if (tickInterval) {
-      clearTimeout(tickInterval)
-      tickInterval = null
-    }
-  }
-  
   return {
     // State
     isRunning,
@@ -1516,6 +1635,8 @@ export const useSimulationStore = defineStore('simulation', () => {
     simulationSettings,
     eventLog,
     metrics,
+    isWorkerInitialized,
+    performanceMetrics,
     
     // Computed
     gameTime,
@@ -1524,14 +1645,19 @@ export const useSimulationStore = defineStore('simulation', () => {
     isPlayerActive,
     
     // Actions
+    initializeWorker,
     startSimulation,
     pauseSimulation,
     resumeSimulation,
     stopSimulation,
     resetSimulation,
+    setSimulationSpeed,
     updatePlayerProfile,
     updateSimulationSettings,
     logEvent,
+    cleanup,
+    
+    // Legacy functions (may need to be refactored for worker compatibility)
     advanceTime,
     
     // Game Systems
