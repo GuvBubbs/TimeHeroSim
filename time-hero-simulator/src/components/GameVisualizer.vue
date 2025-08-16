@@ -9,6 +9,9 @@ import UpgradeChart from './UpgradeChart.vue'
 import BottleneckChart from './BottleneckChart.vue'
 import HelperChart from './HelperChart.vue'
 import MilestoneNotifications from './MilestoneNotifications.vue'
+import MonteCarloPanel from './MonteCarloPanel.vue'
+import ABTestingPanel from './ABTestingPanel.vue'
+import BottleneckAnalyzer from './BottleneckAnalyzer.vue'
 
 const simulation = useSimulationStore()
 const gameValues = useGameValuesStore()
@@ -16,6 +19,10 @@ const results = useResultsStore()
 
 // Component references for milestone notifications
 const milestoneNotifications = ref(null)
+
+// Analysis controls state
+const showAnalysisPanel = ref(false)
+const analysisMode = ref('charts') // charts, monte-carlo, ab-testing, bottlenecks
 
 // Testing controls state
 const showTestingPanel = ref(false)
@@ -817,15 +824,25 @@ function getPlotStatusClass(plot) {
     <div class="section">
       <div class="visualization-header">
         <h3>📊 Advanced Visualization</h3>
-        <div class="chart-toggles">
+        <div class="header-controls">
+          <div class="chart-toggles">
+            <button 
+              v-for="(shown, chartType) in showCharts" 
+              :key="chartType"
+              @click="showCharts[chartType] = !shown"
+              class="chart-toggle"
+              :class="{ active: shown }"
+            >
+              {{ chartType }}
+            </button>
+          </div>
+          
           <button 
-            v-for="(shown, chartType) in showCharts" 
-            :key="chartType"
-            @click="showCharts[chartType] = !shown"
-            class="chart-toggle"
-            :class="{ active: shown }"
+            @click="showAnalysisPanel = !showAnalysisPanel"
+            class="analysis-toggle"
+            :class="{ active: showAnalysisPanel }"
           >
-            {{ chartType }}
+            🔬 Advanced Analysis
           </button>
         </div>
       </div>
@@ -849,6 +866,50 @@ function getPlotStatusClass(plot) {
         
         <div v-if="showCharts.helpers" class="chart-row">
           <HelperChart />
+        </div>
+      </div>
+    </div>
+
+    <!-- Advanced Analysis Panel -->
+    <div v-if="showAnalysisPanel" class="section analysis-panel">
+      <div class="analysis-header">
+        <h3>🔬 Advanced Analysis Tools</h3>
+        <div class="analysis-mode-tabs">
+          <button 
+            v-for="mode in ['charts', 'monte-carlo', 'ab-testing', 'bottlenecks']"
+            :key="mode"
+            @click="analysisMode = mode"
+            class="mode-tab"
+            :class="{ active: analysisMode === mode }"
+          >
+            {{
+              mode === 'charts' ? '📊 Charts' :
+              mode === 'monte-carlo' ? '🎲 Monte Carlo' :
+              mode === 'ab-testing' ? '⚖️ A/B Testing' :
+              '🔍 Bottlenecks'
+            }}
+          </button>
+        </div>
+      </div>
+
+      <div class="analysis-content">
+        <div v-if="analysisMode === 'charts'" class="analysis-section">
+          <p class="analysis-description">
+            Use the chart toggles above to customize your visualization. 
+            Charts show real-time game state and historical progression data.
+          </p>
+        </div>
+
+        <div v-if="analysisMode === 'monte-carlo'" class="analysis-section">
+          <MonteCarloPanel />
+        </div>
+
+        <div v-if="analysisMode === 'ab-testing'" class="analysis-section">
+          <ABTestingPanel />
+        </div>
+
+        <div v-if="analysisMode === 'bottlenecks'" class="analysis-section">
+          <BottleneckAnalyzer />
         </div>
       </div>
     </div>
@@ -1814,6 +1875,12 @@ function getPlotStatusClass(plot) {
   margin-bottom: 1rem;
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .chart-toggles {
   display: flex;
   gap: 0.5rem;
@@ -1835,6 +1902,91 @@ function getPlotStatusClass(plot) {
 .chart-toggle:hover {
   background: #f8f9fa;
   border-color: #adb5bd;
+}
+
+.analysis-toggle {
+  padding: 0.5rem 1rem;
+  border: 2px solid #007bff;
+  background: white;
+  color: #007bff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.analysis-toggle:hover {
+  background: #e3f2fd;
+}
+
+.analysis-toggle.active {
+  background: #007bff;
+  color: white;
+}
+
+/* Advanced Analysis Panel */
+.analysis-panel {
+  background: #f8f9fa;
+  border: 2px solid #007bff;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.analysis-mode-tabs {
+  display: flex;
+  gap: 0.25rem;
+  background: #e9ecef;
+  border-radius: 6px;
+  padding: 0.25rem;
+}
+
+.mode-tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: #6c757d;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.mode-tab:hover {
+  color: #495057;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.mode-tab.active {
+  background: white;
+  color: #007bff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.analysis-content {
+  min-height: 400px;
+}
+
+.analysis-section {
+  height: 100%;
+}
+
+.analysis-description {
+  color: #6c757d;
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+  margin: 0;
 }
 
 .chart-toggle.active {
