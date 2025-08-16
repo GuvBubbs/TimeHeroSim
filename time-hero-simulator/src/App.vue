@@ -6,6 +6,7 @@ import { loadAllGameData } from './utils/importers.js'
 import ControlPanel from './components/ControlPanel.vue'
 import GameVisualizer from './components/GameVisualizer.vue'
 import EventLog from './components/EventLog.vue'
+import ErrorBoundary from './components/ErrorBoundary.vue'
 
 const gameValues = useGameValuesStore()
 const simulation = useSimulationStore()
@@ -27,27 +28,28 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div id="app">
-    <header class="app-header">
-      <h1>🌱 Time Hero Game Balance Simulator</h1>
-      <p class="subtitle">Validate and tune the game's economy through comprehensive simulation</p>
-    </header>
+  <ErrorBoundary>
+    <div id="app">
+      <header class="app-header">
+        <h1>🌱 Time Hero Game Balance Simulator</h1>
+        <p class="subtitle">Validate and tune the game's economy through comprehensive simulation</p>
+      </header>
 
-    <main class="app-main">
-      <div v-if="!gameValues.isLoaded" class="loading">
-        <h2>Loading game data...</h2>
-        <p>Importing crops, upgrades, and adventure data from CSV files</p>
-      </div>
+      <main class="app-main">
+        <div v-if="!gameValues.isLoaded" class="loading">
+          <h2>Loading game data...</h2>
+          <p>Importing crops, upgrades, and adventure data from CSV files</p>
+        </div>
 
-      <div v-else-if="gameValues.validationErrors.length > 0" class="error">
-        <h2>❌ Game Data Validation Errors</h2>
-        <ul>
-          <li v-for="error in gameValues.validationErrors" :key="error">{{ error }}</li>
-        </ul>
-      </div>
+        <div v-else-if="gameValues.validationErrors.length > 0" class="error">
+          <h2>❌ Game Data Validation Errors</h2>
+          <ul>
+            <li v-for="error in gameValues.validationErrors" :key="error">{{ error }}</li>
+          </ul>
+        </div>
 
-      <div v-else class="simulator-container">
-        <div class="main-content">
+        <div v-else class="simulator-container">
+          <div class="main-content">
           <div class="left-panel">
             <ControlPanel />
           </div>
@@ -67,6 +69,7 @@ onMounted(async () => {
       <p>Time Hero Simulator v1.0.0 | Game data: {{ gameValues.lastUpdated }}</p>
     </footer>
   </div>
+  </ErrorBoundary>
 </template>
 
 <style scoped>
