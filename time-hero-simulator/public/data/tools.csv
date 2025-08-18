@@ -1,0 +1,21 @@
+id,name,tier,category,prerequisite,goldCost,energyCost,materials,effect,craftTime,notes
+hoe,Hoe,base,farm,,50,20,"stone:5;wood:3",till_soil,5,Enables plot creation
+hoe_plus,Hoe+,plus,farm,"hoe;anvil_1",750,200,"iron:10;wood:5;pine_resin:1",till_2x,15,2x tilling speed
+terra_former,Terra Former,master,farm,"hoe_plus;mythril_anvil",15000,2000,"crystal:2;silver:10;mountain_stone:2",till_4x_area,45,4x speed and area
+hammer,Hammer,base,farm,hoe,150,40,"stone:8;wood:5",clear_rocks,8,Clear rocks
+hammer_plus,Hammer+,plus,farm,"hammer;anvil_1",1200,300,"iron:8;stone:10;shadow_bark:1",clear_boulders,20,Break boulders
+stone_breaker,Stone Breaker,master,farm,"hammer_plus;mythril_anvil",25000,3000,"crystal:3;mythril:1;frozen_heart:1",instant_rocks,50,Instant clearing
+axe,Axe,base,farm,hammer,300,100,"iron:5;wood:8",remove_stumps,10,Clear stumps
+axe_plus,Axe+,plus,farm,"axe;anvil_2",3000,500,"silver:5;wood:10;mountain_stone:1",stumps_2x,25,2x wood yield
+world_splitter,World Splitter,master,farm,"axe_plus;mythril_anvil",60000,8000,"crystal:3;enchanted_wood:1;frozen_heart:2",ancient_roots,50,3x yield
+shovel,Shovel,base,farm,axe,600,100,"copper:3;wood:5",excavate,10,Dig obstacles
+shovel_plus,Shovel+,plus,farm,"shovel;anvil_2",8000,500,"iron:8;silver:2;shadow_bark:1",deep_excavate,20,Irrigation
+earth_mover,Earth Mover,master,farm,"shovel_plus;crystal_furnace",40000,5000,"crystal:2;mythril:1;cave_crystal:3",reshape_land,45,Area clear
+pickaxe_1,Pickaxe I,base,mining,,100,30,"copper:5;wood:5",mine_depth_10,10,Basic mining
+pickaxe_2,Pickaxe II,iron,mining,pickaxe_1,500,150,"iron:5;stone:8",mine_efficient_15,15,-15% drain
+pickaxe_3,Pickaxe III,silver,mining,"pickaxe_2;anvil_2",2500,750,"silver:3;iron:10",mine_efficient_30,25,-30% drain
+crystal_pick,Crystal Pick,crystal,mining,"pickaxe_3;mythril_anvil",12000,3000,"crystal:2;silver:5;cave_crystal:2",mine_efficient_45,40,-45% drain
+abyss_seeker,Abyss Seeker,mythril,mining,"crystal_pick;crystal_furnace",60000,15000,"mythril:1;crystal:3;molten_core:2",mine_efficient_60,60,-60% drain
+watering_can_2,Watering Can II,base,farm,anvil_1,100,50,"copper:5;wood:3",water_2_plots,5,Water 2 plots
+sprinkler_can,Sprinkler Can,plus,farm,"watering_can_2;furnace_2",750,400,"silver:3;copper:10;pine_resin:1",water_4_plots,20,Water 4 plots
+rain_bringer,Rain Bringer,master,farm,"sprinkler_can;crystal_furnace",15000,2000,"crystal:1;silver:20;frozen_heart:1",water_8_plots,30,Water 8 plots

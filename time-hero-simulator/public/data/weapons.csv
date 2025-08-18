@@ -1,0 +1,51 @@
+id,name,type,level,prerequisite,goldCost,energyCost,materials,damage,attackSpeed,advantageVs,notes
+spear_1,Spear,spear,1,,100,50,"wood:5;stone:3",10,1.0,armored_insects,Base spear
+spear_2,Spear II,spear,2,spear_1,250,100,"wood:8;copper:5",15,1.0,armored_insects,
+spear_3,Spear III,spear,3,spear_2,500,200,"iron:10",22,1.0,armored_insects,
+spear_4,Spear IV,spear,4,"spear_3;anvil_1",1000,400,"iron:15;silver:5",32,1.1,armored_insects,Requires Anvil I
+spear_5,Spear V,spear,5,spear_4,2500,800,"silver:8",45,1.1,armored_insects,
+spear_6,Spear VI,spear,6,"spear_5;anvil_2",5000,1600,"crystal:3",60,1.2,armored_insects,Requires Anvil II
+spear_7,Spear VII,spear,7,spear_6,10000,3200,"crystal:5;pine_resin:1",80,1.2,armored_insects,Boss material required
+spear_8,Spear VIII,spear,8,"spear_7;mythril_anvil",25000,6400,"mythril:2",105,1.3,armored_insects,Requires Mythril Anvil
+spear_9,Spear IX,spear,9,spear_8,50000,12800,"mythril:3;frozen_heart:1",135,1.3,armored_insects,
+spear_10,Spear X,spear,10,spear_9,100000,25600,"obsidian:1;molten_core:2",200,1.5,armored_insects,Max level
+sword_1,Sword,sword,1,,100,50,"wood:5;stone:3",12,0.9,predatory_beasts,Base sword
+sword_2,Sword II,sword,2,sword_1,250,100,"wood:8;copper:5",18,0.9,predatory_beasts,
+sword_3,Sword III,sword,3,sword_2,500,200,"iron:10",26,0.9,predatory_beasts,
+sword_4,Sword IV,sword,4,"sword_3;anvil_1",1000,400,"iron:15;silver:5",36,1.0,predatory_beasts,Requires Anvil I
+sword_5,Sword V,sword,5,sword_4,2500,800,"silver:8",50,1.0,predatory_beasts,
+sword_6,Sword VI,sword,6,"sword_5;anvil_2",5000,1600,"crystal:3",68,1.1,predatory_beasts,Requires Anvil II
+sword_7,Sword VII,sword,7,sword_6,10000,3200,"crystal:5;shadow_bark:1",90,1.1,predatory_beasts,Boss material required
+sword_8,Sword VIII,sword,8,"sword_7;mythril_anvil",25000,6400,"mythril:2",120,1.2,predatory_beasts,Requires Mythril Anvil
+sword_9,Sword IX,sword,9,sword_8,50000,12800,"mythril:3;frozen_heart:1",155,1.2,predatory_beasts,
+sword_10,Sword X,sword,10,sword_9,100000,25600,"obsidian:1;molten_core:2",230,1.4,predatory_beasts,Max level
+bow_1,Bow,bow,1,,100,50,"wood:8;stone:2",8,1.2,flying_predators,Base bow
+bow_2,Bow II,bow,2,bow_1,250,100,"wood:12;copper:5",12,1.2,flying_predators,
+bow_3,Bow III,bow,3,bow_2,500,200,"iron:10",18,1.2,flying_predators,
+bow_4,Bow IV,bow,4,"bow_3;anvil_1",1000,400,"iron:15;silver:5",26,1.3,flying_predators,Requires Anvil I
+bow_5,Bow V,bow,5,bow_4,2500,800,"silver:8",36,1.3,flying_predators,
+bow_6,Bow VI,bow,6,"bow_5;anvil_2",5000,1600,"crystal:3",48,1.4,flying_predators,Requires Anvil II
+bow_7,Bow VII,bow,7,bow_6,10000,3200,"crystal:5;mountain_stone:1",64,1.4,flying_predators,Boss material required
+bow_8,Bow VIII,bow,8,"bow_7;mythril_anvil",25000,6400,"mythril:2",84,1.5,flying_predators,Requires Mythril Anvil
+bow_9,Bow IX,bow,9,bow_8,50000,12800,"mythril:3;frozen_heart:1",108,1.5,flying_predators,
+bow_10,Bow X,bow,10,bow_9,100000,25600,"obsidian:1;molten_core:2",160,1.7,flying_predators,Max level
+crossbow_1,Crossbow,crossbow,1,,150,75,"wood:10;stone:5",15,0.7,venomous_crawlers,Base crossbow
+crossbow_2,Crossbow II,crossbow,2,crossbow_1,350,150,"wood:15;copper:8",22,0.7,venomous_crawlers,
+crossbow_3,Crossbow III,crossbow,3,crossbow_2,750,300,"iron:12",32,0.7,venomous_crawlers,
+crossbow_4,Crossbow IV,crossbow,4,"crossbow_3;anvil_1",1500,600,"iron:18;silver:8",46,0.8,venomous_crawlers,Requires Anvil I
+crossbow_5,Crossbow V,crossbow,5,crossbow_4,3500,1200,"silver:12",64,0.8,venomous_crawlers,
+crossbow_6,Crossbow VI,crossbow,6,"crossbow_5;anvil_2",7000,2400,"crystal:5",86,0.9,venomous_crawlers,Requires Anvil II
+crossbow_7,Crossbow VII,crossbow,7,crossbow_6,14000,4800,"crystal:8;cave_crystal:1",114,0.9,venomous_crawlers,Boss material required
+crossbow_8,Crossbow VIII,crossbow,8,"crossbow_7;mythril_anvil",35000,9600,"mythril:3",150,1.0,venomous_crawlers,Requires Mythril Anvil
+crossbow_9,Crossbow IX,crossbow,9,crossbow_8,70000,19200,"mythril:5;frozen_heart:1",195,1.0,venomous_crawlers,
+crossbow_10,Crossbow X,crossbow,10,crossbow_9,140000,38400,"obsidian:2;molten_core:3",280,1.2,venomous_crawlers,Max level
+wand_1,Wand,wand,1,,200,100,"wood:5;copper:1",7,1.5,living_plants,Base wand
+wand_2,Wand II,wand,2,wand_1,450,200,"wood:8;copper:8",10,1.5,living_plants,
+wand_3,Wand III,wand,3,wand_2,900,400,"iron:8",14,1.5,living_plants,
+wand_4,Wand IV,wand,4,"wand_3;anvil_1",1800,800,"iron:12;silver:3",20,1.6,living_plants,Requires Anvil I
+wand_5,Wand V,wand,5,wand_4,4000,1600,"silver:5",28,1.6,living_plants,
+wand_6,Wand VI,wand,6,"wand_5;anvil_2",8000,3200,"crystal:2",38,1.7,living_plants,Requires Anvil II
+wand_7,Wand VII,wand,7,wand_6,16000,6400,"crystal:3;frozen_heart:1",50,1.7,living_plants,Boss material required
+wand_8,Wand VIII,wand,8,"wand_7;mythril_anvil",40000,12800,"mythril:1",66,1.8,living_plants,Requires Mythril Anvil
+wand_9,Wand IX,wand,9,wand_8,80000,25600,"mythril:2;molten_core:1",86,1.8,living_plants,
+wand_10,Wand X,wand,10,wand_9,160000,51200,"obsidian:1;molten_core:2",130,2.0,living_plants,Max level

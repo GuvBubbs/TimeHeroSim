@@ -1,0 +1,10 @@
+id,name,baseDefense,upgradePotential,specialEffect,effectValue,dropRoute,dropWeight
+minimal_leather,Leather Armor,5,poor,none,0,meadow_path,0.35
+minimal_studded,Studded Leather,5,average,gold_magnet,25,meadow_path,0.30
+low_chain,Chainmail,10,poor,none,0,pine_vale,0.30
+low_regen,Regenerating Hide,10,average,regeneration,3,pine_vale,0.20
+medium_plate,Iron Plate,15,average,none,0,dark_forest,0.25
+medium_reflect,Mirror Mail,15,good,reflection,15,dark_forest,0.15
+high_crystal,Crystal Armor,20,good,evasion,10,mountain_pass,0.10
+high_vampire,Vampiric Plate,20,excellent,vampiric,1,crystal_caves,0.05
+extreme_mythril,Mythril Armor,25,excellent,critical_shield,1,frozen_tundra,0.05

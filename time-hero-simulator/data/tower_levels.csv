@@ -1,0 +1,12 @@
+reachLevel,windLevel,seedLevel,prerequisite,goldCost,energyCost,materials,catchRate,seedPool,notes
+1,Ground,0,,0,0,,1.0,0,Starting level
+2,Breeze,0,tower_built,100,50,"wood:10",1.2,0-1,First reach
+3,Gust,1,reach_2,500,200,"wood:15;copper:5",1.4,0-2,More seeds
+4,Gale,2,reach_3,2000,1000,"wood:20;iron:10",1.6,0-3,Better variety
+5,Jet Stream,3,reach_4,10000,5000,"silver:5",1.8,0-4,Mid-tier seeds
+6,Cloud Layer,4,"reach_5;homestead",50000,20000,"crystal:3",2.0,0-5,Requires farm
+7,Stratosphere,5,"reach_6;manor_grounds",200000,100000,"mythril:2",2.2,0-6,Late game
+8,Mesosphere,6,"reach_7;great_estate",1000000,400000,"mythril:3",2.4,0-7,
+9,Thermosphere,7,"reach_8;great_estate",5000000,1500000,"obsidian:1",2.6,0-8,
+10,Exosphere,8,"reach_9;great_estate",15000000,5000000,"obsidian:2",2.8,0-9,
+11,Low Orbit,9,"reach_10;great_estate",50000000,15000000,"obsidian:3",3.0,0-9,Max reach

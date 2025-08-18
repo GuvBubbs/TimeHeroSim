@@ -1,35 +1,91 @@
-id,name,category,unlockDay,goldCost,energyCost,stoneCost,copperCost,ironCost,silverCost,crystalCost,mythrilCost,effect,description
-storage_1,Storage Shed I,storage,1,20,10,0,0,0,0,0,0,energy_cap_150,Energy cap 50→150
-storage_2,Storage Shed II,storage,2,100,50,5,0,0,0,0,0,energy_cap_500,Energy cap 150→500
-storage_3,Storage Shed III,storage,4,500,200,0,0,10,0,0,0,energy_cap_1500,Energy cap 500→1500
-storage_4,Storage Barn I,storage,14,3000,1000,0,0,0,5,0,0,energy_cap_6000,Energy cap 1500→6000
-storage_5,Storage Barn II,storage,21,20000,5000,0,0,0,0,2,0,energy_cap_20000,Energy cap 6000→20000
-storage_6,Storage Silo,storage,28,100000,25000,0,0,0,0,0,1,energy_cap_100000,Energy cap 20000→100000
-pump_1,Well Pump I,water,1,30,20,3,0,0,0,0,0,pump_4_water,2→4 water/crank
-pump_2,Well Pump II,water,3,150,100,0,5,0,0,0,0,pump_8_water,4→8 water/crank
-pump_3,Well Pump III,water,5,750,500,0,0,10,0,0,0,pump_15_water,8→15 water/crank
-pump_4,Steam Pump,water,14,4000,2500,0,0,0,3,0,0,pump_30_water,15→30 water/crank
-pump_5,Crystal Pump,water,21,25000,12000,0,0,0,0,3,0,pump_60_water,30→60 water/crank
-tank_1,Water Tank I,water,1,25,15,5,0,0,0,0,0,water_cap_60,20→60 water cap
-tank_2,Water Tank II,water,3,125,75,0,8,0,0,0,0,water_cap_200,60→200 water cap
-tank_3,Water Tank III,water,5,600,400,0,0,12,0,0,0,water_cap_600,200→600 water cap
-tank_4,Reservoir,water,14,3500,2000,0,0,0,5,0,0,water_cap_2000,600→2000 water cap
-tank_5,Crystal Reservoir,water,21,22000,10000,0,0,0,0,5,0,water_cap_10000,2000→10000 water cap
-backpack_1,Hero Backpack I,hero,2,40,30,0,5,0,0,0,0,carry_4_crops,Carry 2→4 crops
-backpack_2,Hero Backpack II,hero,4,200,150,0,0,8,0,0,0,carry_8_crops,Carry 4→8 crops
-backpack_3,Hero Cart,hero,14,1200,800,0,0,0,3,0,0,carry_12_crops,Carry 8→12 crops
-backpack_4,Magic Satchel,hero,21,8000,4000,0,0,0,0,2,0,carry_20_crops,Carry 12→20 crops
-backpack_5,Void Bag,hero,28,50000,20000,0,0,0,0,0,1,carry_30_crops,Carry 20→30 crops
-tower_2,Tower Floor 2,tower,2,100,50,10,0,0,0,0,0,tower_floor_2,Access Low Wind seeds
-tower_3,Tower Floor 3,tower,4,500,200,0,15,0,0,0,0,tower_floor_3,Access Mid Wind seeds
-tower_4,Tower Floor 4,tower,14,2000,1000,0,0,10,0,0,0,tower_floor_4,Access High Wind seeds
-tower_5,Tower Floor 5,tower,14,10000,5000,0,0,0,5,0,0,tower_floor_5,Access Jet Stream seeds
-tower_6,Tower Floor 6,tower,21,50000,20000,0,0,0,0,3,0,tower_floor_6,Access Cloud Layer seeds
-tower_7,Tower Floor 7,tower,28,200000,100000,0,0,0,0,0,2,tower_floor_7,Access all seeds
-net_1,Net Upgrade I,tower,3,75,60,0,5,0,0,0,0,catch_rate_120,+20% catch rate
-net_2,Net Upgrade II,tower,5,400,300,0,0,8,0,0,0,catch_rate_140,+40% catch rate
-net_3,Golden Net,tower,14,2500,1500,0,0,0,3,0,0,catch_rate_160,+60% catch rate
-net_4,Crystal Net,tower,21,15000,8000,0,0,0,0,2,0,catch_rate_180,+80% catch rate
-autocatch_1,Auto-Catcher I,tower,5,1000,500,0,0,10,0,0,0,idle_catch_25,25% idle efficiency
-autocatch_2,Auto-Catcher II,tower,14,5000,2500,0,0,0,5,0,0,idle_catch_50,50% idle efficiency
-autocatch_3,Auto-Catcher III,tower,21,30000,15000,0,0,0,0,3,0,idle_catch_75,75% idle efficiency
+id,name,vendor,category,prerequisite,goldCost,energyCost,materials,effect,description
+# Agronomist - Energy Storage
+storage_1,Storage Shed I,agronomist,energy,,20,10,,energy_cap_150,Energy cap 50→150
+storage_2,Storage Shed II,agronomist,energy,storage_1,100,50,"stone:5",energy_cap_500,Energy cap 150→500
+storage_3,Storage Shed III,agronomist,energy,"storage_2;homestead",500,200,"iron:10",energy_cap_1500,Energy cap 500→1500
+storage_4,Storage Barn I,agronomist,energy,"storage_3;homestead",3000,1000,"silver:5",energy_cap_6000,Energy cap 1500→6000
+storage_5,Storage Barn II,agronomist,energy,"storage_4;manor_grounds",20000,5000,"crystal:2",energy_cap_20000,Energy cap 6000→20000
+storage_6,Storage Silo,agronomist,energy,"storage_5;great_estate",100000,25000,"mythril:1",energy_cap_100000,Energy cap 20000→100000
+# Agronomist - Water Systems
+pump_1,Well Pump I,agronomist,water,,30,20,"stone:3",pump_4,2→4 water/crank
+pump_2,Well Pump II,agronomist,water,pump_1,150,100,"copper:5",pump_8,4→8 water/crank
+pump_3,Well Pump III,agronomist,water,"pump_2;homestead",750,500,"iron:10",pump_15,8→15 water/crank
+pump_4,Steam Pump,agronomist,water,"pump_3;homestead",4000,2500,"silver:3",pump_30,15→30 water/crank
+pump_5,Crystal Pump,agronomist,water,"pump_4;manor_grounds",25000,12000,"crystal:3",pump_60,30→60 water/crank
+tank_1,Water Tank I,agronomist,water,,25,15,"stone:5",water_cap_60,20→60 water cap
+tank_2,Water Tank II,agronomist,water,tank_1,125,75,"copper:8",water_cap_200,60→200 water cap
+tank_3,Water Tank III,agronomist,water,"tank_2;homestead",600,400,"iron:12",water_cap_600,200→600 water cap
+tank_4,Reservoir,agronomist,water,"tank_3;homestead",3500,2000,"silver:5",water_cap_2000,600→2000 water cap
+tank_5,Crystal Reservoir,agronomist,water,"tank_4;manor_grounds",22000,10000,"crystal:5",water_cap_10000,2000→10000 water cap
+mulch_beds,Mulch Beds,agronomist,water,tank_2,300,150,"wood:50",water_retention_25,Plots retain water 25% longer
+irrigation,Irrigation Channels,agronomist,water,"mulch_beds;homestead",1500,750,"wood:100;iron:5",water_retention_50,Plots retain water 50% longer
+crystal_irrigation,Crystal Irrigation,agronomist,water,"irrigation;manor_grounds",8000,4000,"wood:200;crystal:3",water_retention_75,Plots retain water 75% longer
+auto_pump_1,Auto-Pump I,agronomist,water,tank_2,200,100,"copper:5",offline_water_10,+10% water/hour offline
+auto_pump_2,Auto-Pump II,agronomist,water,"auto_pump_1;tank_3",1000,500,"iron:10",offline_water_20,+20% water/hour offline
+auto_pump_3,Auto-Pump III,agronomist,water,"auto_pump_2;tank_4",5000,2500,"silver:5",offline_water_35,+35% water/hour offline
+crystal_auto_pump,Crystal Auto-Pump,agronomist,water,"auto_pump_3;tank_5",25000,12000,"crystal:3",offline_water_50,+50% water/hour offline
+# Agronomist - Storage
+seed_storage_1,Seed Storage I,agronomist,storage,,50,40,"stone:5",seed_cap_150,50→150 seed cap
+seed_storage_2,Seed Storage II,agronomist,storage,seed_storage_1,250,200,"copper:10",seed_cap_500,150→500 seed cap
+seed_vault,Seed Vault,agronomist,storage,"seed_storage_2;homestead",1500,1000,"iron:5",seed_cap_2000,500→2000 seed cap
+material_crate_1,Material Crate I,agronomist,storage,,75,50,"wood:10",material_cap_50,Max 50 per material
+material_crate_2,Material Crate II,agronomist,storage,material_crate_1,400,250,"wood:20;iron:5",material_cap_100,Max 100 per material
+material_warehouse,Material Warehouse,agronomist,storage,"material_crate_2;homestead",2000,1000,"iron:10;silver:2",material_cap_250,Max 250 per material
+material_depot,Material Depot,agronomist,storage,"material_warehouse;manor_grounds",10000,5000,"silver:5;crystal:2",material_cap_500,Max 500 per material
+material_silo,Material Silo,agronomist,storage,"material_depot;great_estate",50000,20000,"crystal:3;mythril:1",material_cap_1000,Max 1000 per material
+# Agronomist - Emergency Wood
+wood_bundle_small,Wood Bundle (Small),agronomist,materials,,50,0,,wood_10,Emergency 10 wood
+wood_bundle_medium,Wood Bundle (Medium),agronomist,materials,stage_2,200,0,,wood_50,Emergency 50 wood
+wood_bundle_large,Wood Bundle (Large),agronomist,materials,stage_3,800,0,,wood_250,Emergency 250 wood
+# Land Steward - Deeds
+homestead_deed,Homestead Deed,land_steward,deeds,stage_2_complete,1500,250,,plots_40,Expand to 40 plots
+manor_grounds_deed,Manor Grounds Deed,land_steward,deeds,stage_3_complete,6000,750,,plots_65,Expand to 65 plots
+great_estate_deed,Great Estate Deed,land_steward,deeds,stage_4_complete,20000,1500,,plots_90,Expand to 90 plots
+# Blacksmith - Forge Upgrades
+bellows_1,Bellows I,blacksmith,forge,forge_built,80,60,"stone:8",heat_band_wide,Wider heat band
+bellows_2,Bellows II,blacksmith,forge,bellows_1,400,300,"copper:10",heat_band_wider,Much wider heat band
+auto_bellows,Auto-Bellows,blacksmith,forge,bellows_2,2000,1500,"iron:8",heat_auto,Auto maintains heat
+furnace_1,Furnace Upgrade I,blacksmith,forge,forge_built,200,150,"stone:12",craft_speed_20,+20% craft speed
+furnace_2,Furnace Upgrade II,blacksmith,forge,furnace_1,1000,750,"iron:15",craft_speed_40,+40% craft speed
+crystal_furnace,Crystal Furnace,blacksmith,forge,"furnace_2;manor_grounds",10000,6000,"crystal:5",craft_speed_60,+60% craft speed
+anvil_1,Anvil I,blacksmith,forge,forge_built,150,100,"copper:10",unlock_iron_recipes,Unlock iron recipes
+anvil_2,Anvil II,blacksmith,forge,anvil_1,1500,1000,"silver:5",unlock_silver_recipes,Unlock silver recipes
+mythril_anvil,Mythril Anvil,blacksmith,forge,"anvil_2;great_estate",15000,10000,"crystal:3",unlock_mythril_recipes,Unlock mythril recipes
+batch_craft,Batch Craft,blacksmith,forge,anvil_1,500,0,,craft_batch_5,Craft 5 at once
+master_craft,Master Craft,blacksmith,forge,"batch_craft;furnace_2",5000,0,,craft_proc_10,10% double output
+# Carpenter - Tower
+reach_2,Reach Level 2,carpenter,tower,tower_built,100,50,"wood:10",wind_breeze,Access Breeze band
+reach_3,Reach Level 3,carpenter,tower,reach_2,500,200,"wood:15;copper:5",wind_gust,Access Gust band
+reach_4,Reach Level 4,carpenter,tower,reach_3,2000,1000,"wood:20;iron:10",wind_gale,Access Gale band
+reach_5,Reach Level 5,carpenter,tower,reach_4,10000,5000,"silver:5",wind_jet,Access Jet Stream
+reach_6,Reach Level 6,carpenter,tower,"reach_5;homestead",50000,20000,"crystal:3",wind_cloud,Access Cloud Layer
+reach_7,Reach Level 7,carpenter,tower,"reach_6;manor_grounds",200000,100000,"mythril:2",wind_strato,Access Stratosphere
+reach_8,Reach Level 8,carpenter,tower,"reach_7;great_estate",1000000,400000,"mythril:3",wind_meso,Access Mesosphere
+reach_9,Reach Level 9,carpenter,tower,"reach_8;great_estate",5000000,1500000,"obsidian:1",wind_thermo,Access Thermosphere
+reach_10,Reach Level 10,carpenter,tower,"reach_9;great_estate",15000000,5000000,"obsidian:2",wind_exo,Access Exosphere
+reach_11,Reach Level 11,carpenter,tower,"reach_10;great_estate",50000000,15000000,"obsidian:3",wind_orbit,Access Low Orbit
+net_1,Net I,carpenter,tower,tower_built,75,60,"copper:5",catch_rate_20,+20% catch rate
+net_2,Net II,carpenter,tower,net_1,400,300,"iron:8",catch_rate_40,+40% catch rate
+golden_net,Golden Net,carpenter,tower,"net_2;reach_4",2500,1500,"silver:3",catch_rate_60,+60% catch rate
+crystal_net,Crystal Net,carpenter,tower,"golden_net;reach_5",15000,8000,"crystal:2",catch_rate_80,+80% catch rate
+auto_catcher_1,Auto-Catcher I,carpenter,tower,tower_built,1000,500,"iron:10",auto_seeds_10min,1 seed/10 min
+auto_catcher_2,Auto-Catcher II,carpenter,tower,auto_catcher_1,5000,2500,"silver:5",auto_seeds_5min,1 seed/5 min
+auto_catcher_3,Auto-Catcher III,carpenter,tower,"auto_catcher_2;reach_5",30000,15000,"crystal:3",auto_seeds_2min,1 seed/2 min
+# Carpenter - Gnome Housing
+gnome_hut,Gnome Hut,carpenter,housing,gnome_rescued,500,250,"wood:20;stone:10",gnome_cap_1,House 1 gnome
+gnome_house,Gnome House,carpenter,housing,"gnome_hut;homestead",2000,1000,"wood:50;iron:20",gnome_cap_2,House 2 gnomes
+gnome_lodge,Gnome Lodge,carpenter,housing,"gnome_house;manor_grounds",10000,5000,"wood:100;silver:10",gnome_cap_3,House 3 gnomes
+gnome_hall,Gnome Hall,carpenter,housing,"gnome_lodge;great_estate",50000,25000,"wood:200;crystal:5",gnome_cap_4,House 4 gnomes
+gnome_village,Gnome Village,carpenter,housing,gnome_hall,250000,100000,"wood:500;mythril:2",gnome_cap_5,House 5 gnomes
+training_grounds,Training Grounds,carpenter,housing,"gnome_lodge;manor_grounds",25000,10000,"wood:200;silver:10;cave_crystal:2",training_speed_25,Train 25% faster
+master_academy,Master Academy,carpenter,housing,"training_grounds;great_estate",100000,50000,"wood:500;crystal:5;frozen_heart:1",dual_role_gnomes,Gnomes can dual-role
+# Skills Trainer - Carry Capacity
+carry_2,Carry Capacity 2,skills_trainer,hero,,25,10,,carry_2,Carry 2 crops
+carry_3,Carry Capacity 3,skills_trainer,hero,carry_2,50,15,,carry_3,Carry 3 crops
+carry_4,Carry Capacity 4,skills_trainer,hero,carry_3,100,20,,carry_4,Carry 4 crops
+carry_5,Carry Capacity 5,skills_trainer,hero,"carry_4;homestead",200,30,,carry_5,Carry 5 crops
+carry_6,Carry Capacity 6,skills_trainer,hero,carry_5,400,40,,carry_6,Carry 6 crops
+carry_7,Carry Capacity 7,skills_trainer,hero,"carry_6;manor_grounds",800,60,,carry_7,Carry 7 crops
+carry_8,Carry Capacity 8,skills_trainer,hero,carry_7,1500,80,,carry_8,Carry 8 crops
+carry_9,Carry Capacity 9,skills_trainer,hero,"carry_8;great_estate",3000,100,,carry_9,Carry 9 crops
+carry_10,Carry Capacity 10,skills_trainer,hero,carry_9,6000,125,,carry_10,Carry 10 crops

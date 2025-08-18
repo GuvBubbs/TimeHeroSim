@@ -29,18 +29,36 @@
 
     <!-- Configuration Tabs -->
     <div class="card">
-      <div class="border-b border-slate-700">
+      <!-- Top Level: Game Screen Tabs -->
+      <div class="border-b border-slate-600">
         <nav class="flex space-x-8 px-6">
           <button
-            v-for="tab in configTabs"
-            :key="tab.id"
-            @click="activeTab = tab.id"
-            class="flex items-center space-x-2 py-4 border-b-2 transition-colors"
-            :class="activeTab === tab.id
+            v-for="screen in gameScreens"
+            :key="screen.id"
+            @click="selectScreen(screen.id)"
+            class="flex items-center space-x-2 py-4 border-b-2 transition-colors text-base font-medium"
+            :class="activeScreen === screen.id
               ? 'border-indigo-500 text-indigo-400'
               : 'border-transparent text-slate-400 hover:text-slate-300'"
           >
-            <component :is="tab.icon" class="w-4 h-4" />
+            <component :is="screen.icon" class="w-5 h-5" />
+            <span>{{ screen.name }}</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Second Level: Config Table Tabs -->
+      <div v-if="currentTabs.length > 0" class="border-b border-slate-700">
+        <nav class="flex space-x-6 px-6">
+          <button
+            v-for="tab in currentTabs"
+            :key="tab.id"
+            @click="activeTab = tab.id"
+            class="flex items-center space-x-2 py-3 border-b-2 transition-colors text-sm"
+            :class="activeTab === tab.id
+              ? 'border-indigo-400 text-indigo-300'
+              : 'border-transparent text-slate-500 hover:text-slate-400'"
+          >
             <span>{{ tab.name }}</span>
             <span class="text-xs bg-slate-700 px-2 py-1 rounded-full">{{ tab.count }}</span>
           </button>
@@ -266,12 +284,16 @@ import {
   GiftIcon,
   ShieldExclamationIcon,
   CubeIcon,
-  BeakerIcon
+  BeakerIcon,
+  HomeIcon,
+  BuildingOfficeIcon,
+  RocketLaunchIcon
 } from '@heroicons/vue/24/outline'
 
 const gameValues = useGameValuesStore()
 
 // Reactive state
+const activeScreen = ref('farm')
 const activeTab = ref('crops')
 const searchQuery = ref('')
 const sortBy = ref('name')
@@ -280,45 +302,75 @@ const bulkEditMode = ref(false)
 const selectedItems = ref([])
 const editingItem = ref(null)
 
-// Configuration tabs
-const configTabs = computed(() => [
+// Game screen configurations
+const gameScreens = computed(() => [
   {
-    id: 'crops',
-    name: 'Crops',
-    icon: SparklesIcon,
-    count: Object.keys(gameValues.crops || {}).length
+    id: 'farm',
+    name: 'Farm',
+    icon: HomeIcon,
+    tabs: [
+      { id: 'crops', name: 'Crops', count: Object.keys(gameValues.crops || {}).length },
+      { id: 'cleanups', name: 'Cleanups', count: Object.keys(gameValues.cleanups || {}).length },
+      { id: 'helpers', name: 'Helpers', count: Object.keys(gameValues.helpers || {}).length },
+      { id: 'helperRoles', name: 'Helper Roles', count: Object.keys(gameValues.helperRoles || {}).length }
+    ]
   },
   {
-    id: 'adventures',
-    name: 'Adventures',
+    id: 'tower',
+    name: 'Tower',
+    icon: RocketLaunchIcon,
+    tabs: [
+      { id: 'towerLevels', name: 'Tower Levels', count: Object.keys(gameValues.towerLevels || {}).length }
+    ]
+  },
+  {
+    id: 'town',
+    name: 'Town',
+    icon: BuildingOfficeIcon,
+    tabs: [
+      { id: 'vendors', name: 'Vendors', count: Object.keys(gameValues.vendors || {}).length },
+      { id: 'upgrades', name: 'Upgrades', count: Object.keys(gameValues.upgrades || {}).length }
+    ]
+  },
+  {
+    id: 'adventure',
+    name: 'Adventure',
     icon: ShieldExclamationIcon,
-    count: Object.keys(gameValues.adventures || {}).length
+    tabs: [
+      { id: 'adventures', name: 'Adventures', count: Object.keys(gameValues.adventures || {}).length },
+      { id: 'weapons', name: 'Weapons', count: Object.keys(gameValues.weapons || {}).length },
+      { id: 'armor', name: 'Armor', count: Object.keys(gameValues.armor || {}).length },
+      { id: 'bossMaterials', name: 'Boss Materials', count: Object.keys(gameValues.bossMaterials || {}).length },
+      { id: 'combat', name: 'Combat (Legacy)', count: Object.keys(gameValues.combat || {}).length }
+    ]
   },
   {
-    id: 'upgrades',
-    name: 'Upgrades',
-    icon: WrenchScrewdriverIcon,
-    count: Object.keys(gameValues.upgrades || {}).length
-  },
-  {
-    id: 'mining',
-    name: 'Mining',
+    id: 'mine',
+    name: 'Mine',
     icon: CubeIcon,
-    count: Object.keys(gameValues.mining || {}).length
+    tabs: [
+      { id: 'mining', name: 'Mining', count: Object.keys(gameValues.mining || {}).length }
+    ]
   },
   {
-    id: 'helpers',
-    name: 'Helpers',
-    icon: GiftIcon,
-    count: Object.keys(gameValues.helpers || {}).length
-  },
-  {
-    id: 'combat',
-    name: 'Combat',
-    icon: BeakerIcon,
-    count: Object.keys(gameValues.combat || {}).length
+    id: 'forge',
+    name: 'Forge',
+    icon: WrenchScrewdriverIcon,
+    tabs: [
+      { id: 'tools', name: 'Tools', count: Object.keys(gameValues.tools || {}).length }
+    ]
   }
 ])
+
+// Get current screen configuration
+const currentScreen = computed(() => 
+  gameScreens.value.find(screen => screen.id === activeScreen.value)
+)
+
+// Get current tab configuration
+const currentTabs = computed(() => 
+  currentScreen.value?.tabs || []
+)
 
 // Tab configurations
 const tabConfigs = {
@@ -327,7 +379,7 @@ const tabConfigs = {
     columns: [
       { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
       { key: 'tier', label: 'Tier', type: 'text', class: 'w-24' },
-      { key: 'unlockDay', label: 'Unlock Day', type: 'number', class: 'w-24' },
+      { key: 'seedLevel', label: 'Seed Level', type: 'number', class: 'w-24' },
       { key: 'growthTime', label: 'Growth Time', type: 'number', class: 'w-32' },
       { key: 'energy', label: 'Energy', type: 'number', class: 'w-24' },
       { key: 'seedCost', label: 'Seed Cost', type: 'number', class: 'w-24' }
@@ -337,22 +389,55 @@ const tabConfigs = {
     singular: 'Adventure',
     columns: [
       { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
-      { key: 'unlockDay', label: 'Unlock Day', type: 'number', class: 'w-24' },
+      { key: 'prerequisite', label: 'Prerequisite', type: 'text', class: 'w-32' },
       { key: 'shortEnergy', label: 'Short Energy', type: 'number', class: 'w-32' },
       { key: 'mediumEnergy', label: 'Medium Energy', type: 'number', class: 'w-32' },
       { key: 'longEnergy', label: 'Long Energy', type: 'number', class: 'w-32' },
-      { key: 'goldReward', label: 'Gold Reward', type: 'number', class: 'w-32' }
+      { key: 'shortGold', label: 'Short Gold', type: 'number', class: 'w-32' }
     ]
   },
   upgrades: {
     singular: 'Upgrade',
     columns: [
       { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'vendor', label: 'Vendor', type: 'text', class: 'w-32' },
       { key: 'category', label: 'Category', type: 'text', class: 'w-32' },
-      { key: 'unlockDay', label: 'Unlock Day', type: 'number', class: 'w-24' },
       { key: 'goldCost', label: 'Gold Cost', type: 'number', class: 'w-32' },
       { key: 'energyCost', label: 'Energy Cost', type: 'number', class: 'w-32' },
       { key: 'effect', label: 'Effect', type: 'text', class: 'w-48' }
+    ]
+  },
+  weapons: {
+    singular: 'Weapon',
+    columns: [
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'type', label: 'Type', type: 'text', class: 'w-24' },
+      { key: 'level', label: 'Level', type: 'number', class: 'w-20' },
+      { key: 'damage', label: 'Damage', type: 'number', class: 'w-24' },
+      { key: 'goldCost', label: 'Gold Cost', type: 'number', class: 'w-32' },
+      { key: 'materials', label: 'Materials', type: 'text', class: 'w-48' }
+    ]
+  },
+  armor: {
+    singular: 'Armor',
+    columns: [
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'baseDefense', label: 'Defense', type: 'number', class: 'w-24' },
+      { key: 'upgradePotential', label: 'Upgrade Potential', type: 'text', class: 'w-32' },
+      { key: 'specialEffect', label: 'Special Effect', type: 'text', class: 'w-40' },
+      { key: 'dropRoute', label: 'Drop Route', type: 'text', class: 'w-32' },
+      { key: 'dropWeight', label: 'Drop Weight', type: 'number', class: 'w-28' }
+    ]
+  },
+  tools: {
+    singular: 'Tool',
+    columns: [
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'tier', label: 'Tier', type: 'text', class: 'w-24' },
+      { key: 'category', label: 'Category', type: 'text', class: 'w-24' },
+      { key: 'goldCost', label: 'Gold Cost', type: 'number', class: 'w-32' },
+      { key: 'materials', label: 'Materials', type: 'text', class: 'w-48' },
+      { key: 'effect', label: 'Effect', type: 'text', class: 'w-32' }
     ]
   },
   mining: {
@@ -360,24 +445,76 @@ const tabConfigs = {
     columns: [
       { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
       { key: 'depth', label: 'Depth', type: 'number', class: 'w-20' },
-      { key: 'unlockDay', label: 'Unlock Day', type: 'number', class: 'w-24' },
+      { key: 'minDepth', label: 'Min Depth', type: 'number', class: 'w-24' },
+      { key: 'maxDepth', label: 'Max Depth', type: 'number', class: 'w-24' },
       { key: 'energyDrain', label: 'Energy/Min', type: 'number', class: 'w-28' },
-      { key: 'commonMaterial', label: 'Common Drop', type: 'text', class: 'w-32' },
-      { key: 'rareMaterial', label: 'Rare Drop', type: 'text', class: 'w-32' },
-      { key: 'specialFind', label: 'Special Find', type: 'text', class: 'w-40' },
-      { key: 'specialChance', label: 'Chance %', type: 'number', class: 'w-24' }
+      { key: 'materials', label: 'Materials', type: 'text', class: 'w-48' }
     ]
   },
   helpers: {
     singular: 'Helper',
     columns: [
       { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
-      { key: 'type', label: 'Type', type: 'text', class: 'w-24' },
-      { key: 'unlockDay', label: 'Unlock Day', type: 'number', class: 'w-24' },
-      { key: 'basePlotCapacity', label: 'Base Plots', type: 'number', class: 'w-24' },
-      { key: 'maxPlotCapacity', label: 'Max Plots', type: 'number', class: 'w-24' },
-      { key: 'awakeningEnergy', label: 'Awaken Cost', type: 'number', class: 'w-28' },
-      { key: 'specialAbility', label: 'Special Ability', type: 'text', class: 'w-40' }
+      { key: 'rescueRoute', label: 'Rescue Route', type: 'text', class: 'w-32' },
+      { key: 'baseHousing', label: 'Base Housing', type: 'text', class: 'w-32' },
+      { key: 'roles', label: 'Roles', type: 'text', class: 'w-24' },
+      { key: 'maxLevel', label: 'Max Level', type: 'number', class: 'w-24' },
+      { key: 'baseEffect', label: 'Base Effect', type: 'text', class: 'w-32' }
+    ]
+  },
+  helperRoles: {
+    singular: 'Helper Role',
+    columns: [
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'category', label: 'Category', type: 'text', class: 'w-24' },
+      { key: 'baseEffect', label: 'Base Effect', type: 'number', class: 'w-28' },
+      { key: 'effectPerLevel', label: 'Per Level', type: 'number', class: 'w-24' },
+      { key: 'maxEffect', label: 'Max Effect', type: 'number', class: 'w-28' },
+      { key: 'description', label: 'Description', type: 'text', class: 'w-64' }
+    ]
+  },
+  towerLevels: {
+    singular: 'Tower Level',
+    columns: [
+      { key: 'reachLevel', label: 'Reach Level', type: 'number', class: 'w-24' },
+      { key: 'windLevel', label: 'Wind Level', type: 'text', class: 'w-32' },
+      { key: 'seedLevel', label: 'Seed Level', type: 'number', class: 'w-24' },
+      { key: 'goldCost', label: 'Gold Cost', type: 'number', class: 'w-32' },
+      { key: 'catchRate', label: 'Catch Rate', type: 'number', class: 'w-28' },
+      { key: 'seedPool', label: 'Seed Pool', type: 'text', class: 'w-32' }
+    ]
+  },
+  vendors: {
+    singular: 'Vendor',
+    columns: [
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'shopType', label: 'Shop Type', type: 'text', class: 'w-32' },
+      { key: 'location', label: 'Location', type: 'text', class: 'w-24' },
+      { key: 'prerequisite', label: 'Prerequisite', type: 'text', class: 'w-32' },
+      { key: 'categories', label: 'Categories', type: 'text', class: 'w-48' },
+      { key: 'description', label: 'Description', type: 'text', class: 'w-64' }
+    ]
+  },
+  cleanups: {
+    singular: 'Cleanup',
+    columns: [
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'stage', label: 'Stage', type: 'number', class: 'w-20' },
+      { key: 'plotsAdded', label: 'Plots Added', type: 'number', class: 'w-28' },
+      { key: 'totalPlots', label: 'Total Plots', type: 'number', class: 'w-28' },
+      { key: 'energyCost', label: 'Energy Cost', type: 'number', class: 'w-32' },
+      { key: 'repeatable', label: 'Repeatable', type: 'boolean', class: 'w-24' }
+    ]
+  },
+  bossMaterials: {
+    singular: 'Boss Material',
+    columns: [
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'dropFrom', label: 'Drop From', type: 'text', class: 'w-32' },
+      { key: 'dropChance', label: 'Drop Chance', type: 'number', class: 'w-28' },
+      { key: 'category', label: 'Category', type: 'text', class: 'w-24' },
+      { key: 'uses', label: 'Uses', type: 'text', class: 'w-32' },
+      { key: 'description', label: 'Description', type: 'text', class: 'w-64' }
     ]
   },
   combat: {
@@ -404,8 +541,21 @@ const currentItems = computed(() => {
   const tabData = gameValues[activeTab.value]
   if (!tabData || Object.keys(tabData).length === 0) return []
   
-  return Object.entries(tabData).map(([id, data]) => ({
-    id,
+  // Handle different identifier fields for different data types
+  const getIdField = (tab) => {
+    switch (tab) {
+      case 'mining': return 'depth'
+      case 'helperRoles': return 'role'  
+      case 'towerLevels': return 'reachLevel'
+      default: return 'id'
+    }
+  }
+  
+  const idField = getIdField(activeTab.value)
+  
+  return Object.entries(tabData).map(([key, data]) => ({
+    id: key, // Keep 'id' for UI consistency
+    [idField]: key, // Also include the actual identifier field
     ...data
   }))
 })
@@ -446,6 +596,15 @@ const filteredItems = computed(() => {
 })
 
 // Methods
+function selectScreen(screenId) {
+  activeScreen.value = screenId
+  // Set the first tab of the selected screen as active
+  const screen = gameScreens.value.find(s => s.id === screenId)
+  if (screen && screen.tabs.length > 0) {
+    activeTab.value = screen.tabs[0].id
+  }
+}
+
 function handleSort(columnKey) {
   if (sortBy.value === columnKey) {
     // Toggle direction if clicking the same column

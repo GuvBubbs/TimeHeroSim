@@ -1,0 +1,32 @@
+id,name,stage,plotsAdded,totalPlots,energyCost,toolRequired,materials,cooldown,repeatable
+weeds_1,Clear Weeds #1,1,2,5,5,,,0,false
+weeds_2,Clear Weeds #2,1,3,8,10,,,0,false
+gather_sticks,Gather Sticks,1,0,0,5,,,0,true
+break_branches,Break Branches,1,0,0,10,,,0,true
+dead_trees,Collect Dead Trees,2,2,10,15,,"wood:8",0,false
+till_1,Till Soil #1,2,3,13,20,hoe,,0,false
+rocks_1,Clear Rocks #1,2,3,16,30,,"stone:8",0,false
+till_2,Till Soil #2,2,4,20,40,hoe,,0,false
+gather_branches,Gather Branches,2,0,0,15,,,0,true
+chop_saplings,Chop Saplings,2,0,0,25,,,0,true
+fell_tree,Fell Small Tree,2,0,0,50,axe,"wood:5",0,true
+boulders_1,Clear Boulders #1,3,4,24,100,hammer_plus,"stone:12",0,false
+stumps_1,Remove Stumps #1,3,4,28,150,axe,"wood:20",0,false
+boulders_2,Clear Boulders #2,3,4,32,200,hammer_plus,"stone:18",0,false
+stumps_2,Remove Stumps #2,3,4,36,300,axe,"wood:30",0,false
+till_3,Till New Land,3,4,40,400,hoe_plus,,0,false
+chop_trees,Chop Trees,3,0,0,100,axe,"wood:10",0,true
+clear_grove,Clear Grove,3,0,0,200,axe_plus,"wood:25",0,true
+excavate_1,Excavate Rocks #1,4,5,45,500,shovel,"stone:24",0,false
+thickets_1,Clear Thickets #1,4,5,50,600,earth_mover,"wood:36",0,false
+excavate_2,Excavate Rocks #2,4,5,55,800,shovel_plus,"stone:32",0,false
+thickets_2,Clear Thickets #2,4,5,60,1000,earth_mover,"wood:48",0,false
+terraform,Terraform,4,5,65,1500,terra_former,,0,false
+harvest_forest,Harvest Forest,4,0,0,400,shovel_plus,"wood:40",0,true
+clear_old_growth,Clear Old Growth,4,0,0,800,earth_mover,"wood:100",0,true
+monoliths_1,Stone Monoliths #1,5,5,70,2000,stone_breaker,"stone:50",0,false
+roots_1,Ancient Roots #1,5,5,75,2500,world_splitter,"wood:100",0,false
+monoliths_2,Stone Monoliths #2,5,5,80,3000,stone_breaker,"stone:75",0,false
+sacred,Sacred Clearing,5,10,90,5000,"world_splitter;stone_breaker",,0,false
+mystic_grove,Mystic Grove,5,0,0,1500,world_splitter,"wood:200",0,true
+enchanted_forest,Enchanted Forest,5,0,0,3000,"world_splitter;stone_breaker","wood:500;enchanted_wood:1",0,true

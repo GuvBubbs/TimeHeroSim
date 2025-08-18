@@ -1,9 +1,8 @@
-id,name,unlockDay,shortEnergy,shortDuration,mediumEnergy,mediumDuration,longEnergy,longDuration,goldReward,commonMaterial,commonAmount,rareMaterial,rareAmount,bossMaterial,bossAmount
-meadow_path,Meadow Path,1,10,3,25,8,50,15,150,stone,2,,,copper,2
-pine_vale,Pine Vale,2,40,5,100,15,200,30,600,copper,3,stone,1,iron,3
-dark_forest,Dark Forest,3,80,8,200,20,400,45,1200,iron,3,copper,2,silver,1
-mountain_pass,Mountain Pass,5,200,10,500,30,1000,60,3000,iron,4,silver,1,silver,3
-crystal_caves,Crystal Caves,14,400,15,1000,40,2000,90,8000,silver,3,crystal,1,crystal,2
-frozen_tundra,Frozen Tundra,14,800,20,2000,50,4000,120,16000,crystal,2,mythril,1,mythril,1
-volcano_core,Volcano Core,21,1600,25,4000,65,8000,150,32000,mythril,1,obsidian,1,obsidian,2
-time_rift,Time Rift,28,4000,30,10000,90,20000,180,80000,obsidian,1,temporal_shard,1,temporal_shard,1
+id,name,prerequisite,shortEnergy,shortDuration,shortGold,mediumEnergy,mediumDuration,mediumGold,longEnergy,longDuration,longGold,enemyTypes,boss,bossWeakness,commonMat,rareMat,bossMat,firstClearBonus
+meadow_path,Meadow Path,,10,3,25,25,8,75,50,15,150,slimes:100,Giant Slime,none,"wood:5-10",,copper:2,
+pine_vale,Pine Vale,meadow_path_long,20,5,60,50,15,150,100,30,300,armored_insects:100,Beetle Lord,spear,"wood:20-30",,"iron:3;pine_resin:1",
+dark_forest,Dark Forest,pine_vale_long,40,8,150,100,20,375,200,45,750,beasts:60;slimes:40,Alpha Wolf,sword,"wood:40-60",,"iron:5;shadow_bark:1",gnome_rescued
+mountain_pass,Mountain Pass,dark_forest_long,100,10,400,250,30,1000,500,60,2000,flying:50;insects:50,Sky Serpent,bow,"stone:30-50",silver:3,mountain_stone:1,gnome_rescued
+crystal_caves,Crystal Caves,mountain_pass_long,200,15,1000,500,40,2500,1000,90,5000,crawlers:50;plants:50,Crystal Spider,crossbow,"crystal:1-2",crystal:2,cave_crystal:1,gnome_rescued
+frozen_tundra,Frozen Tundra,crystal_caves_long,400,20,2500,1000,50,6250,2000,120,12500,flying:40;beasts:40;plants:20,Frost Wyrm,wand,"wood:80-120",mythril:1,"frozen_heart:1;enchanted_wood:1",gnome_rescued
+volcano_core,Volcano Core,frozen_tundra_long,800,25,6000,2000,65,15000,4000,150,30000,mixed:100,Lava Titan,rotating,"obsidian:1",obsidian:2,molten_core:1,gnome_rescued

@@ -1,30 +1,30 @@
-name,tier,unlockDay,growthTime,growthStages,energy,seedCost,notes
-Carrot,early,1,6,3,0.5,0,Early starter crop with quick growth
-Radish,early,1,4.5,3,0.5,0,Fastest growing early crop
-Potato,early,1,9,3,1,0,Reliable early crop with good energy
-Cabbage,early,1,12,4,1.5,1,First multi-stage leafy crop
-Turnip,early,2,6,3,1,1,Common root vegetable upgrade
-Corn,early,2,20,5,2.5,2,High yield multi-stage crop
-Tomato,early,2,15,5,2,2,Recurring harvest crop
-Strawberry,mid,3,25,5,6,5,Popular profitable mid-tier crop
-Spinach,mid,3,3,3,2.5,3,Fast growing high energy leafy
-Onion,mid,4,12,3,3.5,4,Solid mid-tier crop
-Garlic,mid,4,18,3,5,5,High value specialty crop
-Cucumber,mid,5,20,5,4.5,6,Consistent multi-harvest crop
-Leek,mid,5,15,3,4,5,Versatile cooking ingredient
-Wheat,mid,6,20,4,6,7,Essential grain for advanced recipes
-Pumpkin,late,14,40,5,12,15,High value seasonal crop
-Pineapple,late,14,50,5,20,25,Premium tropical fruit
-Watermelon,late,14,45,5,17,20,High value summer crop
-Honeydew,late,14,40,5,15,18,Valuable melon variety
-Asparagus,late,14,21,3,10,12,High market price vegetable
-Cauliflower,late,14,24,4,9,11,Advanced recipe ingredient
-Caisim,late,14,12,3,8,10,Rare leafy green specialty
-Yam,endgame,21,36,3,25,35,High energy endgame crop
-Beetroot,endgame,21,32,4,18,25,Unique colored root vegetable
-Bell Pepper (G),endgame,21,35,5,22,30,Green bell pepper variety
-Bell Pepper (R),endgame,21,35,5,27,35,Red bell pepper variety
-Bell Pepper (Y),endgame,28,35,5,32,40,Premium yellow bell pepper
-Shallot,endgame,28,30,3,30,40,High culinary value allium
-Eggplant,endgame,28,30,5,20,28,Staple endgame cooking ingredient
-Soybean,endgame,28,40,5,22,30,Versatile protein crop
+name,tier,seedLevel,stages,growthTime,energy,seedCost,waterConsumption,notes
+Carrot,early,0,3,6,1,0,1,Tutorial crop
+Radish,early,0,3,5,1,0,1,Quick turnover
+Potato,early,1,3,8,2,0,1,Reliable crop
+Cabbage,early,1,4,10,3,1,1,First multi-stage
+Turnip,early,1,3,7,2,1,1,Common vegetable
+Corn,early,2,5,15,5,2,1,Good mid-tier
+Tomato,early,2,5,12,4,2,1,Recurring harvest
+Strawberry,mid,3,5,20,8,5,1,Popular fruit
+Spinach,mid,3,3,10,5,3,1,Quick mid-tier
+Onion,mid,3,3,12,6,4,1,Solid seller
+Garlic,mid,4,3,15,8,5,1,High value
+Cucumber,mid,4,5,25,12,6,1,Long grow
+Leek,mid,5,3,18,10,5,1,Versatile
+Wheat,mid,5,4,22,12,7,1,Bread ingredient
+Asparagus,late,6,4,30,20,12,1,Premium crop
+Cauliflower,late,6,4,28,18,10,1,High tier
+Caisim,late,6,3,25,15,8,1,Asian vegetable
+Pumpkin,late,6,5,35,25,15,1,Seasonal
+Watermelon,late,7,5,40,35,20,1,Summer crop
+Honeydew,late,7,5,38,30,18,1,Melon variety
+Pineapple,endgame,8,5,45,40,25,1,Tropical
+Beetroot,endgame,8,4,35,35,20,1,Root vegetable
+Eggplant,endgame,8,3,30,30,15,1,Purple produce
+Soybean,endgame,8,5,42,45,30,1,Protein crop
+Yam,endgame,9,5,50,50,35,1,Starchy root
+Bell Pepper Green,endgame,9,5,48,45,30,1,Green variant
+Bell Pepper Red,endgame,9,5,48,55,35,1,Red variant
+Bell Pepper Yellow,endgame,9,5,48,65,40,1,Yellow variant
+Shallot,endgame,9,3,40,60,35,1,Premium onion
