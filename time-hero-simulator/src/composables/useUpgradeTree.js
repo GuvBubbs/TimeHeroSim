@@ -8,8 +8,7 @@
 import { ref, computed, watch } from 'vue'
 import { useGameValuesStore } from '@/stores/gameValues.js'
 import { useSimulationStore } from '@/stores/simulation.js'
-import { calculateSourceTreeLayout } from '@/utils/treeLayoutEngine.js'
-import { buildDependencyGraph } from '@/utils/upgradePrerequisites.js'
+import { calculateSourceTreeLayout, SOURCES, AREAS } from '@/utils/treeLayoutEngine.js'
 
 export function useUpgradeTree() {
   // Stores
@@ -18,8 +17,8 @@ export function useUpgradeTree() {
 
   // Filter state
   const filters = ref({
-    sources: {},  // enabled source filters
-    areas: {},    // enabled area filters 
+    sources: [],  // enabled source filters (array for .includes())
+    areas: [],    // enabled area filters (array for .includes())
     search: '',
     status: 'all', // all, available, locked, owned
     dependencies: 'all' // all, direct, critical, none
@@ -51,52 +50,24 @@ export function useUpgradeTree() {
    */
   const upgrades = computed(() => {
     const unifiedNodes = gameValues.unifiedNodes || []
-    console.log('🔍 useUpgradeTree - unified nodes computed:', {
-      totalNodes: unifiedNodes.length,
-      sampleNode: unifiedNodes[0],
-      sourceBreakdown: unifiedNodes.reduce((acc, node) => {
-        acc[node.source] = (acc[node.source] || 0) + 1
-        return acc
-      }, {}),
-      areaBreakdown: unifiedNodes.reduce((acc, node) => {
-        acc[node.area] = (acc[node.area] || 0) + 1
-        return acc
-      }, {})
-    })
     
-    // Add detailed logging to track where nodes might be filtered
-    console.log('🔍 TRACKING: Raw unified nodes before processing:', {
-      count: unifiedNodes.length,
-      firstFew: unifiedNodes.slice(0, 3).map(n => ({ id: n.id, source: n.source, area: n.area }))
-    })
-    
-    // Convert array to keyed object for backward compatibility
-    const keyedNodes = {}
-    const duplicateIds = []
-    const seenIds = new Set()
-    
-    unifiedNodes.forEach((node, index) => {
-      if (seenIds.has(node.id)) {
-        duplicateIds.push({ id: node.id, index, csvSource: node.csvSource })
-      } else {
-        seenIds.add(node.id)
-      }
-      keyedNodes[node.id] = node
-    })
-    
-    if (duplicateIds.length > 0) {
-      console.warn('🚨 DUPLICATE IDs found:', {
-        count: duplicateIds.length,
-        examples: duplicateIds.slice(0, 10),
-        totalOriginal: unifiedNodes.length,
-        totalAfterDedup: Object.keys(keyedNodes).length
-      })
+    // Ensure unifiedNodes is an array
+    if (!Array.isArray(unifiedNodes)) {
+      console.warn('🚨 unifiedNodes is not an array:', typeof unifiedNodes, unifiedNodes)
+      return {}
     }
     
-    console.log('🔍 TRACKING: Keyed nodes after conversion:', {
-      count: Object.keys(keyedNodes).length,
-      firstFewKeys: Object.keys(keyedNodes).slice(0, 3),
-      duplicatesFound: duplicateIds.length
+    console.log('🔍 useUpgradeTree - Processing nodes:', {
+      totalNodes: unifiedNodes.length,
+      firstNode: unifiedNodes[0],
+      hasPrerequisites: unifiedNodes.filter(n => n.prerequisites?.length > 0).length,
+      rootNodes: unifiedNodes.filter(n => !n.prerequisites || n.prerequisites.length === 0).length
+    })
+    
+    // Convert to keyed object
+    const keyedNodes = {}
+    unifiedNodes.forEach(node => {
+      keyedNodes[node.id] = node
     })
     
     return keyedNodes
@@ -160,6 +131,12 @@ export function useUpgradeTree() {
    */
   async function calculateLayout() {
     console.log('🔍 calculateLayout called - starting...')
+    console.log('🔍 Current upgrades state:', {
+      upgradesValue: upgrades.value,
+      upgradesCount: Object.keys(upgrades.value || {}).length,
+      gameStateValue: gameState.value
+    })
+    
     isLoading.value = true
     error.value = null
     
@@ -171,9 +148,37 @@ export function useUpgradeTree() {
         sampleUpgrade: Object.values(upgradesObj)[0]
       })
       
+      // Skip if no upgrades
+      if (!upgradesObj || Object.keys(upgradesObj).length === 0) {
+        console.log('🚨 No upgrades available for layout calculation')
+        return
+      }
+      
       // Calculate the layout using the layout engine
+      console.log('🎯 About to call calculateSourceTreeLayout...')
       const newLayout = await calculateSourceTreeLayout(upgradesObj, gameState.value)
+      console.log('✅ Layout calculation completed:', newLayout)
       layout.value = newLayout
+      
+      // Log missing prerequisites once
+      const missingPrereqs = new Set()
+      const connectedEdges = layout.value?.edges?.length || 0
+      Object.values(layout.value?.nodes || {}).forEach(node => {
+        if (node.prerequisites) {
+          node.prerequisites.forEach(prereqId => {
+            if (!layout.value.nodes[prereqId] && !missingPrereqs.has(prereqId)) {
+              missingPrereqs.add(prereqId)
+            }
+          })
+        }
+      })
+      
+      if (missingPrereqs.size > 0) {
+        console.warn(`📋 Missing prerequisites (${missingPrereqs.size} unique):`, Array.from(missingPrereqs).sort())
+      }
+      
+      console.log(`🔗 Dependency connections: ${connectedEdges} edges created`)
+      console.log(`📊 Layout summary: ${Object.keys(layout.value.nodes).length} nodes across ${Object.keys(layout.value.sourceSections).length} sources`)
       
       // Apply filters to create filtered layout
       updateFilteredLayout()
@@ -235,18 +240,28 @@ export function useUpgradeTree() {
    * Filter methods
    */
   function setSourceFilter(sourceId, enabled) {
-    filters.value.sources[sourceId] = enabled
+    if (enabled && !filters.value.sources.includes(sourceId)) {
+      filters.value.sources.push(sourceId)
+    } else if (!enabled && filters.value.sources.includes(sourceId)) {
+      const index = filters.value.sources.indexOf(sourceId)
+      filters.value.sources.splice(index, 1)
+    }
     updateFilteredLayout()
   }
 
   function toggleSourceFilter(sourceId) {
-    const current = filters.value.sources[sourceId] || false
+    const current = filters.value.sources.includes(sourceId)
     setSourceFilter(sourceId, !current)
   }
 
   function toggleAreaFilter(areaId) {
-    const current = filters.value.areas[areaId] || false
-    filters.value.areas[areaId] = !current
+    const current = filters.value.areas.includes(areaId)
+    if (current) {
+      const index = filters.value.areas.indexOf(areaId)
+      filters.value.areas.splice(index, 1)
+    } else {
+      filters.value.areas.push(areaId)
+    }
     updateFilteredLayout()
   }
 
@@ -259,10 +274,23 @@ export function useUpgradeTree() {
   }
 
   // Watch for changes that require layout recalculation
-  watch(() => upgrades.value, () => {
-    console.log('🔍 Upgrades changed, triggering layout recalculation')
-    calculateLayout()
-  }, { deep: true })
+  watch(() => upgrades.value, (newUpgrades, oldUpgrades) => {
+    const newCount = Object.keys(newUpgrades || {}).length
+    const oldCount = Object.keys(oldUpgrades || {}).length
+    console.log('🔍 Upgrades changed, triggering layout recalculation', { newCount, oldCount })
+    if (newCount > 0) {
+      calculateLayout()
+    }
+  }, { deep: true, immediate: true })
+
+  // Also watch the unifiedNodes directly for more reliable triggering
+  watch(() => gameValues.unifiedNodes, (newNodes) => {
+    console.log('🔍 Unified nodes changed:', newNodes?.length || 0)
+    if (newNodes && newNodes.length > 0) {
+      console.log('🔍 Triggering layout calculation due to unified nodes change')
+      calculateLayout()
+    }
+  }, { immediate: true })
 
   watch(() => gameState.value, () => {
     console.log('🔍 Game state changed, updating filtered layout')
@@ -294,6 +322,10 @@ export function useUpgradeTree() {
     setSourceFilter,
     toggleSourceFilter,
     toggleAreaFilter,
-    findPathTo
+    findPathTo,
+    
+    // Constants
+    SOURCES,
+    AREAS
   }
 }

@@ -1,4 +1,4 @@
-id,name,type,prerequisite_blueprint,craft_time_min,energy_cost,materials,boss_materials,success_rate,notes
+id,name,type,prerequisite,craft_time_min,energy_cost,materials,boss_materials,success_rate,notes
 hoe,Hoe,tool,blueprint_hoe,5,20,Stone x5;Wood x3,,100%,Base tool
 hammer,Hammer,tool,blueprint_hammer,8,40,Stone x8;Wood x5,,100%,Base tool
 axe,Axe,tool,blueprint_axe,10,100,Iron x5;Wood x8,,95%,Base tool

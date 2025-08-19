@@ -1,4 +1,4 @@
-id,name,type,prerequisite_blueprint,build_energy,materials,build_time_min,effect,notes
+id,name,type,prerequisite,build_energy,materials,build_time_min,effect,notes
 storage_shed_1,Storage Shed I,energy_storage,blueprint_storage_shed_1,10,,5,Energy cap 50->150,
 storage_shed_2,Storage Shed II,energy_storage,blueprint_storage_shed_2,50,Stone x5,10,Energy cap 150->500,
 storage_shed_3,Storage Shed III,energy_storage,blueprint_storage_shed_3,200,Iron x10,15,Energy cap 500->1500,

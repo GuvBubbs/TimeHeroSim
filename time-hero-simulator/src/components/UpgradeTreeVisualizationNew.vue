@@ -1,10 +1,10 @@
 <template>
-  <div class="relative w-full h-full bg-slate-900 rounded-lg overflow-hidden">
-    <!-- Interactive Container -->
+  <div class="relative w-full h-full bg-slate-900 rounded-lg">
+    <!-- Interactive Container with scrolling enabled -->
     <div 
       ref="containerRef"
-      class="w-full h-full relative"
-      @wheel.prevent="interactions.handleWheel"
+      class="w-full h-full overflow-auto relative"
+      @wheel="handleWheel"
       @mousedown="interactions.handleMouseDown"
       @touchstart="interactions.handleTouchStart"
       @touchmove="interactions.handleTouchMove"
@@ -12,14 +12,20 @@
       @dblclick="interactions.handleDoubleClick"
       @keydown="interactions.handleKeyDown"
       tabindex="0"
+      :style="{ cursor: interactions.viewTransform.zoom > 1 ? 'grab' : 'default' }"
     >
-      <!-- SVG Canvas for Upgrade Tree -->
+      <!-- SVG Canvas for Upgrade Tree with proper dimensions -->
       <svg
         ref="svgCanvas"
-        :width="layout?.dimensions.width || 1200"
-        :height="layout?.dimensions.height || 800"
-        :style="{ transform: interactions.transformStyle }"
-        class="absolute top-0 left-0"
+        :width="Math.max(layout?.dimensions.width || 1600, containerWidth)"
+        :height="Math.max(layout?.dimensions.height || 800, containerHeight)"
+        :style="{ 
+          minWidth: (layout?.dimensions.width || 1600) + 'px',
+          minHeight: (layout?.dimensions.height || 800) + 'px',
+          transform: debugTransform,
+          transformOrigin: '0 0'
+        }"
+        class="block"
       >
         <!-- Definitions -->
         <defs>
@@ -77,14 +83,35 @@
         <!-- Grid Background -->
         <rect width="100%" height="100%" fill="url(#grid)" />
 
+        <!-- Tier Markers for Visual Debugging -->
+        <g v-for="marker in layout?.tierMarkers" :key="marker.label" opacity="0.3">
+          <line 
+            :x1="marker.x" 
+            :y1="marker.y" 
+            :x2="marker.x" 
+            :y2="marker.height"
+            stroke="#475569" 
+            stroke-width="1"
+            stroke-dasharray="5,5"
+          />
+          <text 
+            :x="marker.x + 5" 
+            y="15" 
+            fill="#94a3b8" 
+            font-size="10"
+          >
+            {{ marker.label }} - {{ marker.phase }}
+          </text>
+        </g>
+
         <!-- Vendor Section Headers -->
-        <g v-for="(section, vendorId) in layout?.vendorSections" :key="vendorId">
+        <g v-for="(section, vendorId) in layout?.sourceSections" :key="vendorId">
           <rect
             x="0"
             :y="section.y"
             :width="layout.dimensions.width"
-            height="50"
-            :fill="getVendorConfig(vendorId).color"
+            :height="section.height"
+            :fill="getSourceConfig(vendorId).color"
             opacity="0.1"
             stroke="#475569"
             stroke-width="1"
@@ -96,7 +123,7 @@
             :y="section.y"
             width="180"
             height="50"
-            :fill="getVendorConfig(vendorId).color"
+            :fill="getSourceConfig(vendorId).color"
             opacity="0.8"
           />
           
@@ -184,17 +211,6 @@
               class="transition-all duration-200"
             />
 
-            <!-- Status Indicator -->
-            <circle
-              v-if="node.status !== 'available'"
-              :cx="node.width - 8"
-              :cy="8"
-              r="6"
-              :fill="getStatusColor(node.status)"
-              stroke="white"
-              stroke-width="1"
-            />
-
             <!-- Upgrade Icon -->
             <text
               :x="node.width / 2"
@@ -203,7 +219,7 @@
               font-size="18"
               class="pointer-events-none select-none"
             >
-              {{ getUpgradeIcon(node.upgrade) }}
+              {{ getUpgradeIcon(node) }}
             </text>
 
             <!-- Upgrade Name -->
@@ -216,7 +232,7 @@
               font-weight="600"
               class="pointer-events-none select-none"
             >
-              {{ truncateName(node.upgrade.name) }}
+              {{ truncateName(node.name) }}
             </text>
 
             <!-- Cost Information -->
@@ -234,7 +250,7 @@
 
             <!-- Time to Afford (if not owned) -->
             <text
-              v-if="!node.isOwned && node.status === 'available'"
+              v-if="!node.isOwned && node.status === 'available' && node.timeToAfford"
               :x="node.width / 2"
               :y="node.height - 4"
               text-anchor="middle"
@@ -262,81 +278,36 @@
       </svg>
     </div>
 
-    <!-- Tooltip -->
-    <UpgradeTooltip
-      v-if="hoveredNode && tooltip.visible"
-      :node="hoveredNode"
-      :position="tooltip.position"
-      :game-state="gameState"
-    />
-
     <!-- Zoom Controls -->
     <div class="absolute top-4 right-4 flex flex-col space-y-2 z-10">
       <button
-        @click="interactions.zoomIn"
+        @click="() => { console.log('+ button clicked'); interactions.zoomIn(); }"
         class="w-10 h-10 bg-slate-800 hover:bg-slate-700 text-white rounded-lg border border-slate-600 flex items-center justify-center transition-colors"
         title="Zoom In"
       >
         <span class="text-lg font-bold">+</span>
       </button>
       <button
-        @click="interactions.zoomOut"
+        @click="() => { console.log('- button clicked'); interactions.zoomOut(); }"
         class="w-10 h-10 bg-slate-800 hover:bg-slate-700 text-white rounded-lg border border-slate-600 flex items-center justify-center transition-colors"
         title="Zoom Out"
       >
         <span class="text-lg font-bold">−</span>
       </button>
       <button
-        @click="interactions.resetView"
+        @click="() => { console.log('reset button clicked'); interactions.resetView(); }"
         class="w-10 h-10 bg-slate-800 hover:bg-slate-700 text-white rounded-lg border border-slate-600 flex items-center justify-center transition-colors text-sm"
         title="Reset View"
       >
         ⌂
       </button>
       <button
-        @click="fitToView"
+        @click="() => { console.log('fit button clicked'); fitToView(); }"
         class="w-10 h-10 bg-slate-800 hover:bg-slate-700 text-white rounded-lg border border-slate-600 flex items-center justify-center transition-colors text-xs"
         title="Fit to View"
       >
         ⤢
       </button>
-    </div>
-
-    <!-- Vendor Legend -->
-    <div class="absolute bottom-4 left-4 bg-slate-800/95 border border-slate-600 rounded-lg p-3 z-10 max-w-xs">
-      <h4 class="text-xs font-medium text-white mb-2">Vendors</h4>
-      <div class="space-y-1 text-xs">
-        <div v-for="(vendor, vendorId) in vendorStats" :key="vendorId" class="flex items-center justify-between space-x-2">
-          <div class="flex items-center space-x-2">
-            <div class="w-3 h-3 rounded" :style="{ backgroundColor: vendor.color }"></div>
-            <span class="text-slate-300">{{ vendor.icon }} {{ vendor.name }}</span>
-          </div>
-          <span class="text-slate-400">{{ vendor.owned }}/{{ vendor.total }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Status Legend -->
-    <div class="absolute bottom-4 right-4 bg-slate-800/95 border border-slate-600 rounded-lg p-3 z-10">
-      <h4 class="text-xs font-medium text-white mb-2">Status</h4>
-      <div class="space-y-1 text-xs">
-        <div class="flex items-center space-x-2">
-          <div class="w-3 h-3 rounded-full bg-green-500"></div>
-          <span class="text-slate-300">Owned</span>
-        </div>
-        <div class="flex items-center space-x-2">
-          <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-          <span class="text-slate-300">Available</span>
-        </div>
-        <div class="flex items-center space-x-2">
-          <div class="w-3 h-3 rounded-full bg-red-500"></div>
-          <span class="text-slate-300">Prerequisites Missing</span>
-        </div>
-        <div class="flex items-center space-x-2">
-          <div class="w-3 h-3 rounded-full bg-purple-500"></div>
-          <span class="text-slate-300">Farm Stage Locked</span>
-        </div>
-      </div>
     </div>
 
     <!-- Loading Overlay -->
@@ -374,8 +345,7 @@
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useUpgradeTree } from '@/composables/useUpgradeTree.js'
 import { useUpgradeInteractions } from '@/composables/useUpgradeInteractions.js'
-import { getVendorConfig } from '@/utils/treeLayoutEngine.js'
-import UpgradeTooltip from './UpgradeTooltip.vue'
+import { getSourceConfig } from '@/utils/treeLayoutEngine.js'
 
 const props = defineProps({
   interactive: {
@@ -397,6 +367,8 @@ const emit = defineEmits(['upgradeSelected', 'upgradeHovered', 'upgradeUnhovered
 // Refs
 const containerRef = ref(null)
 const svgCanvas = ref(null)
+const containerWidth = ref(1600)
+const containerHeight = ref(800)
 
 // Composables
 const {
@@ -408,7 +380,7 @@ const {
   layout,
   filteredLayout,
   gameState,
-  vendorStats,
+  sourceStats,
   calculateLayout,
   selectNode: selectUpgradeNode,
   hoverNode: hoverUpgradeNode,
@@ -418,6 +390,31 @@ const {
 
 const interactions = useUpgradeInteractions(containerRef)
 
+// Debug: Watch viewTransform changes
+watch(() => interactions.viewTransform, (newVal) => {
+  console.log('🚨 viewTransform changed in template:', {
+    zoom: newVal?.zoom,
+    panX: newVal?.panX,
+    panY: newVal?.panY
+  })
+  console.log('🚨 raw viewTransform:', newVal)
+}, { deep: true })
+
+// Debug: Try accessing the values directly
+watch(() => [interactions.viewTransform?.zoom, interactions.viewTransform?.panX, interactions.viewTransform?.panY], (newValues) => {
+  console.log('🔥 Direct access values:', newValues)
+})
+
+// Debug: Create local computed to test reactivity
+const debugTransform = computed(() => {
+  const zoom = interactions.viewTransform?.zoom ?? 1
+  const panX = interactions.viewTransform?.panX ?? 0  
+  const panY = interactions.viewTransform?.panY ?? 0
+  const transform = `translate(${panX}px, ${panY}px) scale(${zoom})`
+  console.log('🔥 debugTransform computed:', transform, { zoom, panX, panY })
+  return transform
+})
+
 // Tooltip state
 const tooltip = ref({
   visible: false,
@@ -425,11 +422,33 @@ const tooltip = ref({
 })
 
 /**
+ * Handle wheel events for scrolling and zooming
+ */
+const handleWheel = (event) => {
+  // Zoom with Ctrl/Cmd + scroll
+  if (event.ctrlKey || event.metaKey) {
+    event.preventDefault()
+    interactions.handleWheel(event)
+    return
+  }
+  
+  // Horizontal scroll with Shift
+  if (event.shiftKey) {
+    event.preventDefault()
+    containerRef.value.scrollLeft += event.deltaY
+    return
+  }
+  
+  // Let normal vertical scrolling happen naturally
+  // Don't prevent default for standard scrolling
+}
+
+/**
  * Select a node and emit event
  */
 const selectNode = (node) => {
   selectUpgradeNode(node)
-  emit('upgradeSelected', node.upgrade)
+  emit('upgradeSelected', node)
 }
 
 /**
@@ -445,7 +464,7 @@ const hoverNode = (node, event) => {
     y: event.clientY - 10
   }
   
-  emit('upgradeHovered', node.upgrade)
+  emit('upgradeHovered', node)
 }
 
 /**
@@ -461,10 +480,10 @@ const handleClearHover = () => {
  * Get vendor statistics display string
  */
 const getVendorStats = (vendorId) => {
-  const stats = vendorStats.value[vendorId]
+  const stats = sourceStats.value[vendorId]
   if (!stats) return ''
   
-  const percentage = Math.round(stats.completionPercentage)
+  const percentage = stats.total > 0 ? Math.round((stats.owned / stats.total) * 100) : 0
   return `${stats.owned}/${stats.total} (${percentage}%)`
 }
 
@@ -522,13 +541,9 @@ const truncateName = (name) => {
  * Get node background color
  */
 const getNodeBackground = (node) => {
-  if (node.isOwned) return '#10b981' // Green for owned
-  if (node.status === 'available') {
-    return node.canAfford ? '#f59e0b' : '#6b7280' // Yellow if affordable, gray if not
-  }
-  if (node.status === 'farm_locked') return '#8b5cf6' // Purple
-  if (node.status === 'prerequisite_missing') return '#ef4444' // Red
-  return '#6b7280' // Gray default
+  // Use source color for consistent visual grouping
+  const sourceConfig = getSourceConfig(node.source)
+  return sourceConfig?.color || '#6b7280'
 }
 
 /**
@@ -552,23 +567,7 @@ const getNodeBorderWidth = (node) => {
  * Get node opacity
  */
 const getNodeOpacity = (node) => {
-  if (node.isOwned) return 0.9
-  if (node.status === 'available') return 0.8
-  return 0.6
-}
-
-/**
- * Get status indicator color
- */
-const getStatusColor = (status) => {
-  const colors = {
-    owned: '#10b981',
-    available: '#f59e0b',
-    prerequisite_missing: '#ef4444',
-    farm_locked: '#8b5cf6',
-    tool_locked: '#ec4899'
-  }
-  return colors[status] || '#6b7280'
+  return 0.8 // Consistent opacity for all nodes
 }
 
 /**
@@ -604,6 +603,7 @@ const isEdgeHighlighted = (edge) => {
  * Fit view to show all content
  */
 const fitToView = () => {
+  console.log('fitToView called')
   if (!layout.value) return
   
   const bounds = {
@@ -613,6 +613,7 @@ const fitToView = () => {
     height: layout.value.dimensions.height
   }
   
+  console.log('fitToView bounds:', bounds)
   interactions.fitToContent(bounds)
 }
 
@@ -640,6 +641,11 @@ onMounted(() => {
   // Focus container for keyboard events
   if (containerRef.value) {
     containerRef.value.focus()
+    
+    // Set container dimensions based on actual size
+    const rect = containerRef.value.getBoundingClientRect()
+    containerWidth.value = rect.width
+    containerHeight.value = rect.height
   }
   
   // Add global keyboard listener

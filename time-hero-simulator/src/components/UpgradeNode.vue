@@ -9,7 +9,8 @@
         'node-locked': isLocked,
         'node-owned': isOwned,
         'node-selected': isSelected,
-        'node-hovered': isHovered
+        'node-hovered': isHovered,
+        'node-placeholder': node.isPlaceholder
       }
     ]"
     :style="cardStyle"
@@ -97,6 +98,11 @@ const cardStyle = computed(() => ({
 
 // Area-based icon mapping
 const areaIcon = computed(() => {
+  // Special icon for placeholder nodes
+  if (props.node.isPlaceholder) {
+    return '📋'
+  }
+  
   const areaIcons = {
     energy: '⚡',
     water: '💧',
@@ -369,4 +375,31 @@ const handleMouseLeave = () => {
 .source-carpenter .card-header { border-bottom: 1px solid #f97316; }
 .source-skills_trainer .card-header { border-bottom: 1px solid #8b5cf6; }
 .source-vendor .card-header { border-bottom: 1px solid #6b7280; }
+
+/* Placeholder node styling */
+.node-placeholder {
+  border: 2px dashed #64748b !important;
+  background: rgba(100, 116, 139, 0.2) !important;
+  opacity: 0.7;
+}
+
+.node-placeholder .card-header {
+  background: rgba(100, 116, 139, 0.3);
+  border-bottom: 1px dashed #64748b;
+}
+
+.node-placeholder .node-title {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.node-placeholder .node-description {
+  color: #64748b;
+  font-size: 10px;
+}
+
+.node-placeholder .node-icon::before {
+  content: "📋";
+  opacity: 0.6;
+}
 </style>

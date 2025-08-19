@@ -36,55 +36,88 @@ export function useUpgradeInteractions(containerRef) {
 
   // Computed transform string for CSS
   const transformStyle = computed(() => {
-    return `translate(${viewTransform.value.panX}px, ${viewTransform.value.panY}px) scale(${viewTransform.value.zoom})`
+    const style = `translate(${viewTransform.value.panX}px, ${viewTransform.value.panY}px) scale(${viewTransform.value.zoom})`
+    console.log('🎯 transformStyle computed:', style)
+    console.log('🎯 viewTransform values:', {
+      zoom: viewTransform.value.zoom,
+      panX: viewTransform.value.panX,
+      panY: viewTransform.value.panY
+    })
+    return style
   })
 
   /**
-   * Mouse wheel handler for zoom and pan
+   * Mouse wheel handler for zoom
+   * Note: Regular scrolling is handled by the container's native scroll
    */
   const handleWheel = (event) => {
-    event.preventDefault()
-    
+    // Only handle zoom (Ctrl/Cmd + wheel)
     if (event.ctrlKey || event.metaKey) {
-      // Zoom
+      event.preventDefault()
       handleZoom(event.deltaY, event.clientX, event.clientY)
-    } else if (event.shiftKey) {
-      // Horizontal pan
-      handlePan(-event.deltaY * settings.value.panSensitivity, 0)
-    } else {
-      // Vertical pan
-      handlePan(-event.deltaX * settings.value.panSensitivity, -event.deltaY * settings.value.panSensitivity)
     }
+    // Let all other scrolling be handled natively by the container
   }
 
   /**
    * Handle zoom operation
    */
   const handleZoom = (delta, centerX, centerY) => {
+    console.log('handleZoom called with:', { delta, centerX, centerY })
+    
     const container = containerRef.value
-    if (!container) return
+    console.log('container:', container)
+    
+    if (!container) {
+      console.log('No container, returning early')
+      return
+    }
 
     const rect = container.getBoundingClientRect()
+    console.log('container rect:', rect)
+    
     const zoomPoint = {
       x: centerX - rect.left,
       y: centerY - rect.top
     }
+    console.log('zoomPoint:', zoomPoint)
 
     const zoomFactor = 1 - (delta * settings.value.zoomSensitivity * 0.01)
+    console.log('zoomFactor:', zoomFactor)
+    console.log('current zoom:', viewTransform.value.zoom)
+    
     const newZoom = Math.max(
       settings.value.minZoom,
       Math.min(settings.value.maxZoom, viewTransform.value.zoom * zoomFactor)
     )
+    console.log('newZoom:', newZoom)
+    console.log('zoom limits:', { min: settings.value.minZoom, max: settings.value.maxZoom })
 
     if (newZoom !== viewTransform.value.zoom) {
+      console.log('Applying zoom change from', viewTransform.value.zoom, 'to', newZoom)
+      
       // Calculate new pan to keep zoom point stable
       const zoomRatio = newZoom / viewTransform.value.zoom
       const newPanX = zoomPoint.x - (zoomPoint.x - viewTransform.value.panX) * zoomRatio
       const newPanY = zoomPoint.y - (zoomPoint.y - viewTransform.value.panY) * zoomRatio
 
+      console.log('old transform:', {
+        zoom: viewTransform.value.zoom,
+        panX: viewTransform.value.panX,
+        panY: viewTransform.value.panY
+      })
+      
       viewTransform.value.zoom = newZoom
       viewTransform.value.panX = newPanX
       viewTransform.value.panY = newPanY
+      
+      console.log('new transform:', {
+        zoom: viewTransform.value.zoom,
+        panX: viewTransform.value.panX,
+        panY: viewTransform.value.panY
+      })
+    } else {
+      console.log('No zoom change needed')
     }
   }
 
@@ -106,6 +139,9 @@ export function useUpgradeInteractions(containerRef) {
    */
   const handleMouseDown = (event) => {
     if (event.button !== 0) return // Only left mouse button
+    
+    // Only enable drag-to-pan when zoomed
+    if (viewTransform.value.zoom === 1.0) return
 
     isDragging.value = true
     dragStart.value = { x: event.clientX, y: event.clientY }
@@ -262,39 +298,76 @@ export function useUpgradeInteractions(containerRef) {
    * Programmatic zoom controls
    */
   const zoomIn = (centerPoint) => {
+    console.log('zoomIn called', centerPoint)
     const center = centerPoint || getViewportCenter()
+    console.log('zoomIn center:', center)
     handleZoom(-100, center.x, center.y)
   }
 
   const zoomOut = (centerPoint) => {
+    console.log('zoomOut called', centerPoint)
     const center = centerPoint || getViewportCenter()
+    console.log('zoomOut center:', center)
     handleZoom(100, center.x, center.y)
   }
 
   const resetView = () => {
-    viewTransform.value.zoom = 1.0
-    viewTransform.value.panX = 0
-    viewTransform.value.panY = 0
+    console.log('resetView called')
+      console.log('resetView old transform:', {
+        zoom: viewTransform.value.zoom,
+        panX: viewTransform.value.panX,
+        panY: viewTransform.value.panY
+      })
+      viewTransform.value.zoom = 1.0
+      viewTransform.value.panX = 0
+      viewTransform.value.panY = 0
+      console.log('resetView new transform:', {
+        zoom: viewTransform.value.zoom,
+        panX: viewTransform.value.panX,
+        panY: viewTransform.value.panY
+      })    // Force a DOM check
+    setTimeout(() => {
+      const container = containerRef.value
+      if (container) {
+        const svg = container.querySelector('svg')
+        if (svg) {
+          console.log('🔍 SVG transform after reset:', svg.style.transform)
+          console.log('🔍 SVG computed style:', window.getComputedStyle(svg).transform)
+        }
+      }
+    }, 100)
   }
 
   const fitToContent = (contentBounds) => {
-    if (!containerRef.value || !contentBounds) return
+    console.log('fitToContent called with bounds:', contentBounds)
+    
+    if (!containerRef.value || !contentBounds) {
+      console.log('fitToContent early return - no container or bounds')
+      return
+    }
 
     const container = containerRef.value
     const containerRect = container.getBoundingClientRect()
+    console.log('fitToContent containerRect:', containerRect)
     
     const scaleX = containerRect.width / contentBounds.width
     const scaleY = containerRect.height / contentBounds.height
     const scale = Math.min(scaleX, scaleY, settings.value.maxZoom) * 0.9 // 90% to add padding
+    console.log('fitToContent scales:', { scaleX, scaleY, finalScale: scale })
 
     const centerX = containerRect.width / 2
     const centerY = containerRect.height / 2
     const contentCenterX = contentBounds.x + contentBounds.width / 2
     const contentCenterY = contentBounds.y + contentBounds.height / 2
+    console.log('fitToContent centers:', { centerX, centerY, contentCenterX, contentCenterY })
 
+    console.log('fitToContent old transform:', viewTransform.value)
+    
     viewTransform.value.zoom = scale
     viewTransform.value.panX = centerX - contentCenterX * scale
     viewTransform.value.panY = centerY - contentCenterY * scale
+    
+    console.log('fitToContent new transform:', viewTransform.value)
   }
 
   /**

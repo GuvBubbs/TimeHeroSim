@@ -1,4 +1,4 @@
-id,name,plot_range,unlock_condition,cleanups_available,notes
+id,name,plot_range,prerequisite,cleanups_available,notes
 farm_stage_1,Starter Plot,3-8,,clear_weeds_1;clear_weeds_2,Tutorial area
 farm_stage_2,Small Hold,8-20,clear_weeds_2,collect_dead_trees;till_soil_1;clear_rocks_1;till_soil_2,No deed required
 farm_stage_3,Homestead,20-40,till_soil_2;homestead_deed,clear_boulders_1;remove_stumps_1;clear_boulders_2;remove_stumps_2;till_new_land,Requires Homestead Deed

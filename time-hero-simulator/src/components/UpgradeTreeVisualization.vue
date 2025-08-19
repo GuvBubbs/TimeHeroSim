@@ -161,15 +161,87 @@
         </g>
 
         <!-- Upgrade Nodes removed - now using HTML cards -->
+        
+        
+        <!-- Tier Grid Lines for Better Visual Structure -->
+        <g class="tier-grid" opacity="0.2">
+          <template v-for="tier in maxTierRange" :key="tier">
+            <line
+              :x1="180 + (tier * 220)"
+              :y1="0"
+              :x2="180 + (tier * 220)"
+              :y2="layout?.dimensions.height || 800"
+              stroke="#475569"
+              stroke-width="1"
+              stroke-dasharray="5,5"
+            />
+            <text
+              :x="180 + (tier * 220) + 110"
+              :y="15"
+              fill="#64748b"
+              font-size="10"
+              text-anchor="middle"
+              font-weight="bold"
+            >
+              T{{ tier }}
+            </text>
+          </template>
+        </g>
+        
+        <!-- Source Swim Lane Headers -->
+        <g class="source-headers">
+          <template v-for="(section, sourceId) in layout?.sourceSections || {}" :key="sourceId">
+            <rect
+              :x="0"
+              :y="section.y"
+              :width="160"
+              :height="section.height"
+              :fill="section.color"
+              opacity="0.1"
+              stroke="none"
+            />
+            <rect
+              :x="10"
+              :y="section.y + 5"
+              :width="150"
+              :height="30"
+              :fill="section.color"
+              opacity="0.8"
+              rx="4"
+            />
+            <text
+              :x="85"
+              :y="section.y + 15"
+              fill="white"
+              font-size="10"
+              font-weight="bold"
+              text-anchor="middle"
+              dominant-baseline="middle"
+            >
+              {{ section.icon }}
+            </text>
+            <text
+              :x="85"
+              :y="section.y + 27"
+              fill="white"
+              font-size="8"
+              text-anchor="middle"
+              dominant-baseline="middle"
+            >
+              {{ section.name }}
+            </text>
+          </template>
+        </g>
+        
         <!-- Debug: Show total nodes count -->
         <text x="20" y="30" fill="white" font-size="12">
-          Debug: {{ Object.keys(filteredLayout?.nodes || {}).length }} nodes, Layout: {{ layout ? 'loaded' : 'loading' }}
+          Nodes: {{ Object.keys(filteredLayout?.nodes || {}).length }} | 
+          Edges: {{ (filteredLayout?.edges || []).length }} |
+          Sources: {{ Object.keys(layout?.sourceSections || {}).length }}
         </text>
         <text x="20" y="50" fill="white" font-size="10">
-          Raw Layout Nodes: {{ layout ? Object.keys(layout.nodes || {}).length : 0 }}
-        </text>
-        <text x="20" y="70" fill="white" font-size="10">
-          Filtered Nodes: {{ filteredLayout ? Object.keys(filteredLayout.nodes || {}).length : 0 }}
+          Root nodes: {{ Object.values(filteredLayout?.nodes || {}).filter(n => n.tier === 0).length }} |
+          Max tier: {{ maxTier }}
         </text>
       </svg>
 
@@ -292,7 +364,7 @@ import { useUpgradeInteractions } from '@/composables/useUpgradeInteractions.js'
 import { useGameValuesStore } from '@/stores/gameValues.js'
 import { getSourceConfig, SOURCES, AREAS } from '@/utils/treeLayoutEngine.js'
 import UpgradeTooltip from './UpgradeTooltip.vue'
-import UpgradeNode from './UpgradeNode.vue'
+import UpgradeNode from './UpgradeNodeSimple.vue'
 
 const props = defineProps({
   interactive: {
@@ -366,6 +438,19 @@ const sourceConfigs = {
 const tooltip = ref({
   visible: false,
   position: { x: 0, y: 0 }
+})
+
+// Computed properties for safe tier calculations
+const maxTier = computed(() => {
+  const nodes = Object.values(filteredLayout.value?.nodes || {})
+  if (nodes.length === 0) return 0
+  return Math.max(...nodes.map(n => n.tier || 0))
+})
+
+const maxTierRange = computed(() => {
+  const max = maxTier.value
+  if (max < 0) return []
+  return Array.from({ length: max + 1 }, (_, i) => i)
 })
 
 /**

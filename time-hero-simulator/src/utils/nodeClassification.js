@@ -1,257 +1,457 @@
 /**
- * Node Classification Engine
+ * Node Classification System
  * 
- * Maps items from CSV files to sources (swim lanes) and areas (node colors)
- * for the upgrade tree visualization system.
+ * Handles classification and processing of upgrade nodes from CSV data.
+ * Converts raw CSV data into structured upgrade nodes with proper
+ * source and area classification.
  */
 
 /**
- * Determine which source (swim lane) an item belongs to
+ * Main function to process all nodes from CSV data
+ * This is the primary export that importers.js expects
  */
-export function classifySource(item, csvSource) {
-  // Direct town vendor mappings with camelCase to match SOURCES
-  const townMappings = {
-    'townBlacksmith': 'blacksmith',
-    'townAgronomist': 'agronomist', 
-    'townLandSteward': 'landSteward',
-    'townCarpenter': 'carpenter',
-    'townSkillsTrainer': 'skillsTrainer',
-    'townMaterialTrader': 'vendor'
-  }
+export function processAllNodes(csvData) {
+  console.log('🔄 Processing all nodes from CSV data...', Object.keys(csvData))
   
-  if (townMappings[csvSource]) {
-    return townMappings[csvSource]
-  }
+  const allNodes = {}
   
-  // Logical mappings for other files to main game screens and vendors
-  const sourceMappings = {
-    // Main Game Screens
-    'crops': 'farm',
-    'farmProjects': 'farm', 
-    'farmStages': 'farm',
-    
-    'adventures': 'adventure',
-    'xpProgression': 'adventure',
-    
-    'forgeCrafting': 'forge',
-    'weapons': 'forge',
-    
-    'mining': 'mine',
-    
-    'towerLevels': 'tower',
-    
-    // Fallback to Town Vendors
-    'phaseTransitions': 'landSteward',
-    'vendors': 'vendor',
-    'bossMaterials': 'vendor'
-  }
-  
-  return sourceMappings[csvSource] || 'vendor' // Default fallback
-}
-
-/**
- * Determine which area (node color) an item belongs to
- */
-export function classifyArea(item, csvSource) {
-  // Type-based classification (most specific)
-  if (item.type) {
-    const typeMappings = {
-      'energy_storage': 'energy',
-      'water_system': 'water', 
-      'tool': 'forge',
-      'weapon': 'forge',
-      'adventure': 'hero',
-      'crop': 'energy',
-      'building': 'housing',
-      'tower': 'tower',
-      'material': 'materials',
-      'deed': 'deeds',
-      'skill': 'hero'
+  // Process each CSV file
+  Object.entries(csvData).forEach(([filename, data]) => {
+    if (!data || data.length === 0) {
+      console.warn(`⚠️ No data in ${filename}`)
+      return
     }
     
-    if (typeMappings[item.type]) {
-      return typeMappings[item.type]
-    }
-  }
-  
-  // Category-based classification  
-  if (item.category) {
-    const categoryMappings = {
-      'energy': 'energy',
-      'water': 'water',
-      'forge': 'forge', 
-      'combat': 'forge',
-      'housing': 'housing',
-      'tower': 'tower',
-      'storage': 'storage',
-      'materials': 'materials',
-      'deeds': 'deeds',
-      'hero': 'hero'
-    }
+    console.log(`📊 Processing ${filename}: ${data.length} rows`)
     
-    if (categoryMappings[item.category]) {
-      return categoryMappings[item.category]
-    }
-  }
-  
-  // CSV source-based fallback classification
-  const sourceMappings = {
-    'town_blacksmith': 'forge',
-    'town_agronomist': 'energy',
-    'town_land_steward': 'deeds', 
-    'town_carpenter': 'housing',
-    'town_skills_trainer': 'hero',
-    'town_material_trader': 'materials',
-    'forge_crafting': 'forge',
-    'farm_projects': 'energy',
-    'farm_stages': 'deeds',
-    'adventures': 'hero',
-    'crops': 'energy',
-    'mining': 'materials',
-    'weapons': 'forge',
-    'tower_levels': 'tower',
-    'vendors': 'materials',
-    'boss_materials': 'materials',
-    'xp_progression': 'hero',
-    'phase_transitions': 'deeds'
-  }
-  
-  return sourceMappings[csvSource] || 'materials' // Default fallback
-}
-
-/**
- * Parse prerequisite string into array of dependencies
- */
-export function parsePrerequisites(prerequisiteField) {
-  if (!prerequisiteField || prerequisiteField.trim() === '') {
-    return []
-  }
-  
-  // Handle semicolon-separated prerequisites
-  return prerequisiteField
-    .split(';')
-    .map(req => req.trim())
-    .filter(req => req.length > 0)
-}
-
-/**
- * Parse materials string into object
- * Format: "wood:5;stone:3" -> { wood: 5, stone: 3 }
- */
-export function parseMaterials(materialsField) {
-  if (!materialsField || materialsField.trim() === '') {
-    return {}
-  }
-  
-  const materials = {}
-  const pairs = materialsField.split(';')
-  
-  pairs.forEach(pair => {
-    const [material, amount] = pair.split(':').map(s => s.trim())
-    if (material && amount) {
-      materials[material.toLowerCase()] = parseInt(amount) || 1
-    }
-  })
-  
-  return materials
-}
-
-/**
- * Extract cost information from CSV item
- */
-export function extractCosts(item) {
-  // Handle various cost field naming conventions
-  const gold = item.goldCost || item.gold_cost || item.cost || 0
-  const energy = item.energyCost || item.energy_cost || item.build_energy || 0
-  
-  // Parse materials from string format
-  const materials = parseMaterials(item.materials)
-  const bossMaterials = parseMaterials(item.boss_materials || item.bossMaterials)
-  
-  return {
-    gold: parseInt(gold) || 0,
-    energy: parseInt(energy) || 0,
-    materials,
-    bossMaterials
-  }
-}
-
-/**
- * Create a unified node object from CSV item
- */
-export function createNode(item, csvSource, index) {
-  const source = classifySource(item, csvSource)
-  const area = classifyArea(item, csvSource)
-  const prerequisites = parsePrerequisites(item.prerequisite || item.prerequisite_blueprint || '')
-  const costs = extractCosts(item)
-  
-  // Create a unique ID by combining csvSource with item id if needed
-  const nodeId = item.id || `${csvSource}_${index}`
-  
-  return {
-    id: nodeId,
-    name: item.name || 'Unnamed Item',
-    description: item.description || item.effect || '', // Use description or effect field
-    effect: item.effect || '',
-    source: source,
-    area: area,
-    category: item.category || 'general', // Preserve category field
-    vendor: item.vendor || source, // Vendor info for tooltip
-    costs: costs, // Structured cost information
-    prerequisites: prerequisites,
-    csvSource: csvSource,
-    rawData: { ...item }, // Clone the original data
-    position: { x: 0, y: 0 }, // Will be calculated by layout engine
-    isAvailable: prerequisites.length === 0, // Simple initial logic
-    isLocked: prerequisites.length > 0
-  }
-}
-
-/**
- * Process all CSV data into unified node structure
- */
-export function processAllNodes(allCsvData) {
-  const nodes = []
-  const excludedSources = new Set([
-    // Combat tab exclusions
-    'armor_base', 'armor_effects', 'armor_potential',
-    'enemy_types_damage', 'route_loot_table', 'route_wave_composition',
-    // Tools & refinement exclusions  
-    'tools', 'material_refinement',
-    // Helper/gnome exclusions
-    'helpers', 'gnome_roles', 'helper_roles',
-    'farm_cleanups' // Also excluded based on user criteria
-  ])
-  
-  for (const [csvSource, csvData] of Object.entries(allCsvData)) {
-    if (excludedSources.has(csvSource) || !Array.isArray(csvData)) {
-      console.log(`⏭️ Skipping ${csvSource}:`, { excluded: excludedSources.has(csvSource), isArray: Array.isArray(csvData) })
-      continue
-    }
-    
-    console.log(`🔍 Processing ${csvSource}:`, { rows: csvData.length, sampleItem: csvData[0] })
-    
-    csvData.forEach((item, index) => {
-      if (item && item.id) { // Only include items with IDs
-        const node = createNode(item, csvSource, index)
-        nodes.push(node)
-      } else {
-        console.log(`⚠️ Skipping item in ${csvSource}[${index}]:`, { hasItem: !!item, hasId: !!(item && item.id), item: item })
+    data.forEach((row, index) => {
+      try {
+        const node = createNode(row, filename)
+        if (node && node.id) {
+          allNodes[node.id] = node
+          console.log(`  ✅ Created node: ${node.id} (${node.name})`)
+        }
+      } catch (error) {
+        console.error(`❌ Error processing row ${index} in ${filename}:`, error, row)
       }
     })
-  }
-  
-  console.log('🔧 Node classification complete:', {
-    totalNodes: nodes.length,
-    sourceBreakdown: nodes.reduce((acc, node) => {
-      acc[node.source] = (acc[node.source] || 0) + 1
-      return acc
-    }, {}),
-    areaBreakdown: nodes.reduce((acc, node) => {
-      acc[node.area] = (acc[node.area] || 0) + 1  
-      return acc
-    }, {})
   })
   
-  return nodes
+  console.log(`✅ Processed ${Object.keys(allNodes).length} total nodes`)
+  
+  // Create placeholder nodes for missing prerequisites
+  const createdPlaceholders = createMissingPrerequisiteNodes(allNodes)
+  console.log(`🔧 Created ${createdPlaceholders} placeholder nodes for missing prerequisites`)
+  
+  return allNodes
+}
+
+/**
+ * Create a unified node structure from CSV row data
+ */
+export function createNode(row, filename) {
+  if (!row || typeof row !== 'object') {
+    console.warn('Invalid row data:', row)
+    return null
+  }
+  
+  // Extract basic info
+  const id = row.id || row.item_id || row.name || `${filename}_${Math.random().toString(36).substr(2, 9)}`
+  const name = row.name || row.item_name || id
+  const description = row.description || row.effect || ''
+  
+  // Classify source and area
+  const source = classifySource(filename, row)
+  const area = classifyArea(row, filename)
+  
+  // Parse costs
+  const costs = parseCosts(row)
+  
+  // Parse prerequisites 
+  const prerequisites = parsePrerequisites(row)
+  
+  // Create unified node
+  const node = {
+    id: String(id),
+    name: String(name),
+    description: String(description),
+    source: source,
+    area: area,
+    costs: costs,
+    prerequisites: prerequisites,
+    filename: filename,
+    originalData: { ...row }
+  }
+  
+  return node
+}
+
+/**
+ * Classify the source (where you buy/get the upgrade)
+ */
+export function classifySource(filename, row) {
+  const file = filename.toLowerCase()
+  
+  // Town vendors - check for 'town_' prefix first
+  if (file.includes('town_blacksmith')) return 'blacksmith'
+  if (file.includes('town_agronomist')) return 'agronomist'  
+  if (file.includes('town_land_steward')) return 'landSteward'
+  if (file.includes('town_carpenter')) return 'carpenter'
+  if (file.includes('town_skills_trainer')) return 'skillsTrainer'
+  if (file.includes('town_material_trader')) return 'vendor'
+  
+  // Then check for generic vendor names
+  if (file.includes('blacksmith')) return 'blacksmith'
+  if (file.includes('agronomist')) return 'agronomist'  
+  if (file.includes('land_steward')) return 'landSteward'
+  if (file.includes('carpenter')) return 'carpenter'
+  if (file.includes('skills_trainer')) return 'skillsTrainer'
+  if (file.includes('material_trader')) return 'vendor'
+  
+  // Game screens
+  if (file.includes('crop')) return 'farm'
+  if (file.includes('farm')) return 'farm'
+  if (file.includes('adventure')) return 'adventure'
+  if (file.includes('forge')) return 'forge'
+  if (file.includes('mining') || file.includes('mine')) return 'mine'
+  if (file.includes('tower')) return 'tower'
+  if (file.includes('weapon')) return 'forge'
+  if (file.includes('armor')) return 'forge'
+  if (file.includes('combat')) return 'adventure'
+  if (file.includes('tools')) return 'forge'
+  
+  // Default
+  return 'unknown'
+}
+
+/**
+ * Classify the area (what part of the game the upgrade affects)
+ */
+export function classifyArea(row, filename) {
+  const name = (row.name || '').toLowerCase()
+  const desc = (row.description || row.effect || '').toLowerCase()
+  const file = filename.toLowerCase()
+  
+  // Energy systems
+  if (name.includes('energy') || desc.includes('energy') || 
+      name.includes('power') || desc.includes('power')) {
+    return 'energy'
+  }
+  
+  // Water systems
+  if (name.includes('water') || desc.includes('water') ||
+      name.includes('irrigation') || desc.includes('irrigation')) {
+    return 'water'
+  }
+  
+  // Forge & Combat
+  if (file.includes('weapon') || file.includes('armor') || 
+      name.includes('sword') || name.includes('armor') ||
+      desc.includes('damage') || desc.includes('defense')) {
+    return 'forge'
+  }
+  
+  // Hero Development
+  if (name.includes('skill') || desc.includes('skill') ||
+      name.includes('training') || desc.includes('training') ||
+      file.includes('skills_trainer')) {
+    return 'hero'
+  }
+  
+  // Housing & Buildings
+  if (name.includes('house') || name.includes('building') ||
+      desc.includes('house') || desc.includes('building')) {
+    return 'housing'
+  }
+  
+  // Tower & Defense
+  if (file.includes('tower') || name.includes('tower') ||
+      name.includes('defense') || desc.includes('defense')) {
+    return 'tower'
+  }
+  
+  // Storage & Logistics
+  if (name.includes('storage') || name.includes('warehouse') ||
+      desc.includes('storage') || desc.includes('capacity')) {
+    return 'storage'
+  }
+  
+  // Materials & Resources
+  if (file.includes('mining') || name.includes('ore') ||
+      name.includes('material') || desc.includes('material')) {
+    return 'materials'
+  }
+  
+  // Deeds & Property
+  if (file.includes('land_steward') || name.includes('deed') ||
+      name.includes('land') || desc.includes('land')) {
+    return 'deeds'
+  }
+  
+  // Default to energy for crops/farm items
+  if (file.includes('crop') || file.includes('farm')) {
+    return 'energy'
+  }
+  
+  return 'materials' // Default fallback
+}
+
+/**
+ * Parse cost information from row data
+ */
+export function parseCosts(row) {
+  const costs = {}
+  
+  // Gold cost
+  if (row.gold_cost || row.cost || row.price) {
+    costs.gold = parseInt(row.gold_cost || row.cost || row.price) || 0
+  }
+  
+  // Energy cost
+  if (row.energy_cost || row.energy) {
+    costs.energy = parseInt(row.energy_cost || row.energy) || 0
+  }
+  
+  // Material costs (look for various material fields)
+  const materials = {}
+  Object.keys(row).forEach(key => {
+    if (key.includes('material') && row[key]) {
+      const materialName = key.replace('_cost', '').replace('material_', '')
+      materials[materialName] = parseInt(row[key]) || 0
+    }
+  })
+  
+  if (Object.keys(materials).length > 0) {
+    costs.materials = materials
+  }
+  
+  return Object.keys(costs).length > 0 ? costs : null
+}
+
+/**
+ * Parse prerequisite information from row data
+ */
+export function parsePrerequisites(row) {
+  const prerequisites = []
+  
+  // Handle prerequisite field with semicolon separation
+  if (row.prerequisite) {
+    const prereqs = String(row.prerequisite)
+      .split(';')  // Changed from ',' to ';'
+      .map(p => p.trim())
+      .filter(p => p && p !== '')
+    prerequisites.push(...prereqs)
+  }
+  
+  // Handle prerequisites field (keeping comma for backward compatibility)
+  if (row.prerequisites) {
+    const prereqs = String(row.prerequisites)
+      .split(/[,;]/)  // Support both comma and semicolon
+      .map(p => p.trim())
+      .filter(p => p && p !== '')
+    prerequisites.push(...prereqs)
+  }
+  
+  if (row.requires) {
+    const requires = String(row.requires)
+      .split(/[,;]/)  // Support both comma and semicolon
+      .map(p => p.trim())
+      .filter(p => p && p !== '')
+    prerequisites.push(...requires)
+  }
+  
+  // Look for unlock conditions
+  if (row.unlock_condition) {
+    const prereqs = String(row.unlock_condition)
+      .split(/[,;]/)  // Support both comma and semicolon
+      .map(p => p.trim())
+      .filter(p => p && p !== '')
+    prerequisites.push(...prereqs)
+  }
+  
+  return prerequisites.length > 0 ? prerequisites : []
+}
+
+/**
+ * Validate node structure
+ */
+export function validateNode(node) {
+  if (!node || typeof node !== 'object') {
+    return false
+  }
+  
+  if (!node.id || !node.name) {
+    return false
+  }
+  
+  return true
+}
+
+/**
+ * Get all valid sources
+ */
+export function getAllSources() {
+  return [
+    'farm', 'adventure', 'forge', 'mine', 'tower',
+    'blacksmith', 'agronomist', 'landSteward', 'carpenter', 'skillsTrainer', 'vendor'
+  ]
+}
+
+/**
+ * Get all valid areas
+ */
+export function getAllAreas() {
+  return [
+    'energy', 'water', 'forge', 'hero', 'housing', 
+    'tower', 'storage', 'materials', 'deeds'
+  ]
+}
+
+/**
+ * Create placeholder nodes for missing prerequisites
+ * @param {Object} allNodes - Current nodes object
+ * @returns {number} Number of placeholder nodes created
+ */
+function createMissingPrerequisiteNodes(allNodes) {
+  const missingPrereqs = new Set()
+  let placeholdersCreated = 0
+  
+  // Collect all referenced prerequisites
+  Object.values(allNodes).forEach(node => {
+    if (node.prerequisites && node.prerequisites.length > 0) {
+      node.prerequisites.forEach(prereqId => {
+        if (!allNodes[prereqId] && !missingPrereqs.has(prereqId)) {
+          missingPrereqs.add(prereqId)
+        }
+      })
+    }
+  })
+  
+  console.log(`🔍 Found ${missingPrereqs.size} missing prerequisites:`, Array.from(missingPrereqs).sort())
+  
+  // Create placeholder nodes for missing prerequisites
+  missingPrereqs.forEach(prereqId => {
+    const placeholderNode = createPlaceholderNode(prereqId)
+    allNodes[prereqId] = placeholderNode
+    placeholdersCreated++
+    console.log(`  🆕 Created placeholder: ${prereqId} (${placeholderNode.source})`)
+  })
+  
+  return placeholdersCreated
+}
+
+/**
+ * Create a placeholder node for a missing prerequisite
+ * @param {string} prereqId - The missing prerequisite ID
+ * @returns {Object} Placeholder node
+ */
+function createPlaceholderNode(prereqId) {
+  // Determine source and area based on ID patterns
+  const source = classifyPlaceholderSource(prereqId)
+  const area = classifyPlaceholderArea(prereqId)
+  
+  return {
+    id: prereqId,
+    name: formatPlaceholderName(prereqId),
+    description: `Missing prerequisite: ${prereqId}`,
+    source: source,
+    area: area,
+    costs: null,
+    prerequisites: [],
+    filename: 'placeholder',
+    originalData: { id: prereqId, placeholder: true },
+    isPlaceholder: true
+  }
+}
+
+/**
+ * Classify source for placeholder nodes based on ID patterns
+ * @param {string} prereqId - The prerequisite ID
+ * @returns {string} Source classification
+ */
+function classifyPlaceholderSource(prereqId) {
+  // Farm-related patterns
+  if (prereqId.includes('clear_weeds') || prereqId.includes('till_') || 
+      prereqId.includes('terraform') || prereqId.includes('sacred_clearing') ||
+      prereqId.includes('homestead') || prereqId.includes('manor') || 
+      prereqId.includes('estate')) {
+    return 'farm'
+  }
+  
+  // Tower-related patterns
+  if (prereqId.includes('reach_') || prereqId.includes('tower_') ||
+      prereqId.includes('tower_built')) {
+    return 'tower'
+  }
+  
+  // Helper-related patterns
+  if (prereqId.includes('gnome_') || prereqId.includes('helper_')) {
+    return 'skillsTrainer'
+  }
+  
+  // Anvil/forge patterns
+  if (prereqId.includes('anvil_')) {
+    return 'blacksmith'
+  }
+  
+  // Blueprint patterns
+  if (prereqId.includes('blueprint_')) {
+    return 'carpenter'
+  }
+  
+  // Default to unknown but log for investigation
+  console.warn(`🤔 Unknown placeholder source pattern for: ${prereqId}`)
+  return 'unknown'
+}
+
+/**
+ * Classify area for placeholder nodes based on ID patterns
+ * @param {string} prereqId - The prerequisite ID
+ * @returns {string} Area classification
+ */
+function classifyPlaceholderArea(prereqId) {
+  // Farm/energy related
+  if (prereqId.includes('clear_weeds') || prereqId.includes('till_') || 
+      prereqId.includes('terraform') || prereqId.includes('sacred_clearing')) {
+    return 'energy'
+  }
+  
+  // Housing/deeds related
+  if (prereqId.includes('homestead') || prereqId.includes('manor') || 
+      prereqId.includes('estate')) {
+    return 'deeds'
+  }
+  
+  // Tower/defense related
+  if (prereqId.includes('reach_') || prereqId.includes('tower_')) {
+    return 'tower'
+  }
+  
+  // Hero/helper related
+  if (prereqId.includes('gnome_') || prereqId.includes('helper_')) {
+    return 'hero'
+  }
+  
+  // Forge/materials related
+  if (prereqId.includes('anvil_') || prereqId.includes('blueprint_')) {
+    return 'forge'
+  }
+  
+  // Default to materials
+  return 'materials'
+}
+
+/**
+ * Format placeholder name for display
+ * @param {string} prereqId - The prerequisite ID
+ * @returns {string} Formatted name
+ */
+function formatPlaceholderName(prereqId) {
+  // Convert underscores to spaces and capitalize
+  return prereqId
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+    .replace(/(\d+)/, ' $1') // Add space before numbers
+    .trim()
 }

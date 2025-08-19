@@ -25,7 +25,7 @@
           </div>
         </div>
         <div class="mt-2 text-xs text-slate-500">
-          Debug: {{ Object.keys(upgrades).length }} nodes, Layout: {{ layout ? 'loaded' : 'loading' }}
+          Debug: {{ upgrades ? Object.keys(upgrades).length : 0 }} nodes, Layout: {{ layout ? 'loaded' : 'loading' }}
         </div>
       </div>
     </div>
@@ -155,8 +155,8 @@
     <!-- Upgrade Tree Visualization -->
     <div class="card">
       <div class="card-body p-0">
-        <div class="h-[600px]">
-          <UpgradeTreeVisualization
+        <div class="relative h-[80vh] min-h-[600px] overflow-auto bg-slate-900 rounded-lg">
+          <UpgradeTreeVisualizationNew
             :interactive="true"
             :edit-mode="editMode"
             @upgradeSelected="handleUpgradeSelected"
@@ -374,7 +374,7 @@
 import { ref, computed, watch } from 'vue'
 import { useGameValuesStore } from '../stores/gameValues.js'
 import { useUpgradeTree } from '../composables/useUpgradeTree.js'
-import UpgradeTreeVisualization from '../components/UpgradeTreeVisualization.vue'
+import UpgradeTreeVisualizationNew from '../components/UpgradeTreeVisualizationNew.vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import { getSourceConfig, SOURCES, AREAS } from '../utils/treeLayoutEngine.js'
 
@@ -384,7 +384,7 @@ const gameValues = useGameValuesStore()
 const editMode = ref(false)
 const selectedUpgrade = ref(null)
 const editedUpgrade = ref({})
-const filtersCollapsed = ref(false)
+const filtersCollapsed = ref(true)
 const searchTerm = ref('')
 const showNodeDetails = ref(true)
 const showTooltips = ref(true)

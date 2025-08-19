@@ -189,7 +189,7 @@ function processMiningData(rawData) {
 
 // Process helpers data specifically
 function processHelpersData(rawData) {
-  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'unlock_prerequisite', 'role_options'], 'helpers')
+  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'prerequisite', 'role_options'], 'helpers')
   
   if (validationErrors.length > 0) {
     throw new Error(`Helpers data validation failed: ${validationErrors.join(', ')}`)
@@ -533,7 +533,8 @@ export async function loadAllGameData() {
       phaseTransitions: phaseTransitionsRaw
     }
     
-    const unifiedNodes = processAllNodes(allRawCsvData)
+    const unifiedNodesObj = processAllNodes(allRawCsvData)
+    const unifiedNodes = Object.values(unifiedNodesObj) // Convert object to array
     
     // Create the final game data object
     const gameData = Object.freeze({

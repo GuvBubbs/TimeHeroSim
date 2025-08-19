@@ -1,4 +1,4 @@
-id,name,unlock_prerequisite,role_options,base_effect,level_effect,max_level,training_time_hours,notes
+id,name,prerequisite,role_options,base_effect,level_effect,max_level,training_time_hours,notes
 gnome_1,Forest Gnome,dark_forest_long,All roles,Varies by role,Varies by role,10,0.5-36,First gnome rescued from Dark Forest
 gnome_2,Mountain Gnome,mountain_pass_long,All roles,Varies by role,Varies by role,10,0.5-36,Second gnome rescued from Mountain Pass
 gnome_3,Crystal Gnome,crystal_caves_long,All roles,Varies by role,Varies by role,10,0.5-36,Third gnome rescued from Crystal Caves
