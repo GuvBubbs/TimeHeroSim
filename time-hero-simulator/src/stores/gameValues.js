@@ -11,22 +11,53 @@ import { ref, computed } from 'vue'
 export const useGameValuesStore = defineStore('gameValues', () => {
   // Immutable game data - loaded from CSV/JSON files
   const crops = ref(Object.freeze({}))
-  const upgrades = ref(Object.freeze({}))
   const adventures = ref(Object.freeze({}))
   const mining = ref(Object.freeze({}))
   const helpers = ref(Object.freeze({}))
-  const combat = ref(Object.freeze({}))
   const tools = ref(Object.freeze({}))
   const storage = ref(Object.freeze({}))
   
   // New data structures for Phase 1
   const weapons = ref(Object.freeze({}))
-  const armor = ref(Object.freeze({}))
   const helperRoles = ref(Object.freeze({}))
   const towerLevels = ref(Object.freeze({}))
   const vendors = ref(Object.freeze({}))
-  const cleanups = ref(Object.freeze({}))
   const bossMaterials = ref(Object.freeze({}))
+  
+  // Combat system data structures
+  const armorBase = ref(Object.freeze({}))
+  const armorPotential = ref(Object.freeze({}))
+  const armorEffects = ref(Object.freeze({}))
+  const routeLootTable = ref(Object.freeze({}))
+  const enemyTypesDamage = ref(Object.freeze({}))
+  const routeWaveComposition = ref(Object.freeze({}))
+  
+  // Farm system data structures
+  const farmCleanups = ref(Object.freeze({}))
+  const farmStages = ref(Object.freeze({}))
+  const farmProjects = ref(Object.freeze({}))
+  const gnomeRoles = ref(Object.freeze({}))
+  
+  // Progression and XP
+  const xpProgression = ref(Object.freeze({}))
+  
+  // Town vendor data structures
+  const townBlacksmith = ref(Object.freeze({}))
+  const townAgronomist = ref(Object.freeze({}))
+  const townCarpenter = ref(Object.freeze({}))
+  const townLandSteward = ref(Object.freeze({}))
+  const townMaterialTrader = ref(Object.freeze({}))
+  const townSkillsTrainer = ref(Object.freeze({}))
+  
+  // Crafting and refinement
+  const forgeCrafting = ref(Object.freeze({}))
+  const materialRefinement = ref(Object.freeze({}))
+  
+  // Game flow
+  const phaseTransitions = ref(Object.freeze({}))
+  
+  // Unified nodes for upgrade tree
+  const unifiedNodes = ref(Object.freeze([]))
   
   // Validation state
   const isLoaded = ref(false)
@@ -47,17 +78,6 @@ export const useGameValuesStore = defineStore('gameValues', () => {
     return levels
   })
   
-  const getUpgradesByVendor = computed(() => {
-    const vendors = {}
-    Object.values(upgrades.value).forEach(upgrade => {
-      if (!vendors[upgrade.vendor]) {
-        vendors[upgrade.vendor] = []
-      }
-      vendors[upgrade.vendor].push(upgrade)
-    })
-    return vendors
-  })
-  
   const getWeaponsByType = computed(() => {
     const types = {}
     Object.values(weapons.value).forEach(weapon => {
@@ -74,22 +94,53 @@ export const useGameValuesStore = defineStore('gameValues', () => {
     try {
       // Freeze all imported data to prevent modification
       crops.value = Object.freeze(gameData.crops || {})
-      upgrades.value = Object.freeze(gameData.upgrades || {})
       adventures.value = Object.freeze(gameData.adventures || {})
       mining.value = Object.freeze(gameData.mining || {})
       helpers.value = Object.freeze(gameData.helpers || {})
-      combat.value = Object.freeze(gameData.combat || {})
       tools.value = Object.freeze(gameData.tools || {})
       storage.value = Object.freeze(gameData.storage || {})
       
       // New data structures
       weapons.value = Object.freeze(gameData.weapons || {})
-      armor.value = Object.freeze(gameData.armor || {})
       helperRoles.value = Object.freeze(gameData.helperRoles || {})
       towerLevels.value = Object.freeze(gameData.towerLevels || {})
       vendors.value = Object.freeze(gameData.vendors || {})
-      cleanups.value = Object.freeze(gameData.cleanups || {})
       bossMaterials.value = Object.freeze(gameData.bossMaterials || {})
+      
+      // Combat system data structures
+      armorBase.value = Object.freeze(gameData.armorBase || {})
+      armorPotential.value = Object.freeze(gameData.armorPotential || {})
+      armorEffects.value = Object.freeze(gameData.armorEffects || {})
+      routeLootTable.value = Object.freeze(gameData.routeLootTable || {})
+      enemyTypesDamage.value = Object.freeze(gameData.enemyTypesDamage || {})
+      routeWaveComposition.value = Object.freeze(gameData.routeWaveComposition || {})
+      
+      // Farm system data structures
+      farmCleanups.value = Object.freeze(gameData.farmCleanups || {})
+      farmStages.value = Object.freeze(gameData.farmStages || {})
+      farmProjects.value = Object.freeze(gameData.farmProjects || {})
+      gnomeRoles.value = Object.freeze(gameData.gnomeRoles || {})
+      
+      // Progression and XP
+      xpProgression.value = Object.freeze(gameData.xpProgression || {})
+      
+      // Town vendor data structures
+      townBlacksmith.value = Object.freeze(gameData.townBlacksmith || {})
+      townAgronomist.value = Object.freeze(gameData.townAgronomist || {})
+      townCarpenter.value = Object.freeze(gameData.townCarpenter || {})
+      townLandSteward.value = Object.freeze(gameData.townLandSteward || {})
+      townMaterialTrader.value = Object.freeze(gameData.townMaterialTrader || {})
+      townSkillsTrainer.value = Object.freeze(gameData.townSkillsTrainer || {})
+      
+      // Crafting and refinement
+      forgeCrafting.value = Object.freeze(gameData.forgeCrafting || {})
+      materialRefinement.value = Object.freeze(gameData.materialRefinement || {})
+      
+      // Game flow
+      phaseTransitions.value = Object.freeze(gameData.phaseTransitions || {})
+      
+      // Unified nodes for upgrade tree
+      unifiedNodes.value = Object.freeze(gameData.unifiedNodes || [])
       
       isLoaded.value = true
       lastUpdated.value = new Date().toISOString()
@@ -97,18 +148,35 @@ export const useGameValuesStore = defineStore('gameValues', () => {
       
       console.log('Game values loaded successfully:', {
         crops: Object.keys(crops.value).length,
-        upgrades: Object.keys(upgrades.value).length,
         adventures: Object.keys(adventures.value).length,
         weapons: Object.keys(weapons.value).length,
-        armor: Object.keys(armor.value).length,
+        armorBase: Object.keys(armorBase.value).length,
+        armorPotential: Object.keys(armorPotential.value).length,
+        armorEffects: Object.keys(armorEffects.value).length,
+        routeLootTable: Object.keys(routeLootTable.value).length,
+        enemyTypesDamage: Object.keys(enemyTypesDamage.value).length,
+        routeWaveComposition: Object.keys(routeWaveComposition.value).length,
         tools: Object.keys(tools.value).length,
         helpers: Object.keys(helpers.value).length,
         helperRoles: Object.keys(helperRoles.value).length,
         mining: Object.keys(mining.value).length,
         towerLevels: Object.keys(towerLevels.value).length,
         vendors: Object.keys(vendors.value).length,
-        cleanups: Object.keys(cleanups.value).length,
-        bossMaterials: Object.keys(bossMaterials.value).length
+        bossMaterials: Object.keys(bossMaterials.value).length,
+        farmCleanups: Object.keys(farmCleanups.value).length,
+        farmStages: Object.keys(farmStages.value).length,
+        farmProjects: Object.keys(farmProjects.value).length,
+        gnomeRoles: Object.keys(gnomeRoles.value).length,
+        xpProgression: Object.keys(xpProgression.value).length,
+        townBlacksmith: Object.keys(townBlacksmith.value).length,
+        townAgronomist: Object.keys(townAgronomist.value).length,
+        townCarpenter: Object.keys(townCarpenter.value).length,
+        townLandSteward: Object.keys(townLandSteward.value).length,
+        townMaterialTrader: Object.keys(townMaterialTrader.value).length,
+        townSkillsTrainer: Object.keys(townSkillsTrainer.value).length,
+        forgeCrafting: Object.keys(forgeCrafting.value).length,
+        materialRefinement: Object.keys(materialRefinement.value).length,
+        phaseTransitions: Object.keys(phaseTransitions.value).length
       })
     } catch (error) {
       console.error('Failed to load game values:', error)
@@ -122,17 +190,17 @@ export const useGameValuesStore = defineStore('gameValues', () => {
     
     // Validate crops
     Object.entries(crops.value).forEach(([id, crop]) => {
-      if (!crop.energy || crop.energy < 0) {
-        errors.push(`Invalid energy for crop ${id}: ${crop.energy}`)
+      if (!crop.energy_per_harvest || crop.energy_per_harvest < 0) {
+        errors.push(`Invalid energy for crop ${id}: ${crop.energy_per_harvest}`)
       }
-      if (!crop.growthTime || crop.growthTime < 0) {
-        errors.push(`Invalid growth time for crop ${id}: ${crop.growthTime}`)
+      if (!crop.growth_time_min || crop.growth_time_min < 0) {
+        errors.push(`Invalid growth time for crop ${id}: ${crop.growth_time_min}`)
       }
-      if (!['early', 'mid', 'late', 'endgame'].includes(crop.tier)) {
+      if (!['Early', 'Mid', 'Late', 'Endgame'].includes(crop.tier)) {
         errors.push(`Invalid tier for crop ${id}: ${crop.tier}`)
       }
-      if (crop.seedLevel === undefined || crop.seedLevel < 0 || crop.seedLevel > 9) {
-        errors.push(`Invalid seed level for crop ${id}: ${crop.seedLevel}`)
+      if (crop.seed_level === undefined || crop.seed_level < 0 || crop.seed_level > 9) {
+        errors.push(`Invalid seed level for crop ${id}: ${crop.seed_level}`)
       }
     })
     
@@ -162,16 +230,6 @@ export const useGameValuesStore = defineStore('gameValues', () => {
       }
       if (tool.materials && !validateMaterialsFormat(tool.materials)) {
         errors.push(`Invalid materials format for tool ${id}: ${tool.materials}`)
-      }
-    })
-    
-    // Validate upgrades have proper materials format
-    Object.entries(upgrades.value).forEach(([id, upgrade]) => {
-      if (!upgrade.vendor) {
-        errors.push(`Missing vendor for upgrade ${id}`)
-      }
-      if (upgrade.materials && !validateMaterialsFormat(upgrade.materials)) {
-        errors.push(`Invalid materials format for upgrade ${id}: ${upgrade.materials}`)
       }
     })
     
@@ -254,11 +312,6 @@ export const useGameValuesStore = defineStore('gameValues', () => {
     return crops.value[cropId] || null
   }
   
-  // Get upgrade by ID with error handling
-  function getUpgrade(upgradeId) {
-    return upgrades.value[upgradeId] || null
-  }
-  
   // Get adventure route by ID
   function getAdventure(adventureId) {
     return adventures.value[adventureId] || null
@@ -270,50 +323,332 @@ export const useGameValuesStore = defineStore('gameValues', () => {
     console.log('Configuration saved')
   }
   
-  // Stub methods for GameConfiguration component
+  // Method implementations for GameConfiguration component
   function updateItemValue(category, itemId, key, value) {
     console.log('updateItemValue called:', category, itemId, key, value)
-    // TODO: Implement actual update logic
+    const dataRef = getDataRef(category)
+    if (dataRef && dataRef.value[itemId]) {
+      const updatedData = { ...dataRef.value }
+      updatedData[itemId] = { ...updatedData[itemId], [key]: value }
+      dataRef.value = Object.freeze(updatedData)
+      hasUnsavedChanges.value = true
+    }
   }
   
   function updateItem(category, itemId, updatedItem) {
     console.log('updateItem called:', category, itemId, updatedItem)
-    // TODO: Implement actual update logic
+    const dataRef = getDataRef(category)
+    if (dataRef) {
+      const updatedData = { ...dataRef.value }
+      updatedData[itemId] = { ...updatedItem }
+      dataRef.value = Object.freeze(updatedData)
+      hasUnsavedChanges.value = true
+      
+      // Save to server automatically
+      saveCategoryToServer(category)
+    }
   }
   
   function addItem(category, itemId, newItem) {
     console.log('addItem called:', category, itemId, newItem)
-    // TODO: Implement actual add logic
+    const dataRef = getDataRef(category)
+    if (dataRef) {
+      const updatedData = { ...dataRef.value }
+      updatedData[itemId] = { ...newItem }
+      dataRef.value = Object.freeze(updatedData)
+      hasUnsavedChanges.value = true
+      
+      // Save to server automatically
+      saveCategoryToServer(category)
+    }
   }
   
   function deleteItem(category, itemId) {
     console.log('deleteItem called:', category, itemId)
-    // TODO: Implement actual delete logic
+    const dataRef = getDataRef(category)
+    if (dataRef && dataRef.value[itemId]) {
+      const updatedData = { ...dataRef.value }
+      delete updatedData[itemId]
+      dataRef.value = Object.freeze(updatedData)
+      hasUnsavedChanges.value = true
+      
+      // Save to server automatically
+      saveCategoryToServer(category)
+    }
+  }
+
+  // New function to save data to server via API
+  async function saveCategoryToServer(category) {
+    const dataRef = getDataRef(category)
+    if (!dataRef) return
+
+    const items = Object.values(dataRef.value)
+    if (items.length === 0) return
+
+    // Get headers from first item or use default
+    const allKeys = new Set()
+    items.forEach(item => {
+      Object.keys(item).forEach(key => {
+        if (key !== '_csvIndex') { // Exclude internal fields
+          allKeys.add(key)
+        }
+      })
+    })
+
+    const headers = Array.from(allKeys)
+    
+    // Create CSV content
+    let csvContent = headers.join(',') + '\n'
+    
+    // Sort by _csvIndex if available to maintain order
+    const sortedItems = items.sort((a, b) => {
+      if (a._csvIndex !== undefined && b._csvIndex !== undefined) {
+        return a._csvIndex - b._csvIndex
+      }
+      if (a._csvIndex !== undefined) return -1
+      if (b._csvIndex !== undefined) return 1
+      return (a.id || '').localeCompare(b.id || '')
+    })
+    
+    sortedItems.forEach(item => {
+      const row = headers.map(key => {
+        let value = item[key] || ''
+        // Escape commas and quotes in CSV
+        if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
+          value = '"' + value.replace(/"/g, '""') + '"'
+        }
+        return value
+      })
+      csvContent += row.join(',') + '\n'
+    })
+
+    try {
+      const response = await fetch('/api/save-csv', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filename: `${category}.csv`,
+          content: csvContent
+        })
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        console.log(`✅ ${result.message}`)
+        hasUnsavedChanges.value = false
+      } else {
+        const error = await response.json()
+        console.error('Failed to save CSV:', error.error)
+      }
+    } catch (error) {
+      console.error('Error saving to server:', error)
+    }
+  }
+
+  // Helper function to get the correct data ref
+  function getDataRef(category) {
+    const dataRefs = {
+      crops,
+      adventures,
+      mining,
+      helpers,
+      tools,
+      storage,
+      weapons,
+      armorBase,
+      armorPotential,
+      armorEffects,
+      routeLootTable,
+      enemyTypesDamage,
+      routeWaveComposition,
+      helperRoles,
+      towerLevels,
+      vendors,
+      bossMaterials,
+      farmCleanups,
+      farmStages,
+      farmProjects,
+      gnomeRoles,
+      xpProgression,
+      townBlacksmith,
+      townAgronomist,
+      townCarpenter,
+      townLandSteward,
+      townMaterialTrader,
+      townSkillsTrainer,
+      forgeCrafting,
+      materialRefinement,
+      phaseTransitions
+    }
+    return dataRefs[category]
+  }
+
+  // CSV Export functions
+  function exportCategoryAsCSV(category) {
+    const dataRef = getDataRef(category)
+    if (!dataRef || !dataRef.value) {
+      console.error('No data found for category:', category)
+      return
+    }
+
+    const items = Object.values(dataRef.value)
+    if (items.length === 0) {
+      console.error('No items found for category:', category)
+      return
+    }
+
+    // Get all unique keys from all items
+    const allKeys = new Set()
+    items.forEach(item => {
+      Object.keys(item).forEach(key => {
+        if (key !== '_csvIndex') { // Exclude internal fields
+          allKeys.add(key)
+        }
+      })
+    })
+
+    const headers = Array.from(allKeys)
+    
+    // Create CSV content
+    let csvContent = headers.join(',') + '\n'
+    
+    // Sort items by _csvIndex to maintain original order, then by id
+    const sortedItems = items.sort((a, b) => {
+      if (a._csvIndex !== undefined && b._csvIndex !== undefined) {
+        return a._csvIndex - b._csvIndex
+      }
+      if (a._csvIndex !== undefined) return -1
+      if (b._csvIndex !== undefined) return 1
+      return (a.id || '').localeCompare(b.id || '')
+    })
+    
+    sortedItems.forEach(item => {
+      const row = headers.map(key => {
+        let value = item[key] || ''
+        // Escape commas and quotes in CSV
+        if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
+          value = '"' + value.replace(/"/g, '""') + '"'
+        }
+        return value
+      })
+      csvContent += row.join(',') + '\n'
+    })
+
+    // Download the CSV file
+    downloadCSV(csvContent, `${category}.csv`)
   }
   
   function exportItemsAsCSV(category, items) {
     console.log('exportItemsAsCSV called:', category, items)
-    // TODO: Implement CSV export
+    
+    if (!items || items.length === 0) {
+      console.error('No items to export')
+      return
+    }
+
+    // Get all unique keys from all items
+    const allKeys = new Set()
+    items.forEach(item => {
+      Object.keys(item).forEach(key => {
+        if (key !== '_csvIndex') { // Exclude internal fields
+          allKeys.add(key)
+        }
+      })
+    })
+
+    const headers = Array.from(allKeys)
+    
+    // Create CSV content
+    let csvContent = headers.join(',') + '\n'
+    
+    items.forEach(item => {
+      const row = headers.map(key => {
+        let value = item[key] || ''
+        // Escape commas and quotes in CSV
+        if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
+          value = '"' + value.replace(/"/g, '""') + '"'
+        }
+        return value
+      })
+      csvContent += row.join(',') + '\n'
+    })
+
+    // Download the CSV file
+    downloadCSV(csvContent, `${category}_export.csv`)
+  }
+
+  function downloadCSV(csvContent, filename) {
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', filename)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
   }
   
   function resetToDefaults() {
     console.log('resetToDefaults called')
-    // TODO: Reload from CSV files
+    // Reload from original CSV files
+    window.location.reload()
   }
   
   function exportAllAsCSV() {
     console.log('exportAllAsCSV called')
-    // TODO: Export all data as CSV
+    const categories = [
+      'crops', 'adventures', 'mining', 'helpers', 'tools', 'storage',
+      'weapons', 'armorBase', 'armorPotential', 'armorEffects', 'routeLootTable', 'enemyTypesDamage', 'routeWaveComposition',
+      'helperRoles', 'towerLevels', 'vendors', 'bossMaterials',
+      'farmCleanups', 'farmStages', 'farmProjects', 'gnomeRoles', 'xpProgression',
+      'townBlacksmith', 'townAgronomist', 'townCarpenter', 'townLandSteward', 
+      'townMaterialTrader', 'townSkillsTrainer', 'forgeCrafting', 'materialRefinement', 'phaseTransitions'
+    ]
+    
+    categories.forEach(category => {
+      const dataRef = getDataRef(category)
+      if (dataRef && dataRef.value && Object.keys(dataRef.value).length > 0) {
+        exportCategoryAsCSV(category)
+      }
+    })
   }
   
   function importFromCSV(category, file) {
     console.log('importFromCSV called:', category, file)
-    // TODO: Import CSV file
+    // TODO: Implement CSV import functionality
+    // This would require parsing the CSV and updating the data
+    console.log('CSV import not yet implemented')
   }
   
   function saveConfigurationSet(name) {
     console.log('saveConfigurationSet called:', name)
-    // TODO: Save configuration set
+    // Save all current data as a named configuration
+    const configData = {
+      name,
+      timestamp: new Date().toISOString(),
+      data: {
+        crops: crops.value,
+        adventures: adventures.value,
+        // ... include all other data
+      }
+    }
+    
+    // Download as JSON
+    const jsonContent = JSON.stringify(configData, null, 2)
+    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `config_${name}_${Date.now()}.json`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
   }
   
   function updateUpgrade(upgradeId, updatedData) {
@@ -334,20 +669,37 @@ export const useGameValuesStore = defineStore('gameValues', () => {
   return {
     // State
     crops,
-    upgrades,
     adventures,
     mining,
     helpers,
-    combat,
     tools,
     storage,
     weapons,
-    armor,
+    armorBase,
+    armorPotential,
+    armorEffects,
+    routeLootTable,
+    enemyTypesDamage,
+    routeWaveComposition,
     helperRoles,
     towerLevels,
     vendors,
-    cleanups,
     bossMaterials,
+    farmCleanups,
+    farmStages,
+    farmProjects,
+    gnomeRoles,
+    xpProgression,
+    townBlacksmith,
+    townAgronomist,
+    townCarpenter,
+    townLandSteward,
+    townMaterialTrader,
+    townSkillsTrainer,
+    forgeCrafting,
+    materialRefinement,
+    phaseTransitions,
+    unifiedNodes,
     isLoaded,
     validationErrors,
     lastUpdated,
@@ -355,14 +707,12 @@ export const useGameValuesStore = defineStore('gameValues', () => {
     
     // Computed
     getCropsBySeedLevel,
-    getUpgradesByVendor,
     getWeaponsByType,
     
     // Actions
     loadGameValues,
     validateGameValues,
     getCrop,
-    getUpgrade,
     getAdventure,
     saveConfiguration,
     parseMaterials,
@@ -374,11 +724,15 @@ export const useGameValuesStore = defineStore('gameValues', () => {
     updateItem,
     addItem,
     deleteItem,
+    saveCategoryToServer,
     exportItemsAsCSV,
+    exportCategoryAsCSV,
+    downloadCSV,
     resetToDefaults,
     exportAllAsCSV,
     importFromCSV,
     saveConfigurationSet,
+    getDataRef,
     updateUpgrade,
     deleteUpgrade,
     exportUpgradeTree

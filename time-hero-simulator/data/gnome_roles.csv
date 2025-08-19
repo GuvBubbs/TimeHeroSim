@@ -1,0 +1,11 @@
+id,role_name,function,base_effect,per_level_bonus,max_level_effect,assignment_location
+waterer,Waterer,Waters crops automatically,Waters 5 plots/minute,+1 plot per level,15 plots/minute at L10,Farm
+pump_operator,Pump Operator,Generates water passively,+20 water/hour,+5 water/hour per level,+70 water/hour at L10,Farm
+sower,Sower,Plants seeds automatically after harvest,Plants 3 seeds/minute,+1 seed per level,13 seeds/minute at L10,Farm
+harvester,Harvester,Collects and stores crops,Harvests 4 plots/minute,+1 plot per level,14 plots/minute at L10,Farm
+miners_friend,Miner's Friend,Reduces mining energy cost,-15% energy drain,-3% per level,-45% energy drain at L10,Mine
+adventure_fighter,Adventure Fighter,Assists in combat,5 neutral damage/hit,+2 damage per level,25 damage/hit at L10,Adventure
+adventure_support,Adventure Support,Heals during adventures,Heals 1 HP/30 sec,+0.5 HP per level,6 HP/30 sec at L10,Adventure
+seed_catcher,Seed Catcher,Boosts tower efficiency,+10% catch rate,+2% per level,+30% catch rate at L10,Tower
+forager,Forager,Collects wood from stumps,5 wood/hour from cleared stumps,+2 wood per level,25 wood/hour at L10,Farm
+refiner,Refiner,Assists at forge,+5% refinement speed,+1% per level,+15% speed at L10,Forge

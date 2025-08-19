@@ -13,8 +13,19 @@ const simulation = useSimulationStore()
 onMounted(async () => {
   try {
     const gameData = await loadAllGameData()
+    console.log('🔍 DEBUG: Game data loaded in App.vue:', {
+      hasUnifiedNodes: !!gameData.unifiedNodes,
+      unifiedNodesLength: gameData.unifiedNodes?.length || 0,
+      sampleNode: gameData.unifiedNodes?.[0]
+    })
+    
     gameValues.loadGameValues(gameData)
     gameValues.validateGameValues()
+    
+    console.log('🔍 DEBUG: After loading to store:', {
+      storeHasUnifiedNodes: !!gameValues.unifiedNodes,
+      storeNodesLength: gameValues.unifiedNodes?.length || 0
+    })
     
     // Initialize worker for better performance
     await simulation.initializeWorker()

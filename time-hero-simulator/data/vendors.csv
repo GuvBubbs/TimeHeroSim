@@ -1,7 +1,7 @@
-id,name,shopType,location,prerequisite,categories,description
-blacksmith,Ember & Edge,equipment,town,first_adventure,tools;weapons;forge_upgrades,Tools and combat gear
-agronomist,Greenwise Co-op,farm,town,,energy_storage;water_systems;seed_storage;materials,Farm infrastructure
-land_steward,County Land Office,deeds,town,,land_deeds,Purchase new land
-carpenter,Towerwrights Guild,tower,town,,tower_reaches;nets;auto_catchers;gnome_housing,Tower and housing
-skills_trainer,Field School,skills,town,,carry_capacity;efficiency,Hero abilities
-material_trader,Exchange Post,exchange,town,,material_trades;gold_conversion,Resource trading
+id,name,shopType,location,prerequisite,categories,description,materials,boss_materials,common_materials,enemy_types,yields
+blacksmith,Ember & Edge,equipment,town,meadow_path_short,tools;weapons;forge_upgrades,Tools and combat gear,,,,,
+agronomist,Greenwise Co-op,farm,town,,energy_storage;water_systems;seed_storage;materials,Farm infrastructure,,,,,
+land_steward,County Land Office,deeds,town,,land_deeds,Purchase new land,,,,,
+carpenter,Towerwrights Guild,tower,town,,tower_reaches;nets;auto_catchers;gnome_housing,Tower and housing,,,,,
+skills_trainer,Field School,skills,town,,carry_capacity;efficiency,Hero abilities,,,,,
+material_trader,Exchange Post,exchange,town,,material_trades;gold_conversion,Resource trading,,,,,

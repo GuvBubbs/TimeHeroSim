@@ -77,26 +77,26 @@
         <!-- Grid Background -->
         <rect width="100%" height="100%" fill="url(#grid)" />
 
-        <!-- Source Section Headers -->
-        <g v-for="(section, sourceId) in layout?.sourceSections" :key="sourceId">
+        <!-- Vendor Section Headers -->
+        <g v-for="(section, vendorId) in layout?.vendorSections" :key="vendorId">
           <rect
             x="0"
             :y="section.y"
             :width="layout.dimensions.width"
             height="50"
-            :fill="getSourceConfig(sourceId).color"
+            :fill="getVendorConfig(vendorId).color"
             opacity="0.1"
             stroke="#475569"
             stroke-width="1"
           />
           
-          <!-- Source Header -->
+          <!-- Vendor Header -->
           <rect
             x="0"
             :y="section.y"
             width="180"
             height="50"
-            :fill="getSourceConfig(sourceId).color"
+            :fill="getVendorConfig(vendorId).color"
             opacity="0.8"
           />
           
@@ -116,7 +116,7 @@
             fill="rgba(255,255,255,0.8)"
             font-size="11"
           >
-            {{ getSourceStats(sourceId) }}
+            {{ getVendorStats(vendorId) }}
           </text>
 
           <!-- Category Labels -->
@@ -160,40 +160,106 @@
           />
         </g>
 
-        <!-- Upgrade Nodes removed - now using HTML cards -->
-        <!-- Debug: Show total nodes count -->
-        <text x="20" y="30" fill="white" font-size="12">
-          Debug: {{ Object.keys(filteredLayout?.nodes || {}).length }} nodes, Layout: {{ layout ? 'loaded' : 'loading' }}
-        </text>
-        <text x="20" y="50" fill="white" font-size="10">
-          Raw Layout Nodes: {{ layout ? Object.keys(layout.nodes || {}).length : 0 }}
-        </text>
-        <text x="20" y="70" fill="white" font-size="10">
-          Filtered Nodes: {{ filteredLayout ? Object.keys(filteredLayout.nodes || {}).length : 0 }}
-        </text>
-      </svg>
+        <!-- Upgrade Nodes -->
+        <g class="upgrade-nodes">
+          <g
+            v-for="node in filteredLayout?.nodes || {}"
+            :key="node.id"
+            :transform="`translate(${node.x}, ${node.y})`"
+            class="upgrade-node cursor-pointer transition-all duration-200"
+            :class="getNodeClasses(node)"
+            @click="selectNode(node)"
+            @mouseenter="hoverNode(node, $event)"
+            @mouseleave="clearHover"
+          >
+            <!-- Node Background -->
+            <rect
+              :width="node.width"
+              :height="node.height"
+              rx="8"
+              :fill="getNodeBackground(node)"
+              :stroke="getNodeBorder(node)"
+              :stroke-width="getNodeBorderWidth(node)"
+              :opacity="getNodeOpacity(node)"
+              class="transition-all duration-200"
+            />
 
-      <!-- HTML Card Nodes Layer -->
-      <div 
-        class="absolute top-0 left-0 pointer-events-none"
-        :style="{ transform: interactions.transformStyle }"
-      >
-        <UpgradeNode
-          v-for="node in filteredLayout?.nodes || {}"
-          :key="node.id"
-          :node="node.upgrade || node"
-          :position="{ x: node.x || 300, y: node.y || 100 }"
-          :isSelected="selectedNode?.id === node.id"
-          :isHovered="hoveredNode?.id === node.id"
-          :isAvailable="node.status === 'available'"
-          :isLocked="node.status === 'locked'"
-          :isOwned="node.isOwned || false"
-          class="pointer-events-auto"
-          @click="selectNode(node)"
-          @mouseenter="hoverNode(node, $event)"
-          @mouseleave="clearHover"
-        />
-      </div>
+            <!-- Status Indicator -->
+            <circle
+              v-if="node.status !== 'available'"
+              :cx="node.width - 8"
+              :cy="8"
+              r="6"
+              :fill="getStatusColor(node.status)"
+              stroke="white"
+              stroke-width="1"
+            />
+
+            <!-- Upgrade Icon -->
+            <text
+              :x="node.width / 2"
+              y="22"
+              text-anchor="middle"
+              font-size="18"
+              class="pointer-events-none select-none"
+            >
+              {{ getUpgradeIcon(node.upgrade) }}
+            </text>
+
+            <!-- Upgrade Name -->
+            <text
+              :x="node.width / 2"
+              y="38"
+              text-anchor="middle"
+              fill="white"
+              font-size="10"
+              font-weight="600"
+              class="pointer-events-none select-none"
+            >
+              {{ truncateName(node.upgrade.name) }}
+            </text>
+
+            <!-- Cost Information -->
+            <text
+              :x="node.width / 2"
+              y="52"
+              text-anchor="middle"
+              fill="#e2e8f0"
+              font-size="8"
+              opacity="0.9"
+              class="pointer-events-none select-none"
+            >
+              {{ node.formattedCost }}
+            </text>
+
+            <!-- Time to Afford (if not owned) -->
+            <text
+              v-if="!node.isOwned && node.status === 'available'"
+              :x="node.width / 2"
+              :y="node.height - 4"
+              text-anchor="middle"
+              :fill="node.canAfford ? '#10b981' : '#f59e0b'"
+              font-size="7"
+              class="pointer-events-none select-none"
+            >
+              {{ node.timeToAfford.timeFormatted }}
+            </text>
+
+            <!-- Highlight Overlay -->
+            <rect
+              v-if="node.isHighlighted"
+              :width="node.width"
+              :height="node.height"
+              rx="8"
+              fill="none"
+              stroke="#fbbf24"
+              stroke-width="3"
+              opacity="0.8"
+              class="pointer-events-none"
+            />
+          </g>
+        </g>
+      </svg>
     </div>
 
     <!-- Tooltip -->
@@ -206,13 +272,6 @@
 
     <!-- Zoom Controls -->
     <div class="absolute top-4 right-4 flex flex-col space-y-2 z-10">
-      <button
-        @click="calculateLayout"
-        class="w-10 h-10 bg-green-600 hover:bg-green-700 text-white rounded-lg border border-green-500 flex items-center justify-center transition-colors text-xs"
-        title="Recalculate Layout"
-      >
-        🔄
-      </button>
       <button
         @click="interactions.zoomIn"
         class="w-10 h-10 bg-slate-800 hover:bg-slate-700 text-white rounded-lg border border-slate-600 flex items-center justify-center transition-colors"
@@ -243,13 +302,39 @@
       </button>
     </div>
 
-    <!-- Area Legend -->
-    <div class="absolute bottom-4 right-4 bg-slate-800/95 border border-slate-600 rounded-lg p-3 z-10 max-w-xs">
-      <h4 class="text-xs font-medium text-white mb-2">Areas (What it Affects)</h4>
-      <div class="grid grid-cols-2 gap-1 text-xs">
-        <div v-for="(area, areaId) in areaConfigs" :key="areaId" class="flex items-center space-x-1">
-          <div class="w-3 h-3 rounded" :style="{ backgroundColor: area.color }"></div>
-          <span class="text-slate-300">{{ area.icon }} {{ area.name }}</span>
+    <!-- Vendor Legend -->
+    <div class="absolute bottom-4 left-4 bg-slate-800/95 border border-slate-600 rounded-lg p-3 z-10 max-w-xs">
+      <h4 class="text-xs font-medium text-white mb-2">Vendors</h4>
+      <div class="space-y-1 text-xs">
+        <div v-for="(vendor, vendorId) in vendorStats" :key="vendorId" class="flex items-center justify-between space-x-2">
+          <div class="flex items-center space-x-2">
+            <div class="w-3 h-3 rounded" :style="{ backgroundColor: vendor.color }"></div>
+            <span class="text-slate-300">{{ vendor.icon }} {{ vendor.name }}</span>
+          </div>
+          <span class="text-slate-400">{{ vendor.owned }}/{{ vendor.total }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Legend -->
+    <div class="absolute bottom-4 right-4 bg-slate-800/95 border border-slate-600 rounded-lg p-3 z-10">
+      <h4 class="text-xs font-medium text-white mb-2">Status</h4>
+      <div class="space-y-1 text-xs">
+        <div class="flex items-center space-x-2">
+          <div class="w-3 h-3 rounded-full bg-green-500"></div>
+          <span class="text-slate-300">Owned</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+          <span class="text-slate-300">Available</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="w-3 h-3 rounded-full bg-red-500"></div>
+          <span class="text-slate-300">Prerequisites Missing</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+          <span class="text-slate-300">Farm Stage Locked</span>
         </div>
       </div>
     </div>
@@ -289,10 +374,8 @@
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useUpgradeTree } from '@/composables/useUpgradeTree.js'
 import { useUpgradeInteractions } from '@/composables/useUpgradeInteractions.js'
-import { useGameValuesStore } from '@/stores/gameValues.js'
-import { getSourceConfig, SOURCES, AREAS } from '@/utils/treeLayoutEngine.js'
+import { getVendorConfig } from '@/utils/treeLayoutEngine.js'
 import UpgradeTooltip from './UpgradeTooltip.vue'
-import UpgradeNode from './UpgradeNode.vue'
 
 const props = defineProps({
   interactive: {
@@ -317,7 +400,6 @@ const svgCanvas = ref(null)
 
 // Composables
 const {
-  upgrades,
   selectedNode,
   hoveredNode,
   highlightedPath,
@@ -326,7 +408,7 @@ const {
   layout,
   filteredLayout,
   gameState,
-  sourceStats,
+  vendorStats,
   calculateLayout,
   selectNode: selectUpgradeNode,
   hoverNode: hoverUpgradeNode,
@@ -335,32 +417,6 @@ const {
 } = useUpgradeTree()
 
 const interactions = useUpgradeInteractions(containerRef)
-
-// Configuration for areas and sources
-const areaConfigs = {
-  production: { name: 'Production', color: '#10b981' },
-  combat: { name: 'Combat', color: '#ef4444' },
-  social: { name: 'Social', color: '#3b82f6' },
-  building: { name: 'Building', color: '#f59e0b' },
-  exploration: { name: 'Exploration', color: '#8b5cf6' },
-  research: { name: 'Research', color: '#06b6d4' },
-  economic: { name: 'Economic', color: '#84cc16' },
-  other: { name: 'Other', color: '#6b7280' }
-}
-
-const sourceConfigs = {
-  farm: { name: 'Farm', color: '#10b981' },
-  blacksmith: { name: 'Blacksmith', color: '#ef4444' },
-  agronomist: { name: 'Agronomist', color: '#84cc16' },
-  landSteward: { name: 'Land Steward', color: '#f59e0b' },
-  carpenter: { name: 'Carpenter', color: '#8b5cf6' },
-  skillsTrainer: { name: 'Skills Trainer', color: '#06b6d4' },
-  vendor: { name: 'Vendor', color: '#6b7280' },
-  adventure: { name: 'Adventure', color: '#3b82f6' },
-  forge: { name: 'Forge', color: '#ef4444' },
-  mine: { name: 'Mine', color: '#64748b' },
-  tower: { name: 'Tower', color: '#8b5cf6' }
-}
 
 // Tooltip state
 const tooltip = ref({
@@ -401,7 +457,16 @@ const handleClearHover = () => {
   emit('upgradeUnhovered')
 }
 
-
+/**
+ * Get vendor statistics display string
+ */
+const getVendorStats = (vendorId) => {
+  const stats = vendorStats.value[vendorId]
+  if (!stats) return ''
+  
+  const percentage = Math.round(stats.completionPercentage)
+  return `${stats.owned}/${stats.total} (${percentage}%)`
+}
 
 /**
  * Format category name for display
@@ -454,22 +519,16 @@ const truncateName = (name) => {
 }
 
 /**
- * Get node background color based on area (what the upgrade affects)
+ * Get node background color
  */
 const getNodeBackground = (node) => {
-  // Get area color from the node or upgrade data
-  const areaColor = node.nodeColor || getAreaColor(node.upgrade?.category) || '#6b7280'
-  
-  // Modify based on status
   if (node.isOwned) return '#10b981' // Green for owned
   if (node.status === 'available') {
-    return node.canAfford ? areaColor : '#6b7280' // Area color if affordable, gray if not
+    return node.canAfford ? '#f59e0b' : '#6b7280' // Yellow if affordable, gray if not
   }
   if (node.status === 'farm_locked') return '#8b5cf6' // Purple
   if (node.status === 'prerequisite_missing') return '#ef4444' // Red
-  
-  // Use dimmed area color for other states
-  return adjustColorOpacity(areaColor, 0.7)
+  return '#6b7280' // Gray default
 }
 
 /**
@@ -487,34 +546,6 @@ const getNodeBorder = (node) => {
 const getNodeBorderWidth = (node) => {
   if (node.isSelected || node.isHighlighted) return 3
   return 1
-}
-
-/**
- * Get area color based on category
- */
-const getAreaColor = (category) => {
-  return areaConfigs[category]?.color || '#6b7280'
-}
-
-/**
- * Adjust color opacity
- */
-const adjustColorOpacity = (hexColor, opacity) => {
-  // Convert hex to RGB, then apply opacity
-  const hex = hexColor.replace('#', '')
-  const r = parseInt(hex.substr(0, 2), 16)
-  const g = parseInt(hex.substr(2, 2), 16)
-  const b = parseInt(hex.substr(4, 2), 16)
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`
-}
-
-/**
- * Get source stats string
- */
-const getSourceStats = (sourceId) => {
-  const stats = sourceStats.value[sourceId]
-  if (!stats) return '0/0'
-  return `${stats.owned}/${stats.total}`
 }
 
 /**
@@ -604,23 +635,6 @@ watch(() => props.selectedUpgradeId, (newId) => {
   }
 })
 
-// Watch for game data loading
-watch(() => gameState.value, (newGameState) => {
-  console.log('🔍 Game state changed, triggering layout recalculation')
-  calculateLayout()
-}, { deep: true })
-
-// Also watch for upgrades data loading
-const gameValuesStore = useGameValuesStore()
-watch(() => gameValuesStore.isLoaded, (isLoaded) => {
-  if (isLoaded) {
-    console.log('🔍 Game data loaded, triggering layout calculation')
-    nextTick(() => {
-      calculateLayout()
-    })
-  }
-})
-
 // Lifecycle
 onMounted(() => {
   // Focus container for keyboard events
@@ -630,19 +644,6 @@ onMounted(() => {
   
   // Add global keyboard listener
   document.addEventListener('keydown', handleGlobalKeyDown)
-  
-  // Debug: Log the current game state and upgrades
-  console.log('🔍 UpgradeTreeVisualization mounted')
-  console.log('📊 Game state:', gameState.value)
-  console.log('📋 Layout:', layout.value)
-  console.log('🔧 Filtered layout:', filteredLayout.value)
-  console.log('🔍 TRACKING: Upgrades from useUpgradeTree:', {
-    upgradesType: typeof upgrades.value,
-    upgradesIsArray: Array.isArray(upgrades.value),
-    upgradesKeys: Object.keys(upgrades.value || {}).slice(0, 5),
-    upgradesCount: Object.keys(upgrades.value || {}).length,
-    firstUpgrade: Object.values(upgrades.value || {})[0]
-  })
   
   // Initial calculation
   nextTick(() => {

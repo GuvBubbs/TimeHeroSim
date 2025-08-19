@@ -1,0 +1,37 @@
+id,name,type,prerequisite,gold_cost,notes
+blueprint_storage_shed_1,Storage Shed I Blueprint,energy_storage,,20,Energy cap 50->150
+blueprint_storage_shed_2,Storage Shed II Blueprint,energy_storage,storage_shed_1,100,Energy cap 150->500
+blueprint_storage_shed_3,Storage Shed III Blueprint,energy_storage,storage_shed_2;homestead_deed,500,Energy cap 500->1500
+blueprint_storage_barn_1,Storage Barn I Blueprint,energy_storage,storage_shed_3;homestead_deed,3000,Energy cap 1500->6000
+blueprint_storage_barn_2,Storage Barn II Blueprint,energy_storage,storage_barn_1;manor_grounds_deed,20000,Energy cap 6000->20000
+blueprint_storage_silo,Storage Silo Blueprint,energy_storage,storage_barn_2;great_estate_deed,100000,Energy cap 20000->100000
+blueprint_well_pump_1,Well Pump I Blueprint,pump,,30,Water/crank 2->4
+blueprint_well_pump_2,Well Pump II Blueprint,pump,well_pump_1,150,Water/crank 4->8
+blueprint_well_pump_3,Well Pump III Blueprint,pump,well_pump_2;homestead_deed,750,Water/crank 8->15
+blueprint_steam_pump,Steam Pump Blueprint,pump,well_pump_3;homestead_deed,4000,Water/crank 15->30
+blueprint_crystal_pump,Crystal Pump Blueprint,pump,steam_pump;manor_grounds_deed,25000,Water/crank 30->60
+blueprint_water_tank_1,Water Tank I Blueprint,water_storage,,25,Water cap 20->60
+blueprint_water_tank_2,Water Tank II Blueprint,water_storage,water_tank_1,125,Water cap 60->200
+blueprint_water_tank_3,Water Tank III Blueprint,water_storage,water_tank_2;homestead_deed,600,Water cap 200->600
+blueprint_reservoir,Reservoir Blueprint,water_storage,water_tank_3;homestead_deed,3500,Water cap 600->2000
+blueprint_crystal_reservoir,Crystal Reservoir Blueprint,water_storage,reservoir;manor_grounds_deed,22000,Water cap 2000->10000
+blueprint_seed_storage_1,Seed Storage I Blueprint,seed_storage,,50,Seed cap 50->150
+blueprint_seed_storage_2,Seed Storage II Blueprint,seed_storage,seed_storage_1,250,Seed cap 150->500
+blueprint_seed_vault,Seed Vault Blueprint,seed_storage,seed_storage_2;homestead_deed,1500,Seed cap 500->2000
+blueprint_material_crate_1,Material Crate I Blueprint,material_storage,,75,Max 50 per material
+blueprint_material_crate_2,Material Crate II Blueprint,material_storage,material_crate_1,400,Max 100 per material
+blueprint_material_warehouse,Material Warehouse Blueprint,material_storage,material_crate_2;homestead_deed,2000,Max 250 per material
+blueprint_material_depot,Material Depot Blueprint,material_storage,material_warehouse;manor_grounds_deed,10000,Max 500 per material
+blueprint_material_silo,Material Silo Blueprint,material_storage,material_depot;great_estate_deed,50000,Max 1000 per material
+blueprint_grand_warehouse,Grand Warehouse Blueprint,material_storage,material_silo,250000,Max 2500 per material
+blueprint_infinite_vault,Infinite Vault Blueprint,material_storage,blueprint_grand_warehouse,1000000,Max 10000 per material
+wood_bundle_small,Wood Bundle (Small),resource,,50,10 Wood emergency supply
+wood_bundle_medium,Wood Bundle (Medium),resource,farm_stage_2,200,50 Wood bulk purchase
+wood_bundle_large,Wood Bundle (Large),resource,farm_stage_3,800,250 Wood late game
+blueprint_mulch_beds,Mulch Beds Blueprint,water_retention,water_tank_2,300,Plots retain water 25% longer
+blueprint_irrigation_channels,Irrigation Channels Blueprint,water_retention,mulch_beds;homestead_deed,1500,Plots retain water 50% longer
+blueprint_crystal_irrigation,Crystal Irrigation Blueprint,water_retention,irrigation_channels;manor_grounds_deed,8000,Plots retain water 75% longer
+blueprint_auto_pump_1,Auto-Pump I Blueprint,auto_pump,water_tank_2,200,+10% water cap/hour offline
+blueprint_auto_pump_2,Auto-Pump II Blueprint,auto_pump,auto_pump_1;water_tank_3,1000,+20% water cap/hour offline
+blueprint_auto_pump_3,Auto-Pump III Blueprint,auto_pump,auto_pump_2;reservoir,5000,+35% water cap/hour offline
+blueprint_crystal_auto_pump,Crystal Auto-Pump Blueprint,auto_pump,auto_pump_3;crystal_reservoir,25000,+50% water cap/hour offline

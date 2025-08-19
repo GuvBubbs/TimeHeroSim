@@ -1,6 +1,6 @@
-id,name,rescueRoute,baseHousing,roles,baseEffect,levelScaling,maxLevel,xpPerLevel,trainingTime
-gnome_1,Forest Gnome,dark_forest,gnome_hut,all,varies,linear,10,"100;300;600;1000;2000;4000;8000;16000;32000","0.5;1;2;4;8;12;18;24;36"
-gnome_2,Mountain Gnome,mountain_pass,gnome_house,all,varies,linear,10,"100;300;600;1000;2000;4000;8000;16000;32000","0.5;1;2;4;8;12;18;24;36"
-gnome_3,Crystal Gnome,crystal_caves,gnome_lodge,all,varies,linear,10,"100;300;600;1000;2000;4000;8000;16000;32000","0.5;1;2;4;8;12;18;24;36"
-gnome_4,Frost Gnome,frozen_tundra,gnome_hall,all,varies,linear,10,"100;300;600;1000;2000;4000;8000;16000;32000","0.5;1;2;4;8;12;18;24;36"
-gnome_5,Lava Gnome,volcano_core,gnome_village,all,varies,linear,10,"100;300;600;1000;2000;4000;8000;16000;32000","0.5;1;2;4;8;12;18;24;36"
+id,name,unlock_prerequisite,role_options,base_effect,level_effect,max_level,training_time_hours,notes
+gnome_1,Forest Gnome,dark_forest_long,All roles,Varies by role,Varies by role,10,0.5-36,First gnome rescued from Dark Forest
+gnome_2,Mountain Gnome,mountain_pass_long,All roles,Varies by role,Varies by role,10,0.5-36,Second gnome rescued from Mountain Pass
+gnome_3,Crystal Gnome,crystal_caves_long,All roles,Varies by role,Varies by role,10,0.5-36,Third gnome rescued from Crystal Caves
+gnome_4,Frost Gnome,frozen_tundra_long,All roles,Varies by role,Varies by role,10,0.5-36,Fourth gnome rescued from Frozen Tundra
+gnome_5,Lava Gnome,volcano_core_long,All roles,Varies by role,Varies by role,10,0.5-36,Fifth gnome rescued from Volcano Core

@@ -1,0 +1,71 @@
+id,name,type,prerequisite_blueprint,craft_time_min,energy_cost,materials,boss_materials,success_rate,notes
+hoe,Hoe,tool,blueprint_hoe,5,20,Stone x5;Wood x3,,100%,Base tool
+hammer,Hammer,tool,blueprint_hammer,8,40,Stone x8;Wood x5,,100%,Base tool
+axe,Axe,tool,blueprint_axe,10,100,Iron x5;Wood x8,,95%,Base tool
+shovel,Shovel,tool,blueprint_shovel,10,100,Copper x3;Wood x5,,100%,Base tool
+pickaxe_1,Pickaxe I,mining_tool,blueprint_pickaxe_1,10,30,Copper x5;Wood x5,,100%,Base pickaxe
+pickaxe_2,Pickaxe II,mining_tool,blueprint_pickaxe_2,15,150,Iron x5;Stone x8,,95%,Iron tier
+pickaxe_3,Pickaxe III,mining_tool,blueprint_pickaxe_3;anvil_2,25,750,Silver x3;Iron x10,,90%,Silver tier
+watering_can_2,Watering Can II,watering_tool,anvil_1,5,50,Copper x5;Wood x3,,100%,Waters 2 plots
+hoe_plus,Hoe+,tool,blueprint_hoe_plus;anvil_1,15,200,Iron x10;Wood x5,Pine Resin x1,95%,Plus tier
+hammer_plus,Hammer+,tool,blueprint_hammer_plus;anvil_1,20,300,Iron x8;Stone x10,Shadow Bark x1,95%,Plus tier
+axe_plus,Axe+,tool,blueprint_axe_plus;anvil_2,25,500,Silver x5;Wood x10,Mountain Stone x1,90%,Plus tier
+shovel_plus,Shovel+,tool,blueprint_shovel_plus;anvil_2,20,500,Iron x8;Silver x2,Shadow Bark x1,90%,Plus tier
+crystal_pick,Crystal Pick,mining_tool,blueprint_crystal_pick;mythril_anvil,40,3000,Crystal x2;Silver x5,Cave Crystal x2,85%,Crystal tier
+sprinkler_can,Sprinkler Can,watering_tool,watering_can_2;furnace_2,20,400,Silver x3;Copper x10,Pine Resin x1,90%,Waters 4 plots
+terra_former,Terra Former,tool,blueprint_terra_former;mythril_anvil,45,2000,Crystal x2;Silver x10,Mountain Stone x2,85%,Master hoe
+stone_breaker,Stone Breaker,tool,blueprint_stone_breaker;mythril_anvil,50,3000,Crystal x3;Mythril x1,Frozen Heart x1,80%,Master hammer
+world_splitter,World Splitter,tool,blueprint_world_splitter;mythril_anvil,50,8000,Crystal x3;Enchanted Wood x1,Frozen Heart x2,80%,Master axe
+earth_mover,Earth Mover,tool,blueprint_earth_mover;crystal_furnace,45,5000,Crystal x2;Mythril x1,Cave Crystal x3,80%,Master shovel
+abyss_seeker,Abyss Seeker,mining_tool,blueprint_abyss_seeker;crystal_furnace,60,15000,Mythril x1;Crystal x3,Molten Core x2,80%,Master pickaxe
+rain_bringer,Rain Bringer,watering_tool,sprinkler_can;crystal_furnace,30,2000,Crystal x1;Silver x20,Frozen Heart x1,85%,Waters 8 plots
+spear_1,Spear I,weapon,blueprint_spear_1,10,100,Wood x5;Stone x3,,100%,Level 1
+spear_2,Spear II,weapon,blueprint_spear_2,12,150,Wood x8;Copper x5,,100%,Level 2
+spear_3,Spear III,weapon,blueprint_spear_3,15,200,Iron x10,,95%,Level 3
+spear_4,Spear IV,weapon,blueprint_spear_4;anvil_1,18,300,Iron x15;Silver x5,,90%,Level 4
+spear_5,Spear V,weapon,blueprint_spear_5,20,500,Silver x8,,90%,Level 5
+spear_6,Spear VI,weapon,blueprint_spear_6;anvil_2,25,1000,Crystal x3,,85%,Level 6
+spear_7,Spear VII,weapon,blueprint_spear_7,30,2000,Crystal x5,Pine Resin x1,85%,Level 7
+spear_8,Spear VIII,weapon,blueprint_spear_8;mythril_anvil,35,5000,Mythril x2,,80%,Level 8
+spear_9,Spear IX,weapon,blueprint_spear_9,40,10000,Mythril x3,Frozen Heart x1,80%,Level 9
+spear_10,Spear X,weapon,blueprint_spear_10,50,20000,Obsidian x1,Molten Core x2,75%,Level 10
+sword_1,Sword I,weapon,blueprint_sword_1,10,100,Wood x5;Stone x3,,100%,Level 1
+sword_2,Sword II,weapon,blueprint_sword_2,12,150,Wood x8;Copper x5,,100%,Level 2
+sword_3,Sword III,weapon,blueprint_sword_3,15,200,Iron x10,,95%,Level 3
+sword_4,Sword IV,weapon,blueprint_sword_4;anvil_1,18,300,Iron x15;Silver x5,,90%,Level 4
+sword_5,Sword V,weapon,blueprint_sword_5,20,500,Silver x8,,90%,Level 5
+sword_6,Sword VI,weapon,blueprint_sword_6;anvil_2,25,1000,Crystal x3,,85%,Level 6
+sword_7,Sword VII,weapon,blueprint_sword_7,30,2000,Crystal x5,Shadow Bark x1,85%,Level 7
+sword_8,Sword VIII,weapon,blueprint_sword_8;mythril_anvil,35,5000,Mythril x2,,80%,Level 8
+sword_9,Sword IX,weapon,blueprint_sword_9,40,10000,Mythril x3,Mountain Stone x1,80%,Level 9
+sword_10,Sword X,weapon,blueprint_sword_10,50,20000,Obsidian x1,Molten Core x2,75%,Level 10
+bow_1,Bow I,weapon,blueprint_bow_1,10,100,Wood x8;Stone x2,,100%,Level 1
+bow_2,Bow II,weapon,blueprint_bow_2,12,150,Wood x12;Copper x5,,100%,Level 2
+bow_3,Bow III,weapon,blueprint_bow_3,15,200,Iron x10;Wood x5,,95%,Level 3
+bow_4,Bow IV,weapon,blueprint_bow_4;anvil_1,18,300,Iron x15;Silver x5,,90%,Level 4
+bow_5,Bow V,weapon,blueprint_bow_5,20,500,Silver x8,,90%,Level 5
+bow_6,Bow VI,weapon,blueprint_bow_6;anvil_2,25,1000,Crystal x3,,85%,Level 6
+bow_7,Bow VII,weapon,blueprint_bow_7,30,2000,Crystal x5,Cave Crystal x1,85%,Level 7
+bow_8,Bow VIII,weapon,blueprint_bow_8;mythril_anvil,35,5000,Mythril x2,,80%,Level 8
+bow_9,Bow IX,weapon,blueprint_bow_9,40,10000,Mythril x3,Frozen Heart x1,80%,Level 9
+bow_10,Bow X,weapon,blueprint_bow_10,50,20000,Obsidian x1,Molten Core x2,75%,Level 10
+crossbow_1,Crossbow I,weapon,blueprint_crossbow_1,12,150,Wood x10;Stone x5,,100%,Level 1
+crossbow_2,Crossbow II,weapon,blueprint_crossbow_2,15,200,Wood x15;Copper x8,,100%,Level 2
+crossbow_3,Crossbow III,weapon,blueprint_crossbow_3,18,300,Iron x12;Wood x8,,95%,Level 3
+crossbow_4,Crossbow IV,weapon,blueprint_crossbow_4;anvil_1,22,450,Iron x18;Silver x6,,90%,Level 4
+crossbow_5,Crossbow V,weapon,blueprint_crossbow_5,25,750,Silver x10,,90%,Level 5
+crossbow_6,Crossbow VI,weapon,blueprint_crossbow_6;anvil_2,30,1500,Crystal x4,,85%,Level 6
+crossbow_7,Crossbow VII,weapon,blueprint_crossbow_7,35,3000,Crystal x6,Mountain Stone x1,85%,Level 7
+crossbow_8,Crossbow VIII,weapon,blueprint_crossbow_8;mythril_anvil,40,7500,Mythril x3,,80%,Level 8
+crossbow_9,Crossbow IX,weapon,blueprint_crossbow_9,45,15000,Mythril x4,Cave Crystal x2,80%,Level 9
+crossbow_10,Crossbow X,weapon,blueprint_crossbow_10,60,30000,Obsidian x2,Molten Core x3,75%,Level 10
+wand_1,Wand I,weapon,blueprint_wand_1,8,100,Wood x5;Copper x1,,100%,Level 1
+wand_2,Wand II,weapon,blueprint_wand_2,10,200,Wood x8;Copper x3,,100%,Level 2
+wand_3,Wand III,weapon,blueprint_wand_3,12,400,Iron x5;Silver x2,,95%,Level 3
+wand_4,Wand IV,weapon,blueprint_wand_4;anvil_1,15,600,Silver x8,,90%,Level 4
+wand_5,Wand V,weapon,blueprint_wand_5,18,1000,Silver x12,,90%,Level 5
+wand_6,Wand VI,weapon,blueprint_wand_6;anvil_2,22,2000,Crystal x2,,85%,Level 6
+wand_7,Wand VII,weapon,blueprint_wand_7,25,4000,Crystal x4,Pine Resin x2,85%,Level 7
+wand_8,Wand VIII,weapon,blueprint_wand_8;mythril_anvil,30,10000,Mythril x2,,80%,Level 8
+wand_9,Wand IX,weapon,blueprint_wand_9,35,20000,Mythril x3,Shadow Bark x2,80%,Level 9
+wand_10,Wand X,weapon,blueprint_wand_10,45,40000,Obsidian x1,Frozen Heart x2,75%,Level 10

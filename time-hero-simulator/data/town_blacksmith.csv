@@ -1,0 +1,80 @@
+id,name,type,prerequisite,gold_cost,notes
+unlock_blacksmith,Unlock Blacksmith,vendor,meadow_path_short,0,Vendor unlocks after first adventure
+blueprint_hoe,Hoe Blueprint,tool,,50,Base tool
+blueprint_hoe_plus,Hoe+ Blueprint,tool,blueprint_hoe;anvil_1,750,Plus tier tool
+blueprint_terra_former,Terra Former Blueprint,tool,blueprint_hoe_plus;mythril_anvil,15000,Master tier tool
+blueprint_hammer,Hammer Blueprint,tool,blueprint_hoe,150,Base tool
+blueprint_hammer_plus,Hammer+ Blueprint,tool,blueprint_hammer;anvil_1,1200,Plus tier tool
+blueprint_stone_breaker,Stone Breaker Blueprint,tool,blueprint_hammer_plus;mythril_anvil,25000,Master tier tool
+blueprint_axe,Axe Blueprint,tool,blueprint_hammer,300,Base tool
+blueprint_axe_plus,Axe+ Blueprint,tool,blueprint_axe;anvil_2,3000,Plus tier tool
+blueprint_world_splitter,World Splitter Blueprint,tool,blueprint_axe_plus;mythril_anvil,60000,Master tier tool
+blueprint_shovel,Shovel Blueprint,tool,blueprint_axe,600,Base tool
+blueprint_shovel_plus,Shovel+ Blueprint,tool,blueprint_shovel;anvil_2,8000,Plus tier tool
+blueprint_earth_mover,Earth Mover Blueprint,tool,blueprint_shovel_plus;crystal_furnace,40000,Master tier tool
+blueprint_pickaxe_1,Pickaxe I Blueprint,mining_tool,,100,Base pickaxe
+blueprint_pickaxe_2,Pickaxe II Blueprint,mining_tool,blueprint_pickaxe_1,500,Iron tier
+blueprint_pickaxe_3,Pickaxe III Blueprint,mining_tool,blueprint_pickaxe_2;anvil_2,2500,Silver tier
+blueprint_crystal_pick,Crystal Pick Blueprint,mining_tool,blueprint_pickaxe_3;mythril_anvil,12000,Crystal tier
+blueprint_abyss_seeker,Abyss Seeker Blueprint,mining_tool,blueprint_crystal_pick;crystal_furnace,60000,Master pickaxe
+blueprint_spear_1,Spear I Blueprint,weapon,,100,Level 1 weapon
+blueprint_spear_2,Spear II Blueprint,weapon,blueprint_spear_1,250,Level 2 weapon
+blueprint_spear_3,Spear III Blueprint,weapon,blueprint_spear_2,500,Level 3 weapon
+blueprint_spear_4,Spear IV Blueprint,weapon,blueprint_spear_3;anvil_1,1000,Level 4 weapon
+blueprint_spear_5,Spear V Blueprint,weapon,blueprint_spear_4,2500,Level 5 weapon
+blueprint_spear_6,Spear VI Blueprint,weapon,blueprint_spear_5;anvil_2,5000,Level 6 weapon
+blueprint_spear_7,Spear VII Blueprint,weapon,blueprint_spear_6,10000,Level 7 weapon
+blueprint_spear_8,Spear VIII Blueprint,weapon,blueprint_spear_7;mythril_anvil,25000,Level 8 weapon
+blueprint_spear_9,Spear IX Blueprint,weapon,blueprint_spear_8,50000,Level 9 weapon
+blueprint_spear_10,Spear X Blueprint,weapon,blueprint_spear_9,100000,Level 10 weapon
+blueprint_sword_1,Sword I Blueprint,weapon,,100,Level 1 weapon
+blueprint_sword_2,Sword II Blueprint,weapon,blueprint_sword_1,250,Level 2 weapon
+blueprint_sword_3,Sword III Blueprint,weapon,blueprint_sword_2,500,Level 3 weapon
+blueprint_sword_4,Sword IV Blueprint,weapon,blueprint_sword_3;anvil_1,1000,Level 4 weapon
+blueprint_sword_5,Sword V Blueprint,weapon,blueprint_sword_4,2500,Level 5 weapon
+blueprint_sword_6,Sword VI Blueprint,weapon,blueprint_sword_5;anvil_2,5000,Level 6 weapon
+blueprint_sword_7,Sword VII Blueprint,weapon,blueprint_sword_6,10000,Level 7 weapon
+blueprint_sword_8,Sword VIII Blueprint,weapon,blueprint_sword_7;mythril_anvil,25000,Level 8 weapon
+blueprint_sword_9,Sword IX Blueprint,weapon,blueprint_sword_8,50000,Level 9 weapon
+blueprint_sword_10,Sword X Blueprint,weapon,blueprint_sword_9,100000,Level 10 weapon
+blueprint_bow_1,Bow I Blueprint,weapon,,100,Level 1 weapon
+blueprint_bow_2,Bow II Blueprint,weapon,blueprint_bow_1,250,Level 2 weapon
+blueprint_bow_3,Bow III Blueprint,weapon,blueprint_bow_2,500,Level 3 weapon
+blueprint_bow_4,Bow IV Blueprint,weapon,blueprint_bow_3;anvil_1,1000,Level 4 weapon
+blueprint_bow_5,Bow V Blueprint,weapon,blueprint_bow_4,2500,Level 5 weapon
+blueprint_bow_6,Bow VI Blueprint,weapon,blueprint_bow_5;anvil_2,5000,Level 6 weapon
+blueprint_bow_7,Bow VII Blueprint,weapon,blueprint_bow_6,10000,Level 7 weapon
+blueprint_bow_8,Bow VIII Blueprint,weapon,blueprint_bow_7;mythril_anvil,25000,Level 8 weapon
+blueprint_bow_9,Bow IX Blueprint,weapon,blueprint_bow_8,50000,Level 9 weapon
+blueprint_bow_10,Bow X Blueprint,weapon,blueprint_bow_9,100000,Level 10 weapon
+blueprint_crossbow_1,Crossbow I Blueprint,weapon,,150,Level 1 weapon
+blueprint_crossbow_2,Crossbow II Blueprint,weapon,blueprint_crossbow_1,375,Level 2 weapon
+blueprint_crossbow_3,Crossbow III Blueprint,weapon,blueprint_crossbow_2,750,Level 3 weapon
+blueprint_crossbow_4,Crossbow IV Blueprint,weapon,blueprint_crossbow_3;anvil_1,1500,Level 4 weapon
+blueprint_crossbow_5,Crossbow V Blueprint,weapon,blueprint_crossbow_4,3750,Level 5 weapon
+blueprint_crossbow_6,Crossbow VI Blueprint,weapon,blueprint_crossbow_5;anvil_2,7500,Level 6 weapon
+blueprint_crossbow_7,Crossbow VII Blueprint,weapon,blueprint_crossbow_6,15000,Level 7 weapon
+blueprint_crossbow_8,Crossbow VIII Blueprint,weapon,blueprint_crossbow_7;mythril_anvil,37500,Level 8 weapon
+blueprint_crossbow_9,Crossbow IX Blueprint,weapon,blueprint_crossbow_8,75000,Level 9 weapon
+blueprint_crossbow_10,Crossbow X Blueprint,weapon,blueprint_crossbow_9,150000,Level 10 weapon
+blueprint_wand_1,Wand I Blueprint,weapon,,200,Level 1 weapon
+blueprint_wand_2,Wand II Blueprint,weapon,blueprint_wand_1,500,Level 2 weapon
+blueprint_wand_3,Wand III Blueprint,weapon,blueprint_wand_2,1000,Level 3 weapon
+blueprint_wand_4,Wand IV Blueprint,weapon,blueprint_wand_3;anvil_1,2000,Level 4 weapon
+blueprint_wand_5,Wand V Blueprint,weapon,blueprint_wand_4,5000,Level 5 weapon
+blueprint_wand_6,Wand VI Blueprint,weapon,blueprint_wand_5;anvil_2,10000,Level 6 weapon
+blueprint_wand_7,Wand VII Blueprint,weapon,blueprint_wand_6,20000,Level 7 weapon
+blueprint_wand_8,Wand VIII Blueprint,weapon,blueprint_wand_7;mythril_anvil,50000,Level 8 weapon
+blueprint_wand_9,Wand IX Blueprint,weapon,blueprint_wand_8,100000,Level 9 weapon
+blueprint_wand_10,Wand X Blueprint,weapon,blueprint_wand_9,200000,Level 10 weapon
+bellows_1,Bellows I,forge_upgrade,,80,Heat control tier 1
+bellows_2,Bellows II,forge_upgrade,bellows_1,400,Heat control tier 2
+auto_bellows,Auto-Bellows,forge_upgrade,bellows_2,2000,Automatic heat control
+furnace_1,Furnace I,forge_upgrade,,200,Speed tier 1
+furnace_2,Furnace II,forge_upgrade,furnace_1,1000,Speed tier 2
+crystal_furnace,Crystal Furnace,forge_upgrade,furnace_2;manor_grounds_deed,10000,Speed tier 3
+anvil_1,Anvil I,forge_upgrade,,150,Recipe tier 1
+anvil_2,Anvil II,forge_upgrade,anvil_1,1500,Recipe tier 2
+mythril_anvil,Mythril Anvil,forge_upgrade,anvil_2;great_estate_deed,15000,Recipe tier 3
+batch_craft,Batch Craft,forge_recipe,anvil_1,500,Craft 5 at once
+master_craft,Master Craft,forge_recipe,batch_craft;furnace_2,5000,10% chance double output

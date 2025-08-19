@@ -287,7 +287,8 @@ import {
   BeakerIcon,
   HomeIcon,
   BuildingOfficeIcon,
-  RocketLaunchIcon
+  RocketLaunchIcon,
+  CogIcon
 } from '@heroicons/vue/24/outline'
 
 const gameValues = useGameValuesStore()
@@ -296,7 +297,7 @@ const gameValues = useGameValuesStore()
 const activeScreen = ref('farm')
 const activeTab = ref('crops')
 const searchQuery = ref('')
-const sortBy = ref('name')
+const sortBy = ref('id')
 const sortDirection = ref('asc') // 'asc' or 'desc'
 const bulkEditMode = ref(false)
 const selectedItems = ref([])
@@ -309,18 +310,13 @@ const gameScreens = computed(() => [
     name: 'Farm',
     icon: HomeIcon,
     tabs: [
-      { id: 'crops', name: 'Crops', count: Object.keys(gameValues.crops || {}).length },
-      { id: 'cleanups', name: 'Cleanups', count: Object.keys(gameValues.cleanups || {}).length },
-      { id: 'helpers', name: 'Helpers', count: Object.keys(gameValues.helpers || {}).length },
-      { id: 'helperRoles', name: 'Helper Roles', count: Object.keys(gameValues.helperRoles || {}).length }
-    ]
-  },
-  {
-    id: 'tower',
-    name: 'Tower',
-    icon: RocketLaunchIcon,
-    tabs: [
-      { id: 'towerLevels', name: 'Tower Levels', count: Object.keys(gameValues.towerLevels || {}).length }
+      { id: 'crops', name: 'Crops', dataKey: 'crops' },
+      { id: 'farmCleanups', name: 'Cleanups', dataKey: 'farmCleanups' },
+      { id: 'farmStages', name: 'Stages', dataKey: 'farmStages' },
+      { id: 'farmProjects', name: 'Projects', dataKey: 'farmProjects' },
+      { id: 'helpers', name: 'Helpers', dataKey: 'helpers' },
+      { id: 'helperRoles', name: 'Helper Roles', dataKey: 'helperRoles' },
+      { id: 'gnomeRoles', name: 'Gnome Roles', dataKey: 'gnomeRoles' }
     ]
   },
   {
@@ -328,8 +324,13 @@ const gameScreens = computed(() => [
     name: 'Town',
     icon: BuildingOfficeIcon,
     tabs: [
-      { id: 'vendors', name: 'Vendors', count: Object.keys(gameValues.vendors || {}).length },
-      { id: 'upgrades', name: 'Upgrades', count: Object.keys(gameValues.upgrades || {}).length }
+      { id: 'vendors', name: 'Vendors', dataKey: 'vendors' },
+      { id: 'townBlacksmith', name: 'Blacksmith', dataKey: 'townBlacksmith' },
+      { id: 'townAgronomist', name: 'Agronomist', dataKey: 'townAgronomist' },
+      { id: 'townCarpenter', name: 'Carpenter', dataKey: 'townCarpenter' },
+      { id: 'townLandSteward', name: 'Land Steward', dataKey: 'townLandSteward' },
+      { id: 'townMaterialTrader', name: 'Material Trader', dataKey: 'townMaterialTrader' },
+      { id: 'townSkillsTrainer', name: 'Skills Trainer', dataKey: 'townSkillsTrainer' }
     ]
   },
   {
@@ -337,19 +338,23 @@ const gameScreens = computed(() => [
     name: 'Adventure',
     icon: ShieldExclamationIcon,
     tabs: [
-      { id: 'adventures', name: 'Adventures', count: Object.keys(gameValues.adventures || {}).length },
-      { id: 'weapons', name: 'Weapons', count: Object.keys(gameValues.weapons || {}).length },
-      { id: 'armor', name: 'Armor', count: Object.keys(gameValues.armor || {}).length },
-      { id: 'bossMaterials', name: 'Boss Materials', count: Object.keys(gameValues.bossMaterials || {}).length },
-      { id: 'combat', name: 'Combat (Legacy)', count: Object.keys(gameValues.combat || {}).length }
+      { id: 'adventures', name: 'Routes', dataKey: 'adventures' }
     ]
   },
   {
-    id: 'mine',
-    name: 'Mine',
-    icon: CubeIcon,
+    id: 'combat',
+    name: 'Combat',
+    icon: ShieldExclamationIcon,
     tabs: [
-      { id: 'mining', name: 'Mining', count: Object.keys(gameValues.mining || {}).length }
+      { id: 'weapons', name: 'Weapons', dataKey: 'weapons' },
+      { id: 'xpProgression', name: 'XP Levels', dataKey: 'xpProgression' },
+      { id: 'bossMaterials', name: 'Boss Materials', dataKey: 'bossMaterials' },
+      { id: 'armorBase', name: 'Armor Base Stats', dataKey: 'armorBase' },
+      { id: 'armorPotential', name: 'Armor Potential', dataKey: 'armorPotential' },
+      { id: 'armorEffects', name: 'Armor Effects', dataKey: 'armorEffects' },
+      { id: 'routeLootTable', name: 'Route Loot Tables', dataKey: 'routeLootTable' },
+      { id: 'enemyTypesDamage', name: 'Enemy Types', dataKey: 'enemyTypesDamage' },
+      { id: 'routeWaveComposition', name: 'Wave Composition', dataKey: 'routeWaveComposition' }
     ]
   },
   {
@@ -357,7 +362,25 @@ const gameScreens = computed(() => [
     name: 'Forge',
     icon: WrenchScrewdriverIcon,
     tabs: [
-      { id: 'tools', name: 'Tools', count: Object.keys(gameValues.tools || {}).length }
+      { id: 'forgeCrafting', name: 'Crafting Recipes', dataKey: 'forgeCrafting' },
+      { id: 'tools', name: 'Tools', dataKey: 'tools' },
+      { id: 'materialRefinement', name: 'Refinement', dataKey: 'materialRefinement' }
+    ]
+  },
+  {
+    id: 'mining',
+    name: 'Mining',
+    icon: CubeIcon,
+    tabs: [
+      { id: 'mining', name: 'Depths', dataKey: 'mining' }
+    ]
+  },
+  {
+    id: 'tower',
+    name: 'Tower',
+    icon: RocketLaunchIcon,
+    tabs: [
+      { id: 'towerLevels', name: 'Reach Levels', dataKey: 'towerLevels' }
     ]
   }
 ])
@@ -368,43 +391,41 @@ const currentScreen = computed(() =>
 )
 
 // Get current tab configuration
-const currentTabs = computed(() => 
-  currentScreen.value?.tabs || []
-)
+const currentTabs = computed(() => {
+  const tabs = currentScreen.value?.tabs || []
+  return tabs.map(tab => ({
+    ...tab,
+    count: Object.keys(gameValues[tab.dataKey] || {}).length
+  }))
+})
 
 // Tab configurations
 const tabConfigs = {
   crops: {
     singular: 'Crop',
     columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
       { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
       { key: 'tier', label: 'Tier', type: 'text', class: 'w-24' },
-      { key: 'seedLevel', label: 'Seed Level', type: 'number', class: 'w-24' },
-      { key: 'growthTime', label: 'Growth Time', type: 'number', class: 'w-32' },
-      { key: 'energy', label: 'Energy', type: 'number', class: 'w-24' },
-      { key: 'seedCost', label: 'Seed Cost', type: 'number', class: 'w-24' }
+      { key: 'seed_level', label: 'Seed Level', type: 'number', class: 'w-24' },
+      { key: 'stages', label: 'Stages', type: 'number', class: 'w-24' },
+      { key: 'growth_time_min', label: 'Growth Time (min)', type: 'number', class: 'w-32' },
+      { key: 'energy_per_harvest', label: 'Energy per Harvest', type: 'number', class: 'w-32' },
+      { key: 'prerequisite', label: 'Prerequisite', type: 'text', class: 'w-32' }
     ]
   },
   adventures: {
     singular: 'Adventure',
     columns: [
-      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
-      { key: 'prerequisite', label: 'Prerequisite', type: 'text', class: 'w-32' },
-      { key: 'shortEnergy', label: 'Short Energy', type: 'number', class: 'w-32' },
-      { key: 'mediumEnergy', label: 'Medium Energy', type: 'number', class: 'w-32' },
-      { key: 'longEnergy', label: 'Long Energy', type: 'number', class: 'w-32' },
-      { key: 'shortGold', label: 'Short Gold', type: 'number', class: 'w-32' }
-    ]
-  },
-  upgrades: {
-    singular: 'Upgrade',
-    columns: [
-      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
-      { key: 'vendor', label: 'Vendor', type: 'text', class: 'w-32' },
-      { key: 'category', label: 'Category', type: 'text', class: 'w-32' },
-      { key: 'goldCost', label: 'Gold Cost', type: 'number', class: 'w-32' },
-      { key: 'energyCost', label: 'Energy Cost', type: 'number', class: 'w-32' },
-      { key: 'effect', label: 'Effect', type: 'text', class: 'w-48' }
+      { key: 'id', label: 'ID', type: 'text', class: 'w-40' },
+      { key: 'route', label: 'Route', type: 'text', class: 'w-32' },
+      { key: 'length', label: 'Length', type: 'text', class: 'w-24' },
+      { key: 'prerequisite', label: 'Prerequisite', type: 'text', class: 'w-40' },
+      { key: 'energy_cost', label: 'Energy Cost', type: 'number', class: 'w-28' },
+      { key: 'duration_min', label: 'Duration (min)', type: 'number', class: 'w-32' },
+      { key: 'gold_reward', label: 'Gold Reward', type: 'number', class: 'w-32' },
+      { key: 'boss', label: 'Boss', type: 'text', class: 'w-32' },
+      { key: 'boss_weakness', label: 'Boss Weakness', type: 'text', class: 'w-32' }
     ]
   },
   weapons: {
@@ -418,15 +439,61 @@ const tabConfigs = {
       { key: 'materials', label: 'Materials', type: 'text', class: 'w-48' }
     ]
   },
-  armor: {
-    singular: 'Armor',
+  armorBase: {
+    singular: 'Armor Base Stat',
     columns: [
-      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
-      { key: 'baseDefense', label: 'Defense', type: 'number', class: 'w-24' },
-      { key: 'upgradePotential', label: 'Upgrade Potential', type: 'text', class: 'w-32' },
-      { key: 'specialEffect', label: 'Special Effect', type: 'text', class: 'w-40' },
-      { key: 'dropRoute', label: 'Drop Route', type: 'text', class: 'w-32' },
-      { key: 'dropWeight', label: 'Drop Weight', type: 'number', class: 'w-28' }
+      { key: 'defense_rating', label: 'Defense Rating', type: 'text', class: 'w-32' },
+      { key: 'base_defense_value', label: 'Base Defense Value', type: 'number', class: 'w-32' },
+      { key: 'drop_weight', label: 'Drop Weight', type: 'text', class: 'w-24' }
+    ]
+  },
+  armorPotential: {
+    singular: 'Armor Potential',
+    columns: [
+      { key: 'upgrade_potential', label: 'Upgrade Potential', type: 'text', class: 'w-32' },
+      { key: 'forge_bonus', label: 'Forge Bonus', type: 'text', class: 'w-32' },
+      { key: 'drop_weight', label: 'Drop Weight', type: 'text', class: 'w-24' }
+    ]
+  },
+  armorEffects: {
+    singular: 'Armor Effect',
+    columns: [
+      { key: 'effect', label: 'Effect', type: 'text', class: 'w-32' },
+      { key: 'description', label: 'Description', type: 'text', class: 'w-64' },
+      { key: 'drop_weight', label: 'Drop Weight', type: 'text', class: 'w-24' },
+      { key: 'best_against', label: 'Best Against', type: 'text', class: 'w-48' }
+    ]
+  },
+  routeLootTable: {
+    singular: 'Route Loot Entry',
+    columns: [
+      { key: 'route', label: 'Route', type: 'text', class: 'w-32' },
+      { key: 'minimal', label: 'Minimal', type: 'text', class: 'w-20' },
+      { key: 'low', label: 'Low', type: 'text', class: 'w-20' },
+      { key: 'medium', label: 'Medium', type: 'text', class: 'w-20' },
+      { key: 'high', label: 'High', type: 'text', class: 'w-20' },
+      { key: 'extreme', label: 'Extreme', type: 'text', class: 'w-20' }
+    ]
+  },
+  enemyTypesDamage: {
+    singular: 'Enemy Type',
+    columns: [
+      { key: 'enemy_type', label: 'Enemy Type', type: 'text', class: 'w-40' },
+      { key: 'base_damage', label: 'Base Damage', type: 'number', class: 'w-24' },
+      { key: 'attack_speed', label: 'Attack Speed', type: 'text', class: 'w-24' },
+      { key: 'hp', label: 'HP', type: 'number', class: 'w-20' },
+      { key: 'weak_to', label: 'Weak To', type: 'text', class: 'w-24' },
+      { key: 'resistant_to', label: 'Resistant To', type: 'text', class: 'w-24' }
+    ]
+  },
+  routeWaveComposition: {
+    singular: 'Route Wave',
+    columns: [
+      { key: 'route', label: 'Route', type: 'text', class: 'w-32' },
+      { key: 'wave_size', label: 'Wave Size', type: 'text', class: 'w-24' },
+      { key: 'enemy_types', label: 'Enemy Types', type: 'text', class: 'w-64' },
+      { key: 'total_waves_s_m_l', label: 'Total Waves (S/M/L)', type: 'text', class: 'w-32' },
+      { key: 'boss', label: 'Boss', type: 'text', class: 'w-48' }
     ]
   },
   tools: {
@@ -443,12 +510,13 @@ const tabConfigs = {
   mining: {
     singular: 'Mining Level',
     columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
       { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
-      { key: 'depth', label: 'Depth', type: 'number', class: 'w-20' },
-      { key: 'minDepth', label: 'Min Depth', type: 'number', class: 'w-24' },
-      { key: 'maxDepth', label: 'Max Depth', type: 'number', class: 'w-24' },
-      { key: 'energyDrain', label: 'Energy/Min', type: 'number', class: 'w-28' },
-      { key: 'materials', label: 'Materials', type: 'text', class: 'w-48' }
+      { key: 'depth_range', label: 'Depth Range', type: 'text', class: 'w-32' },
+      { key: 'prerequisite', label: 'Prerequisite', type: 'text', class: 'w-32' },
+      { key: 'base_energy_per_min', label: 'Energy/Min', type: 'number', class: 'w-28' },
+      { key: 'runtime_1500_energy_hours', label: 'Runtime (hours)', type: 'number', class: 'w-32' },
+      { key: 'raw_materials_per_30sec', label: 'Raw Materials/30s', type: 'text', class: 'w-48' }
     ]
   },
   helpers: {
@@ -495,17 +563,6 @@ const tabConfigs = {
       { key: 'description', label: 'Description', type: 'text', class: 'w-64' }
     ]
   },
-  cleanups: {
-    singular: 'Cleanup',
-    columns: [
-      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
-      { key: 'stage', label: 'Stage', type: 'number', class: 'w-20' },
-      { key: 'plotsAdded', label: 'Plots Added', type: 'number', class: 'w-28' },
-      { key: 'totalPlots', label: 'Total Plots', type: 'number', class: 'w-28' },
-      { key: 'energyCost', label: 'Energy Cost', type: 'number', class: 'w-32' },
-      { key: 'repeatable', label: 'Repeatable', type: 'boolean', class: 'w-24' }
-    ]
-  },
   bossMaterials: {
     singular: 'Boss Material',
     columns: [
@@ -517,17 +574,161 @@ const tabConfigs = {
       { key: 'description', label: 'Description', type: 'text', class: 'w-64' }
     ]
   },
-  combat: {
-    singular: 'Combat Item',
+  farmCleanups: {
+    singular: 'Farm Cleanup',
     columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'stage', label: 'Stage', type: 'number', class: 'w-20' },
+      { key: 'prerequisite', label: 'Prerequisite', type: 'text', class: 'w-48' },
+      { key: 'plots_added', label: 'Plots Added', type: 'number', class: 'w-28' },
+      { key: 'total_plots', label: 'Total Plots', type: 'number', class: 'w-28' },
+      { key: 'energy_cost', label: 'Energy Cost', type: 'number', class: 'w-28' },
+      { key: 'tool_required', label: 'Tool Required', type: 'text', class: 'w-32' },
+      { key: 'yields', label: 'Yields', type: 'text', class: 'w-48' },
+      { key: 'repeatable', label: 'Repeatable', type: 'boolean', class: 'w-24' }
+    ]
+  },
+  farmStages: {
+    singular: 'Farm Stage',
+    columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'plot_range', label: 'Plot Range', type: 'text', class: 'w-32' },
+      { key: 'unlock_condition', label: 'Unlock Condition', type: 'text', class: 'w-48' },
+      { key: 'cleanups_available', label: 'Cleanups Available', type: 'text', class: 'w-48' },
+      { key: 'notes', label: 'Notes', type: 'text', class: 'w-64' }
+    ]
+  },
+  farmProjects: {
+    singular: 'Farm Project',
+    columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
       { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
       { key: 'type', label: 'Type', type: 'text', class: 'w-24' },
-      { key: 'category', label: 'Category', type: 'text', class: 'w-24' },
-      { key: 'unlockDay', label: 'Unlock Day', type: 'number', class: 'w-24' },
-      { key: 'damage', label: 'Damage', type: 'number', class: 'w-20' },
-      { key: 'goldCost', label: 'Gold Cost', type: 'number', class: 'w-24' },
-      { key: 'craftTime', label: 'Craft Time', type: 'number', class: 'w-24' },
-      { key: 'effect', label: 'Effect', type: 'text', class: 'w-32' }
+      { key: 'prerequisite_blueprint', label: 'Prerequisite Blueprint', type: 'text', class: 'w-48' },
+      { key: 'build_energy', label: 'Build Energy', type: 'number', class: 'w-28' },
+      { key: 'materials', label: 'Materials', type: 'text', class: 'w-48' },
+      { key: 'build_time_min', label: 'Build Time (min)', type: 'number', class: 'w-32' },
+      { key: 'effect', label: 'Effect', type: 'text', class: 'w-48' },
+      { key: 'notes', label: 'Notes', type: 'text', class: 'w-64' }
+    ]
+  },
+  gnomeRoles: {
+    singular: 'Gnome Role',
+    columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
+      { key: 'role_name', label: 'Role Name', type: 'text', class: 'w-48' },
+      { key: 'function', label: 'Function', type: 'text', class: 'w-48' },
+      { key: 'base_effect', label: 'Base Effect', type: 'number', class: 'w-28' },
+      { key: 'per_level_bonus', label: 'Per Level Bonus', type: 'number', class: 'w-32' },
+      { key: 'max_level_effect', label: 'Max Level Effect', type: 'number', class: 'w-32' },
+      { key: 'assignment_location', label: 'Assignment Location', type: 'text', class: 'w-48' }
+    ]
+  },
+  xpProgression: {
+    singular: 'XP Level',
+    columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
+      { key: 'level', label: 'Level', type: 'number', class: 'w-20' },
+      { key: 'xp_required', label: 'XP Required', type: 'number', class: 'w-32' },
+      { key: 'total_hp', label: 'Total HP', type: 'number', class: 'w-32' },
+      { key: 'typical_phase', label: 'Typical Phase', type: 'text', class: 'w-32' },
+      { key: 'notes', label: 'Notes', type: 'text', class: 'w-64' }
+    ]
+  },
+  townBlacksmith: {
+    singular: 'Blacksmith Item',
+    columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'type', label: 'Type', type: 'text', class: 'w-24' },
+      { key: 'prerequisite', label: 'Prerequisite', type: 'text', class: 'w-48' },
+      { key: 'gold_cost', label: 'Gold Cost', type: 'number', class: 'w-28' },
+      { key: 'notes', label: 'Notes', type: 'text', class: 'w-64' }
+    ]
+  },
+  townAgronomist: {
+    singular: 'Agronomist Item',
+    columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'type', label: 'Type', type: 'text', class: 'w-24' },
+      { key: 'prerequisite', label: 'Prerequisite', type: 'text', class: 'w-48' },
+      { key: 'gold_cost', label: 'Gold Cost', type: 'number', class: 'w-28' },
+      { key: 'notes', label: 'Notes', type: 'text', class: 'w-64' }
+    ]
+  },
+  townCarpenter: {
+    singular: 'Carpenter Item',
+    columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'type', label: 'Type', type: 'text', class: 'w-24' },
+      { key: 'prerequisite', label: 'Prerequisite', type: 'text', class: 'w-48' },
+      { key: 'gold_cost', label: 'Gold Cost', type: 'number', class: 'w-28' },
+      { key: 'notes', label: 'Notes', type: 'text', class: 'w-64' }
+    ]
+  },
+  townLandSteward: {
+    singular: 'Land Steward Item',
+    columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'type', label: 'Type', type: 'text', class: 'w-24' },
+      { key: 'prerequisite', label: 'Prerequisite', type: 'text', class: 'w-48' },
+      { key: 'gold_cost', label: 'Gold Cost', type: 'number', class: 'w-28' },
+      { key: 'notes', label: 'Notes', type: 'text', class: 'w-64' }
+    ]
+  },
+  townMaterialTrader: {
+    singular: 'Material Trader Item',
+    columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'type', label: 'Type', type: 'text', class: 'w-24' },
+      { key: 'prerequisite', label: 'Prerequisite', type: 'text', class: 'w-48' },
+      { key: 'gold_cost', label: 'Gold Cost', type: 'number', class: 'w-28' },
+      { key: 'notes', label: 'Notes', type: 'text', class: 'w-64' }
+    ]
+  },
+  townSkillsTrainer: {
+    singular: 'Skills Trainer Item',
+    columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'type', label: 'Type', type: 'text', class: 'w-24' },
+      { key: 'prerequisite', label: 'Prerequisite', type: 'text', class: 'w-48' },
+      { key: 'gold_cost', label: 'Gold Cost', type: 'number', class: 'w-28' },
+      { key: 'notes', label: 'Notes', type: 'text', class: 'w-64' }
+    ]
+  },
+  forgeCrafting: {
+    singular: 'Forge Recipe',
+    columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
+      { key: 'name', label: 'Name', type: 'text', class: 'w-48' },
+      { key: 'type', label: 'Type', type: 'text', class: 'w-24' },
+      { key: 'prerequisite_blueprint', label: 'Prerequisite Blueprint', type: 'text', class: 'w-48' },
+      { key: 'craft_time_min', label: 'Craft Time (min)', type: 'number', class: 'w-32' },
+      { key: 'energy_cost', label: 'Energy Cost', type: 'number', class: 'w-28' },
+      { key: 'materials', label: 'Materials', type: 'text', class: 'w-48' },
+      { key: 'boss_materials', label: 'Boss Materials', type: 'text', class: 'w-48' },
+      { key: 'success_rate', label: 'Success Rate', type: 'number', class: 'w-28' },
+      { key: 'notes', label: 'Notes', type: 'text', class: 'w-64' }
+    ]
+  },
+  materialRefinement: {
+    singular: 'Refinement Recipe',
+    columns: [
+      { key: 'id', label: 'ID', type: 'text', class: 'w-32' },
+      { key: 'raw_material', label: 'Raw Material', type: 'text', class: 'w-32' },
+      { key: 'refined_output', label: 'Refined Output', type: 'text', class: 'w-32' },
+      { key: 'refine_time_min', label: 'Refine Time (min)', type: 'number', class: 'w-32' },
+      { key: 'energy_cost', label: 'Energy Cost', type: 'number', class: 'w-28' },
+      { key: 'ratio', label: 'Ratio', type: 'text', class: 'w-24' },
+      { key: 'success_rate', label: 'Success Rate', type: 'number', class: 'w-28' },
+      { key: 'notes', label: 'Notes', type: 'text', class: 'w-64' }
     ]
   }
 }
@@ -538,7 +739,10 @@ const activeTabConfig = computed(() => tabConfigs[activeTab.value] || tabConfigs
 const hasUnsavedChanges = computed(() => gameValues.hasUnsavedChanges || false)
 
 const currentItems = computed(() => {
-  const tabData = gameValues[activeTab.value]
+  const currentTab = currentTabs.value.find(tab => tab.id === activeTab.value)
+  const dataKey = currentTab?.dataKey || activeTab.value
+  const tabData = gameValues[dataKey]
+  
   if (!tabData || Object.keys(tabData).length === 0) return []
   
   // Handle different identifier fields for different data types
@@ -547,6 +751,7 @@ const currentItems = computed(() => {
       case 'mining': return 'depth'
       case 'helperRoles': return 'role'  
       case 'towerLevels': return 'reachLevel'
+      case 'phaseTransitions': return 'phase'
       default: return 'id'
     }
   }
@@ -574,8 +779,15 @@ const filteredItems = computed(() => {
   
   // Apply sorting
   items.sort((a, b) => {
-    const aVal = getItemValue(a, sortBy.value)
-    const bVal = getItemValue(b, sortBy.value)
+    let sortKey = sortBy.value
+    
+    // Use CSV index for 'id' sort to preserve original CSV order
+    if (sortKey === 'id') {
+      sortKey = '_csvIndex'
+    }
+    
+    const aVal = getItemValue(a, sortKey)
+    const bVal = getItemValue(b, sortKey)
     
     let comparison = 0
     
@@ -703,12 +915,6 @@ function createDefaultItem(type) {
       gold_reward: 50,
       materials_reward: 1,
       difficulty: 'medium'
-    },
-    upgrades: {
-      name: 'New Upgrade',
-      cost: { gold: 100, energy: 0, materials: 0 },
-      effects: 'New effect',
-      category: 'farm'
     }
   }
   

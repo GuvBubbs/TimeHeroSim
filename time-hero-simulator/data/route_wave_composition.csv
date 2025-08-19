@@ -1,0 +1,8 @@
+route,wave_size,enemy_types,total_waves_s_m_l,boss
+Meadow Path,1-2,Slimes only,3/5/8,Giant Slime
+Pine Vale,1-2,Armored Insects (100%),4/6/10,Beetle Lord
+Dark Forest,2-3,Beasts (60%)- Slimes (40%),4/7/12,Alpha Wolf
+Mountain Pass,2-3,Flying (50%)- Insects (50%),5/8/14,Sky Serpent
+Crystal Caves,2-4,Crawlers (50%)- Plants (50%),5/9/16,Crystal Spider
+Frozen Tundra,3-4,Flying (40%)- Beasts (40%)- Plants (20%),6/10/18,Frost Wyrm
+Volcano Core,3-5,Random mix of all types,6/11/20,Lava Titan (rotates weakness)

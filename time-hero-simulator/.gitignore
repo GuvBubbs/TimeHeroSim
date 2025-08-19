@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Auto-copied data files (source is in /data/)
+public/data/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

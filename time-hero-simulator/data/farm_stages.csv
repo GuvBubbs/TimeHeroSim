@@ -1,0 +1,7 @@
+id,name,plot_range,unlock_condition,cleanups_available,notes
+farm_stage_1,Starter Plot,3-8,,clear_weeds_1;clear_weeds_2,Tutorial area
+farm_stage_2,Small Hold,8-20,clear_weeds_2,collect_dead_trees;till_soil_1;clear_rocks_1;till_soil_2,No deed required
+farm_stage_3,Homestead,20-40,till_soil_2;homestead_deed,clear_boulders_1;remove_stumps_1;clear_boulders_2;remove_stumps_2;till_new_land,Requires Homestead Deed
+farm_stage_4,Manor Grounds,40-65,till_new_land;manor_grounds_deed,excavate_rocks_1;clear_thickets_1;excavate_rocks_2;clear_thickets_2;terraform,Requires Manor Grounds Deed
+farm_stage_5,Great Estate,65-90,terraform;great_estate_deed,stone_monoliths_1;ancient_roots_1;stone_monoliths_2;sacred_clearing,Requires Great Estate Deed
+farm_stage_6,Legacy Estate,90+,sacred_clearing,Future content,Post-game content

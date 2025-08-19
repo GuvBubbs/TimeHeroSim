@@ -1,30 +1,30 @@
-name,tier,seedLevel,stages,growthTime,energy,seedCost,waterConsumption,notes
-Carrot,early,0,3,6,1,0,1,Tutorial crop
-Radish,early,0,3,5,1,0,1,Quick turnover
-Potato,early,1,3,8,2,0,1,Reliable crop
-Cabbage,early,1,4,10,3,1,1,First multi-stage
-Turnip,early,1,3,7,2,1,1,Common vegetable
-Corn,early,2,5,15,5,2,1,Good mid-tier
-Tomato,early,2,5,12,4,2,1,Recurring harvest
-Strawberry,mid,3,5,20,8,5,1,Popular fruit
-Spinach,mid,3,3,10,5,3,1,Quick mid-tier
-Onion,mid,3,3,12,6,4,1,Solid seller
-Garlic,mid,4,3,15,8,5,1,High value
-Cucumber,mid,4,5,25,12,6,1,Long grow
-Leek,mid,5,3,18,10,5,1,Versatile
-Wheat,mid,5,4,22,12,7,1,Bread ingredient
-Asparagus,late,6,4,30,20,12,1,Premium crop
-Cauliflower,late,6,4,28,18,10,1,High tier
-Caisim,late,6,3,25,15,8,1,Asian vegetable
-Pumpkin,late,6,5,35,25,15,1,Seasonal
-Watermelon,late,7,5,40,35,20,1,Summer crop
-Honeydew,late,7,5,38,30,18,1,Melon variety
-Pineapple,endgame,8,5,45,40,25,1,Tropical
-Beetroot,endgame,8,4,35,35,20,1,Root vegetable
-Eggplant,endgame,8,3,30,30,15,1,Purple produce
-Soybean,endgame,8,5,42,45,30,1,Protein crop
-Yam,endgame,9,5,50,50,35,1,Starchy root
-Bell Pepper Green,endgame,9,5,48,45,30,1,Green variant
-Bell Pepper Red,endgame,9,5,48,55,35,1,Red variant
-Bell Pepper Yellow,endgame,9,5,48,65,40,1,Yellow variant
-Shallot,endgame,9,3,40,60,35,1,Premium onion
+id,name,tier,seed_level,stages,growth_time_min,energy_per_harvest,prerequisite
+carrot,Carrot,Early,0,3,6,1,
+radish,Radish,Early,0,3,5,1,
+potato,Potato,Early,1,3,8,2,tower_reach_3
+cabbage,Cabbage,Early,1,4,10,3,tower_reach_3
+turnip,Turnip,Early,1,3,7,2,tower_reach_3
+corn,Corn,Early,2,5,15,5,tower_reach_4
+tomato,Tomato,Early,2,5,12,4,tower_reach_4
+strawberry,Strawberry,Mid,3,5,20,8,tower_reach_5
+spinach,Spinach,Mid,3,3,10,5,tower_reach_5
+onion,Onion,Mid,3,3,12,6,tower_reach_5
+garlic,Garlic,Mid,4,3,15,8,tower_reach_6
+cucumber,Cucumber,Mid,4,5,25,12,tower_reach_6
+leek,Leek,Mid,5,3,18,10,tower_reach_7
+wheat,Wheat,Mid,5,4,22,12,tower_reach_7
+asparagus,Asparagus,Late,6,4,30,20,tower_reach_8
+cauliflower,Cauliflower,Late,6,4,28,18,tower_reach_8
+caisim,Caisim,Late,6,3,25,15,tower_reach_8
+pumpkin,Pumpkin,Late,6,5,35,25,tower_reach_8
+watermelon,Watermelon,Late,7,5,40,35,tower_reach_9
+honeydew,Honeydew,Late,7,5,38,30,tower_reach_9
+pineapple,Pineapple,Endgame,8,5,45,40,tower_reach_10
+beetroot,Beetroot,Endgame,8,4,35,35,tower_reach_10
+eggplant,Eggplant,Endgame,8,3,30,30,tower_reach_10
+soybean,Soybean,Endgame,8,5,42,45,tower_reach_10
+yam,Yam,Endgame,9,5,50,50,tower_reach_11
+bell_pepper_g,Bell Pepper (Green),Endgame,9,5,48,45,tower_reach_11
+bell_pepper_r,Bell Pepper (Red),Endgame,9,5,48,55,tower_reach_11
+bell_pepper_y,Bell Pepper (Yellow),Endgame,9,5,48,65,tower_reach_11
+shallot,Shallot,Endgame,9,3,40,60,tower_reach_11

@@ -1,0 +1,4 @@
+id,name,type,prerequisite,gold_cost,build_energy,effect
+homestead_deed,Homestead Deed,land_deed,farm_stage_2,1500,250,Expands plots 20->40; unlocks Stage 3 cleanups
+manor_grounds_deed,Manor Grounds Deed,land_deed,farm_stage_3,6000,750,Expands plots 40->65; unlocks Stage 4 cleanups
+great_estate_deed,Great Estate Deed,land_deed,farm_stage_4,20000,1500,Expands plots 65->90; unlocks Stage 5 cleanups

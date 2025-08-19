@@ -1,0 +1,10 @@
+id,name,type,prerequisite,gold_cost,training_energy,effect
+carry_capacity_1,Carry Capacity Rank 1,skill,,25,10,+1 carry (total 2)
+carry_capacity_2,Carry Capacity Rank 2,skill,carry_capacity_1,50,15,+1 carry (total 3)
+carry_capacity_3,Carry Capacity Rank 3,skill,carry_capacity_2,100,20,+1 carry (total 4)
+carry_capacity_4,Carry Capacity Rank 4,skill,carry_capacity_3;homestead_deed,200,30,+1 carry (total 5)
+carry_capacity_5,Carry Capacity Rank 5,skill,carry_capacity_4,400,40,+1 carry (total 6)
+carry_capacity_6,Carry Capacity Rank 6,skill,carry_capacity_5;manor_grounds_deed,800,60,+1 carry (total 7)
+carry_capacity_7,Carry Capacity Rank 7,skill,carry_capacity_6,1500,80,+1 carry (total 8)
+carry_capacity_8,Carry Capacity Rank 8,skill,carry_capacity_7;great_estate_deed,3000,100,+1 carry (total 9)
+carry_capacity_9,Carry Capacity Rank 9,skill,carry_capacity_8,6000,125,+1 carry (total 10)

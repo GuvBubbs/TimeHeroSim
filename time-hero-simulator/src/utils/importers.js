@@ -1,4 +1,5 @@
 import Papa from 'papaparse'
+import { processAllNodes } from './nodeClassification.js'
 
 /**
  * CSV Import Utilities
@@ -48,6 +49,11 @@ async function loadCSVFile(filename) {
     console.log(`📝 CSV content for ${filename} (first 200 chars):`, csvText.substring(0, 200))
     
     const parsedData = parseCSVData(csvText)
+    console.log(`🔍 Parsed ${filename}:`, {
+      rows: parsedData.length,
+      headers: parsedData.length > 0 ? Object.keys(parsedData[0]) : [],
+      sampleRow: parsedData[0]
+    })
     console.log(`✅ Parsed ${filename} successfully. Row count:`, parsedData.length)
     console.log(`🔍 First parsed row:`, parsedData[0])
     
@@ -68,6 +74,27 @@ function arrayToKeyedObject(array, keyField = 'id') {
   return result
 }
 
+// Generic data processor for simple CSV data
+function processGenericData(rawData, keyField = 'id') {
+  if (!rawData || rawData.length === 0) {
+    return Object.freeze({})
+  }
+  
+  const result = {}
+  rawData.forEach((item, index) => {
+    // Add an index field to preserve CSV order
+    const enhancedItem = {
+      ...item,
+      _csvIndex: index
+    }
+    
+    const key = item[keyField] || item.name?.toLowerCase().replace(/\s+/g, '_') || `item_${index}`
+    result[key] = enhancedItem
+  })
+  
+  return Object.freeze(result)
+}
+
 // Validate required fields in data
 function validateRequiredFields(data, requiredFields, dataType) {
   const errors = []
@@ -85,7 +112,7 @@ function validateRequiredFields(data, requiredFields, dataType) {
 
 // Process crops data specifically
 function processCropsData(rawData) {
-  const validationErrors = validateRequiredFields(rawData, ['name', 'tier', 'energy', 'growthTime', 'seedLevel'], 'crops')
+  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'tier', 'seed_level', 'growth_time_min', 'energy_per_harvest'], 'crops')
   
   if (validationErrors.length > 0) {
     throw new Error(`Crops data validation failed: ${validationErrors.join(', ')}`)
@@ -93,23 +120,10 @@ function processCropsData(rawData) {
   
   // Convert to keyed object and add computed properties
   const cropsObj = {}
-  rawData.forEach(crop => {
-    const key = crop.name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')
-    cropsObj[key] = {
+  rawData.forEach((crop, index) => {
+    cropsObj[crop.id] = {
       ...crop,
-      id: key,
-      // Parse numeric fields
-      seedLevel: parseInt(crop.seedLevel) || 0,
-      stages: parseInt(crop.stages) || parseInt(crop.growthStages) || 1,
-      growthTime: parseFloat(crop.growthTime) || 1,
-      energy: parseFloat(crop.energy) || 0,
-      seedCost: parseInt(crop.seedCost) || 0,
-      waterConsumption: parseInt(crop.waterConsumption) || 1,
-      // Add computed properties
-      energyPerMinute: parseFloat(crop.energy) / parseFloat(crop.growthTime),
-      energyEfficiency: parseFloat(crop.energy) / (parseFloat(crop.growthTime) + (parseInt(crop.seedCost) || 0)),
-      stageMultiplier: (parseInt(crop.stages) || parseInt(crop.growthStages) || 1) === 3 ? 1.0 : 
-                      (parseInt(crop.stages) || parseInt(crop.growthStages) || 1) === 4 ? 1.5 : 2.0
+      _csvIndex: index // Preserve original CSV order
     }
   })
   
@@ -118,20 +132,17 @@ function processCropsData(rawData) {
 
 // Process adventures data specifically  
 function processAdventuresData(rawData) {
-  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'shortEnergy', 'shortDuration', 'shortGold'], 'adventures')
+  const validationErrors = validateRequiredFields(rawData, ['id', 'route', 'length', 'energy_cost'], 'adventures')
   
   if (validationErrors.length > 0) {
     throw new Error(`Adventures data validation failed: ${validationErrors.join(', ')}`)
   }
   
   const adventuresObj = {}
-  rawData.forEach(adventure => {
+  rawData.forEach((adventure, index) => {
     adventuresObj[adventure.id] = {
       ...adventure,
-      // Add computed efficiency ratios
-      shortEfficiency: adventure.goldReward / (adventure.shortEnergy || 1),
-      mediumEfficiency: adventure.goldReward / (adventure.mediumEnergy || 1),
-      longEfficiency: adventure.goldReward / (adventure.longEnergy || 1)
+      _csvIndex: index // Preserve original CSV order
     }
   })
   
@@ -140,34 +151,17 @@ function processAdventuresData(rawData) {
 
 // Process upgrades data specifically
 function processUpgradesData(rawData) {
-  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'category', 'goldCost', 'vendor'], 'upgrades')
+  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'vendor', 'category'], 'upgrades')
   
   if (validationErrors.length > 0) {
     throw new Error(`Upgrades data validation failed: ${validationErrors.join(', ')}`)
   }
   
   const upgradesObj = {}
-  rawData.forEach(upgrade => {
-    // Create structured cost object
-    const cost = {
-      gold: upgrade.goldCost || 0,
-      energy: upgrade.energyCost || 0,
-      stone: upgrade.stoneCost || 0,
-      copper: upgrade.copperCost || 0,
-      iron: upgrade.ironCost || 0,
-      silver: upgrade.silverCost || 0,
-      crystal: upgrade.crystalCost || 0,
-      mythril: upgrade.mythrilCost || 0
-    }
-    
-    // Calculate total cost for sorting/analysis
-    const materialCost = cost.stone + cost.copper + cost.iron + cost.silver + cost.crystal + cost.mythril
-    
+  rawData.forEach((upgrade, index) => {
     upgradesObj[upgrade.id] = {
       ...upgrade,
-      cost, // Add structured cost object for validation
-      totalMaterialCost: materialCost,
-      totalCost: cost.gold + cost.energy + materialCost
+      _csvIndex: index // Preserve original CSV order
     }
   })
   
@@ -176,18 +170,17 @@ function processUpgradesData(rawData) {
 
 // Process mining data specifically
 function processMiningData(rawData) {
-  const validationErrors = validateRequiredFields(rawData, ['depth', 'name', 'energyDrain'], 'mining')
+  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'depth_range', 'base_energy_per_min'], 'mining')
   
   if (validationErrors.length > 0) {
     throw new Error(`Mining data validation failed: ${validationErrors.join(', ')}`)
   }
   
   const miningObj = {}
-  rawData.forEach(level => {
-    miningObj[level.depth] = {
+  rawData.forEach((level, index) => {
+    miningObj[level.id] = {
       ...level,
-      // Add computed properties if needed
-      ...(level.energyDrain && { efficiencyRatio: (level.materials ? level.materials.length : 1) / level.energyDrain })
+      _csvIndex: index // Preserve original CSV order
     }
   })
   
@@ -196,18 +189,17 @@ function processMiningData(rawData) {
 
 // Process helpers data specifically
 function processHelpersData(rawData) {
-  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'rescueRoute', 'baseHousing'], 'helpers')
+  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'unlock_prerequisite', 'role_options'], 'helpers')
   
   if (validationErrors.length > 0) {
     throw new Error(`Helpers data validation failed: ${validationErrors.join(', ')}`)
   }
   
   const helpersObj = {}
-  rawData.forEach(helper => {
+  rawData.forEach((helper, index) => {
     helpersObj[helper.id] = {
       ...helper,
-      // Add computed properties
-      efficiencyGain: helper.maxEfficiency - helper.baseEfficiency
+      _csvIndex: index // Preserve original CSV order
     }
   })
   
@@ -216,77 +208,41 @@ function processHelpersData(rawData) {
 
 // Process combat data specifically
 function processCombatData(rawData) {
-  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'type', 'category'], 'combat')
-  
-  if (validationErrors.length > 0) {
-    throw new Error(`Combat data validation failed: ${validationErrors.join(', ')}`)
-  }
-  
-  const combatObj = {}
-  rawData.forEach(item => {
-    // Create structured cost object
-    const cost = {
-      gold: item.goldCost || 0,
-      energy: item.energyCost || 0,
-      stone: item.stoneCost || 0,
-      copper: item.copperCost || 0,
-      iron: item.ironCost || 0,
-      silver: item.silverCost || 0,
-      crystal: item.crystalCost || 0,
-      mythril: item.mythrilCost || 0
-    }
-    
-    combatObj[item.id] = {
-      ...item,
-      cost // Add structured cost object
-    }
-  })
-  
-  return Object.freeze(combatObj)
+  // Use generic processing since combat.csv structure may vary
+  return processGenericData(rawData, 'id')
 }
 
 // Process weapons data specifically
 function processWeaponsData(rawData) {
+  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'type', 'level'], 'weapons')
+  
+  if (validationErrors.length > 0) {
+    throw new Error(`Weapons data validation failed: ${validationErrors.join(', ')}`)
+  }
+  
   const weaponsObj = {}
-  rawData.forEach(weapon => {
+  rawData.forEach((weapon, index) => {
     weaponsObj[weapon.id] = {
       ...weapon,
-      // Parse numeric fields
-      level: parseInt(weapon.level) || 1,
-      goldCost: parseInt(weapon.goldCost) || 0,
-      energyCost: parseInt(weapon.energyCost) || 0,
-      damage: parseInt(weapon.damage) || 0,
-      attackSpeed: parseFloat(weapon.attackSpeed) || 1.0
+      _csvIndex: index // Preserve original CSV order
     }
   })
   return Object.freeze(weaponsObj)
 }
 
-// Process armor data specifically  
-function processArmorData(rawData) {
-  const armorObj = {}
-  rawData.forEach(armor => {
-    armorObj[armor.id] = {
-      ...armor,
-      // Parse numeric fields
-      baseDefense: parseInt(armor.baseDefense) || 0,
-      effectValue: parseInt(armor.effectValue) || 0,
-      dropWeight: parseFloat(armor.dropWeight) || 0
-    }
-  })
-  return Object.freeze(armorObj)
-}
-
 // Process tools data specifically
 function processToolsData(rawData) {
+  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'tier', 'category'], 'tools')
+  
+  if (validationErrors.length > 0) {
+    throw new Error(`Tools data validation failed: ${validationErrors.join(', ')}`)
+  }
+  
   const toolsObj = {}
-  rawData.forEach(tool => {
+  rawData.forEach((tool, index) => {
     toolsObj[tool.id] = {
       ...tool,
-      // Parse numeric fields
-      goldCost: parseInt(tool.goldCost) || 0,
-      energyCost: parseInt(tool.energyCost) || 0,
-      craftTime: parseInt(tool.craftTime) || 0
+      _csvIndex: index // Preserve original CSV order
     }
   })
   return Object.freeze(toolsObj)
@@ -294,14 +250,17 @@ function processToolsData(rawData) {
 
 // Process helper roles data specifically
 function processHelperRolesData(rawData) {
+  const validationErrors = validateRequiredFields(rawData, ['role', 'name', 'category'], 'helperRoles')
+  
+  if (validationErrors.length > 0) {
+    throw new Error(`Helper roles data validation failed: ${validationErrors.join(', ')}`)
+  }
+  
   const rolesObj = {}
-  rawData.forEach(role => {
+  rawData.forEach((role, index) => {
     rolesObj[role.role] = {
       ...role,
-      // Parse numeric fields
-      baseEffect: parseInt(role.baseEffect) || 0,
-      effectPerLevel: parseFloat(role.effectPerLevel) || 0,
-      maxEffect: parseInt(role.maxEffect) || 0
+      _csvIndex: index // Preserve original CSV order
     }
   })
   return Object.freeze(rolesObj)
@@ -309,16 +268,17 @@ function processHelperRolesData(rawData) {
 
 // Process tower levels data specifically
 function processTowerLevelsData(rawData) {
+  const validationErrors = validateRequiredFields(rawData, ['reachLevel', 'windLevel', 'seedLevel'], 'towerLevels')
+  
+  if (validationErrors.length > 0) {
+    throw new Error(`Tower levels data validation failed: ${validationErrors.join(', ')}`)
+  }
+  
   const levelsObj = {}
-  rawData.forEach(level => {
+  rawData.forEach((level, index) => {
     levelsObj[level.reachLevel] = {
       ...level,
-      // Parse numeric fields
-      reachLevel: parseInt(level.reachLevel) || 1,
-      seedLevel: parseInt(level.seedLevel) || 0,
-      goldCost: parseInt(level.goldCost) || 0,
-      energyCost: parseInt(level.energyCost) || 0,
-      catchRate: parseFloat(level.catchRate) || 1.0
+      _csvIndex: index // Preserve original CSV order
     }
   })
   return Object.freeze(levelsObj)
@@ -326,41 +286,36 @@ function processTowerLevelsData(rawData) {
 
 // Process vendors data specifically
 function processVendorsData(rawData) {
+  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'shopType'], 'vendors')
+  
+  if (validationErrors.length > 0) {
+    throw new Error(`Vendors data validation failed: ${validationErrors.join(', ')}`)
+  }
+  
   const vendorsObj = {}
-  rawData.forEach(vendor => {
+  rawData.forEach((vendor, index) => {
     vendorsObj[vendor.id] = {
-      ...vendor
+      ...vendor,
+      _csvIndex: index // Preserve original CSV order
     }
   })
   return Object.freeze(vendorsObj)
 }
 
 // Process cleanups data specifically
-function processCleanupsData(rawData) {
-  const cleanupsObj = {}
-  rawData.forEach(cleanup => {
-    cleanupsObj[cleanup.id] = {
-      ...cleanup,
-      // Parse numeric fields
-      stage: parseInt(cleanup.stage) || 1,
-      plotsAdded: parseInt(cleanup.plotsAdded) || 0,
-      totalPlots: parseInt(cleanup.totalPlots) || 0,
-      energyCost: parseInt(cleanup.energyCost) || 0,
-      cooldown: parseInt(cleanup.cooldown) || 0,
-      repeatable: cleanup.repeatable === 'true'
-    }
-  })
-  return Object.freeze(cleanupsObj)
-}
-
 // Process boss materials data specifically
 function processBossMaterialsData(rawData) {
+  const validationErrors = validateRequiredFields(rawData, ['id', 'name', 'dropFrom'], 'bossMaterials')
+  
+  if (validationErrors.length > 0) {
+    throw new Error(`Boss materials data validation failed: ${validationErrors.join(', ')}`)
+  }
+  
   const materialsObj = {}
-  rawData.forEach(material => {
+  rawData.forEach((material, index) => {
     materialsObj[material.id] = {
       ...material,
-      // Parse numeric fields
-      dropChance: parseFloat(material.dropChance) || 0
+      _csvIndex: index // Preserve original CSV order
     }
   })
   return Object.freeze(materialsObj)
@@ -380,13 +335,36 @@ export async function loadAllGameData() {
       helpersRaw, 
       combatRaw,
       weaponsRaw,
-      armorRaw,
+      armorBaseRaw,
+      armorPotentialRaw,
+      armorEffectsRaw,
+      routeLootTableRaw,
+      enemyTypesDamageRaw,
+      routeWaveCompositionRaw,
       toolsRaw,
       helperRolesRaw,
       towerLevelsRaw,
       vendorsRaw,
-      cleanupsRaw,
-      bossMaterialsRaw
+      bossMaterialsRaw,
+      // Farm system data
+      farmCleanupsRaw,
+      farmStagesRaw,
+      farmProjectsRaw,
+      gnomeRolesRaw,
+      // Progression data
+      xpProgressionRaw,
+      // Town vendor data
+      townBlacksmithRaw,
+      townAgronomistRaw,
+      townCarpenterRaw,
+      townLandStewardRaw,
+      townMaterialTraderRaw,
+      townSkillsTrainerRaw,
+      // Crafting data
+      forgeCraftingRaw,
+      materialRefinementRaw,
+      // Game flow data
+      phaseTransitionsRaw
     ] = await Promise.all([
       loadCSVFile('crops.csv'),
       loadCSVFile('adventures.csv'),
@@ -395,13 +373,36 @@ export async function loadAllGameData() {
       loadCSVFile('helpers.csv').catch(() => []),
       loadCSVFile('combat.csv').catch(() => []),
       loadCSVFile('weapons.csv').catch(() => []),
-      loadCSVFile('armor.csv').catch(() => []),
+      loadCSVFile('armor_base.csv').catch(() => []),
+      loadCSVFile('armor_potential.csv').catch(() => []),
+      loadCSVFile('armor_effects.csv').catch(() => []),
+      loadCSVFile('route_loot_table.csv').catch(() => []),
+      loadCSVFile('enemy_types_damage.csv').catch(() => []),
+      loadCSVFile('route_wave_composition.csv').catch(() => []),
       loadCSVFile('tools.csv').catch(() => []),
       loadCSVFile('helper_roles.csv').catch(() => []),
       loadCSVFile('tower_levels.csv').catch(() => []),
       loadCSVFile('vendors.csv').catch(() => []),
-      loadCSVFile('cleanups.csv').catch(() => []),
-      loadCSVFile('boss_materials.csv').catch(() => [])
+      loadCSVFile('boss_materials.csv').catch(() => []),
+      // Farm system files
+      loadCSVFile('farm_cleanups.csv').catch(() => []),
+      loadCSVFile('farm_stages.csv').catch(() => []),
+      loadCSVFile('farm_projects.csv').catch(() => []),
+      loadCSVFile('gnome_roles.csv').catch(() => []),
+      // Progression files
+      loadCSVFile('xp_progression.csv').catch(() => []),
+      // Town vendor files
+      loadCSVFile('town_blacksmith.csv').catch(() => []),
+      loadCSVFile('town_agronomist.csv').catch(() => []),
+      loadCSVFile('town_carpenter.csv').catch(() => []),
+      loadCSVFile('town_land_steward.csv').catch(() => []),
+      loadCSVFile('town_material_trader.csv').catch(() => []),
+      loadCSVFile('town_skills_trainer.csv').catch(() => []),
+      // Crafting files
+      loadCSVFile('forge_crafting.csv').catch(() => []),
+      loadCSVFile('material_refinement.csv').catch(() => []),
+      // Game flow files
+      loadCSVFile('phase_transitions.csv').catch(() => [])
     ])
     
     console.log('📊 Raw data loaded:', {
@@ -412,13 +413,31 @@ export async function loadAllGameData() {
       helpers: helpersRaw.length,
       combat: combatRaw.length,
       weapons: weaponsRaw.length,
-      armor: armorRaw.length,
+      armorBase: armorBaseRaw.length,
+      armorPotential: armorPotentialRaw.length,
+      armorEffects: armorEffectsRaw.length,
+      routeLootTable: routeLootTableRaw.length,
+      enemyTypesDamage: enemyTypesDamageRaw.length,
+      routeWaveComposition: routeWaveCompositionRaw.length,
       tools: toolsRaw.length,
       helperRoles: helperRolesRaw.length,
       towerLevels: towerLevelsRaw.length,
       vendors: vendorsRaw.length,
-      cleanups: cleanupsRaw.length,
-      bossMaterials: bossMaterialsRaw.length
+      bossMaterials: bossMaterialsRaw.length,
+      farmCleanups: farmCleanupsRaw.length,
+      farmStages: farmStagesRaw.length,
+      farmProjects: farmProjectsRaw.length,
+      gnomeRoles: gnomeRolesRaw.length,
+      xpProgression: xpProgressionRaw.length,
+      townBlacksmith: townBlacksmithRaw.length,
+      townAgronomist: townAgronomistRaw.length,
+      townCarpenter: townCarpenterRaw.length,
+      townLandSteward: townLandStewardRaw.length,
+      townMaterialTrader: townMaterialTraderRaw.length,
+      townSkillsTrainer: townSkillsTrainerRaw.length,
+      forgeCrafting: forgeCraftingRaw.length,
+      materialRefinement: materialRefinementRaw.length,
+      phaseTransitions: phaseTransitionsRaw.length
     })
     
     // Process each data type
@@ -429,13 +448,33 @@ export async function loadAllGameData() {
     const helpers = helpersRaw.length > 0 ? processHelpersData(helpersRaw) : Object.freeze({})
     const combat = combatRaw.length > 0 ? processCombatData(combatRaw) : Object.freeze({})
     const weapons = weaponsRaw.length > 0 ? processWeaponsData(weaponsRaw) : Object.freeze({})
-    const armor = armorRaw.length > 0 ? processArmorData(armorRaw) : Object.freeze({})
+    const armorBase = armorBaseRaw.length > 0 ? processGenericData(armorBaseRaw, 'defense_rating') : Object.freeze({})
+    const armorPotential = armorPotentialRaw.length > 0 ? processGenericData(armorPotentialRaw, 'upgrade_potential') : Object.freeze({})
+    const armorEffects = armorEffectsRaw.length > 0 ? processGenericData(armorEffectsRaw, 'effect') : Object.freeze({})
+    const routeLootTable = routeLootTableRaw.length > 0 ? processGenericData(routeLootTableRaw, 'route') : Object.freeze({})
+    const enemyTypesDamage = enemyTypesDamageRaw.length > 0 ? processGenericData(enemyTypesDamageRaw, 'enemy_type') : Object.freeze({})
+    const routeWaveComposition = routeWaveCompositionRaw.length > 0 ? processGenericData(routeWaveCompositionRaw, 'route') : Object.freeze({})
     const tools = toolsRaw.length > 0 ? processToolsData(toolsRaw) : Object.freeze({})
     const helperRoles = helperRolesRaw.length > 0 ? processHelperRolesData(helperRolesRaw) : Object.freeze({})
     const towerLevels = towerLevelsRaw.length > 0 ? processTowerLevelsData(towerLevelsRaw) : Object.freeze({})
     const vendors = vendorsRaw.length > 0 ? processVendorsData(vendorsRaw) : Object.freeze({})
-    const cleanups = cleanupsRaw.length > 0 ? processCleanupsData(cleanupsRaw) : Object.freeze({})
     const bossMaterials = bossMaterialsRaw.length > 0 ? processBossMaterialsData(bossMaterialsRaw) : Object.freeze({})
+    
+    // Process new data types using generic processor
+    const farmCleanups = farmCleanupsRaw.length > 0 ? processGenericData(farmCleanupsRaw, 'id') : Object.freeze({})
+    const farmStages = farmStagesRaw.length > 0 ? processGenericData(farmStagesRaw, 'stage') : Object.freeze({})
+    const farmProjects = farmProjectsRaw.length > 0 ? processGenericData(farmProjectsRaw, 'id') : Object.freeze({})
+    const gnomeRoles = gnomeRolesRaw.length > 0 ? processGenericData(gnomeRolesRaw, 'role') : Object.freeze({})
+    const xpProgression = xpProgressionRaw.length > 0 ? processGenericData(xpProgressionRaw, 'level') : Object.freeze({})
+    const townBlacksmith = townBlacksmithRaw.length > 0 ? processGenericData(townBlacksmithRaw, 'id') : Object.freeze({})
+    const townAgronomist = townAgronomistRaw.length > 0 ? processGenericData(townAgronomistRaw, 'id') : Object.freeze({})
+    const townCarpenter = townCarpenterRaw.length > 0 ? processGenericData(townCarpenterRaw, 'id') : Object.freeze({})
+    const townLandSteward = townLandStewardRaw.length > 0 ? processGenericData(townLandStewardRaw, 'id') : Object.freeze({})
+    const townMaterialTrader = townMaterialTraderRaw.length > 0 ? processGenericData(townMaterialTraderRaw, 'id') : Object.freeze({})
+    const townSkillsTrainer = townSkillsTrainerRaw.length > 0 ? processGenericData(townSkillsTrainerRaw, 'id') : Object.freeze({})
+    const forgeCrafting = forgeCraftingRaw.length > 0 ? processGenericData(forgeCraftingRaw, 'id') : Object.freeze({})
+    const materialRefinement = materialRefinementRaw.length > 0 ? processGenericData(materialRefinementRaw, 'material') : Object.freeze({})
+    const phaseTransitions = phaseTransitionsRaw.length > 0 ? processGenericData(phaseTransitionsRaw, 'phase') : Object.freeze({})
     
     console.log('🔧 Processed data:', {
       crops: Object.keys(crops).length,
@@ -445,14 +484,56 @@ export async function loadAllGameData() {
       helpers: Object.keys(helpers).length,
       combat: Object.keys(combat).length,
       weapons: Object.keys(weapons).length,
-      armor: Object.keys(armor).length,
+      armorBase: Object.keys(armorBase).length,
+      armorPotential: Object.keys(armorPotential).length,
+      armorEffects: Object.keys(armorEffects).length,
+      routeLootTable: Object.keys(routeLootTable).length,
+      enemyTypesDamage: Object.keys(enemyTypesDamage).length,
+      routeWaveComposition: Object.keys(routeWaveComposition).length,
       tools: Object.keys(tools).length,
       helperRoles: Object.keys(helperRoles).length,
       towerLevels: Object.keys(towerLevels).length,
       vendors: Object.keys(vendors).length,
-      cleanups: Object.keys(cleanups).length,
-      bossMaterials: Object.keys(bossMaterials).length
+      bossMaterials: Object.keys(bossMaterials).length,
+      farmCleanups: Object.keys(farmCleanups).length,
+      farmStages: Object.keys(farmStages).length,
+      farmProjects: Object.keys(farmProjects).length,
+      gnomeRoles: Object.keys(gnomeRoles).length,
+      xpProgression: Object.keys(xpProgression).length,
+      townBlacksmith: Object.keys(townBlacksmith).length,
+      townAgronomist: Object.keys(townAgronomist).length,
+      townCarpenter: Object.keys(townCarpenter).length,
+      townLandSteward: Object.keys(townLandSteward).length,
+      townMaterialTrader: Object.keys(townMaterialTrader).length,
+      townSkillsTrainer: Object.keys(townSkillsTrainer).length,
+      forgeCrafting: Object.keys(forgeCrafting).length,
+      materialRefinement: Object.keys(materialRefinement).length,
+      phaseTransitions: Object.keys(phaseTransitions).length
     })
+    
+    // Create unified nodes for upgrade tree
+    const allRawCsvData = {
+      crops: cropsRaw,
+      adventures: adventuresRaw,
+      mining: miningRaw,
+      weapons: weaponsRaw,
+      towerLevels: towerLevelsRaw,
+      vendors: vendorsRaw,
+      bossMaterials: bossMaterialsRaw,
+      farmStages: farmStagesRaw,
+      farmProjects: farmProjectsRaw,
+      xpProgression: xpProgressionRaw,
+      townBlacksmith: townBlacksmithRaw,
+      townAgronomist: townAgronomistRaw,
+      townCarpenter: townCarpenterRaw,
+      townLandSteward: townLandStewardRaw,
+      townMaterialTrader: townMaterialTraderRaw,
+      townSkillsTrainer: townSkillsTrainerRaw,
+      forgeCrafting: forgeCraftingRaw,
+      phaseTransitions: phaseTransitionsRaw
+    }
+    
+    const unifiedNodes = processAllNodes(allRawCsvData)
     
     // Create the final game data object
     const gameData = Object.freeze({
@@ -463,14 +544,34 @@ export async function loadAllGameData() {
       helpers,
       combat,
       weapons,
-      armor,
+      armorBase,
+      armorPotential,
+      armorEffects,
+      routeLootTable,
+      enemyTypesDamage,
+      routeWaveComposition,
       tools,
       helperRoles,
       towerLevels,
       vendors,
-      cleanups,
       bossMaterials,
-      storage: Object.freeze({})
+      farmCleanups,
+      farmStages,
+      farmProjects,
+      gnomeRoles,
+      xpProgression,
+      townBlacksmith,
+      townAgronomist,
+      townCarpenter,
+      townLandSteward,
+      townMaterialTrader,
+      townSkillsTrainer,
+      forgeCrafting,
+      materialRefinement,
+      phaseTransitions,
+      storage: Object.freeze({}),
+      // Unified nodes for upgrade tree
+      unifiedNodes: Object.freeze(unifiedNodes)
     })
     
     console.log('✅ Game data loaded successfully:', {
@@ -481,13 +582,31 @@ export async function loadAllGameData() {
       helpers: Object.keys(helpers).length,
       combat: Object.keys(combat).length,
       weapons: Object.keys(weapons).length,
-      armor: Object.keys(armor).length,
+      armorBase: Object.keys(armorBase).length,
+      armorPotential: Object.keys(armorPotential).length,
+      armorEffects: Object.keys(armorEffects).length,
+      routeLootTable: Object.keys(routeLootTable).length,
+      enemyTypesDamage: Object.keys(enemyTypesDamage).length,
+      routeWaveComposition: Object.keys(routeWaveComposition).length,
       tools: Object.keys(tools).length,
       helperRoles: Object.keys(helperRoles).length,
       towerLevels: Object.keys(towerLevels).length,
       vendors: Object.keys(vendors).length,
-      cleanups: Object.keys(cleanups).length,
-      bossMaterials: Object.keys(bossMaterials).length
+      bossMaterials: Object.keys(bossMaterials).length,
+      farmCleanups: Object.keys(farmCleanups).length,
+      farmStages: Object.keys(farmStages).length,
+      farmProjects: Object.keys(farmProjects).length,
+      gnomeRoles: Object.keys(gnomeRoles).length,
+      xpProgression: Object.keys(xpProgression).length,
+      townBlacksmith: Object.keys(townBlacksmith).length,
+      townAgronomist: Object.keys(townAgronomist).length,
+      townCarpenter: Object.keys(townCarpenter).length,
+      townLandSteward: Object.keys(townLandSteward).length,
+      townMaterialTrader: Object.keys(townMaterialTrader).length,
+      townSkillsTrainer: Object.keys(townSkillsTrainer).length,
+      forgeCrafting: Object.keys(forgeCrafting).length,
+      materialRefinement: Object.keys(materialRefinement).length,
+      phaseTransitions: Object.keys(phaseTransitions).length
     })
     
     console.log('🔍 Sample crop data:', Object.values(crops)[0])

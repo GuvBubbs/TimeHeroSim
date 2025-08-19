@@ -1,8 +1,22 @@
-id,name,prerequisite,shortEnergy,shortDuration,shortGold,mediumEnergy,mediumDuration,mediumGold,longEnergy,longDuration,longGold,enemyTypes,boss,bossWeakness,commonMat,rareMat,bossMat,firstClearBonus
-meadow_path,Meadow Path,,10,3,25,25,8,75,50,15,150,slimes:100,Giant Slime,none,"wood:5-10",,copper:2,
-pine_vale,Pine Vale,meadow_path_long,20,5,60,50,15,150,100,30,300,armored_insects:100,Beetle Lord,spear,"wood:20-30",,"iron:3;pine_resin:1",
-dark_forest,Dark Forest,pine_vale_long,40,8,150,100,20,375,200,45,750,beasts:60;slimes:40,Alpha Wolf,sword,"wood:40-60",,"iron:5;shadow_bark:1",gnome_rescued
-mountain_pass,Mountain Pass,dark_forest_long,100,10,400,250,30,1000,500,60,2000,flying:50;insects:50,Sky Serpent,bow,"stone:30-50",silver:3,mountain_stone:1,gnome_rescued
-crystal_caves,Crystal Caves,mountain_pass_long,200,15,1000,500,40,2500,1000,90,5000,crawlers:50;plants:50,Crystal Spider,crossbow,"crystal:1-2",crystal:2,cave_crystal:1,gnome_rescued
-frozen_tundra,Frozen Tundra,crystal_caves_long,400,20,2500,1000,50,6250,2000,120,12500,flying:40;beasts:40;plants:20,Frost Wyrm,wand,"wood:80-120",mythril:1,"frozen_heart:1;enchanted_wood:1",gnome_rescued
-volcano_core,Volcano Core,frozen_tundra_long,800,25,6000,2000,65,15000,4000,150,30000,mixed:100,Lava Titan,rotating,"obsidian:1",obsidian:2,molten_core:1,gnome_rescued
+id,route,length,prerequisite,energy_cost,duration_min,gold_reward,boss,boss_weakness,boss_materials,common_materials,first_clear_bonus,enemy_types,materials,yields
+meadow_path_short,Meadow Path,Short,,10,3,25,Giant Slime,None,Copper x2,Wood x5-10,,Slimes only,,
+meadow_path_medium,Meadow Path,Medium,meadow_path_short,25,8,75,Giant Slime,None,Copper x2,Wood x5-10,,Slimes only,,
+meadow_path_long,Meadow Path,Long,meadow_path_medium,50,15,150,Giant Slime,None,Copper x2,Wood x5-10,,Slimes only,,
+pine_vale_short,Pine Vale,Short,meadow_path_long,20,5,60,Beetle Lord,Spear,Iron x3;Pine Resin x1,Wood x20-30,,Armored Insects,,
+pine_vale_medium,Pine Vale,Medium,meadow_path_long,50,15,150,Beetle Lord,Spear,Iron x3;Pine Resin x1,Wood x20-30,,Armored Insects,,
+pine_vale_long,Pine Vale,Long,meadow_path_long,100,30,300,Beetle Lord,Spear,Iron x3;Pine Resin x1,Wood x20-30,,Armored Insects,,
+dark_forest_short,Dark Forest,Short,pine_vale_long,40,8,150,Alpha Wolf,Sword,Iron x5;Shadow Bark x1,Wood x40-60,,Beasts 60%;Slimes 40%,,
+dark_forest_medium,Dark Forest,Medium,pine_vale_long,100,20,375,Alpha Wolf,Sword,Iron x5;Shadow Bark x1,Wood x40-60,,Beasts 60%;Slimes 40%,,
+dark_forest_long,Dark Forest,Long,pine_vale_long,200,45,750,Alpha Wolf,Sword,Iron x5;Shadow Bark x1,Wood x40-60,gnome_1,Beasts 60%;Slimes 40%,,
+mountain_pass_short,Mountain Pass,Short,dark_forest_long,100,10,400,Sky Serpent,Bow,Silver x3;Mountain Stone x1,Stone x30-50,,Flying 50%;Insects 50%,,
+mountain_pass_medium,Mountain Pass,Medium,dark_forest_long,250,30,1000,Sky Serpent,Bow,Silver x3;Mountain Stone x1,Stone x30-50,,Flying 50%;Insects 50%,,
+mountain_pass_long,Mountain Pass,Long,dark_forest_long,500,60,2000,Sky Serpent,Bow,Silver x3;Mountain Stone x1,Stone x30-50,gnome_2,Flying 50%;Insects 50%,,
+crystal_caves_short,Crystal Caves,Short,mountain_pass_long,200,15,1000,Crystal Spider,Crossbow,Crystal x2;Cave Crystal x1,Crystal x1-2,,Crawlers 50%;Plants 50%,,
+crystal_caves_medium,Crystal Caves,Medium,mountain_pass_long,500,40,2500,Crystal Spider,Crossbow,Crystal x2;Cave Crystal x1,Crystal x1-2,,Crawlers 50%;Plants 50%,,
+crystal_caves_long,Crystal Caves,Long,mountain_pass_long,1000,90,5000,Crystal Spider,Crossbow,Crystal x2;Cave Crystal x1,Crystal x1-2,gnome_3,Crawlers 50%;Plants 50%,,
+frozen_tundra_short,Frozen Tundra,Short,crystal_caves_long,400,20,2500,Frost Wyrm,Wand,Mythril x1;Frozen Heart x1;Enchanted Wood x1,Wood x80-120,,Flying 40%;Beasts 40%;Plants 20%,,
+frozen_tundra_medium,Frozen Tundra,Medium,crystal_caves_long,1000,50,6250,Frost Wyrm,Wand,Mythril x1;Frozen Heart x1;Enchanted Wood x1,Wood x80-120,,Flying 40%;Beasts 40%;Plants 20%,,
+frozen_tundra_long,Frozen Tundra,Long,crystal_caves_long,2000,120,12500,Frost Wyrm,Wand,Mythril x1;Frozen Heart x1;Enchanted Wood x1,Wood x80-120,gnome_4,Flying 40%;Beasts 40%;Plants 20%,,
+volcano_core_short,Volcano Core,Short,frozen_tundra_long,800,25,6000,Lava Titan,Rotates,Obsidian x2;Molten Core x1,Obsidian x1,,Random mix all types,,
+volcano_core_medium,Volcano Core,Medium,frozen_tundra_long,2000,65,15000,Lava Titan,Rotates,Obsidian x2;Molten Core x1,Obsidian x1,,Random mix all types,,
+volcano_core_long,Volcano Core,Long,frozen_tundra_long,4000,150,30000,Lava Titan,Rotates,Obsidian x2;Molten Core x1,Obsidian x1,gnome_5,Random mix all types,,
